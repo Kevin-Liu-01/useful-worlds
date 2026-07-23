@@ -17,6 +17,7 @@ import {
   Github,
   Images,
   Linkedin,
+  Mail,
   Maximize2,
   Play,
   X,
@@ -2455,7 +2456,9 @@ const HeroMarginRail = ({
     aria-label={
       side === "left" ? "Responsive pointer trace" : "Hero visual modes"
     }
-    className="relative hidden h-full min-h-0 overflow-hidden bg-black text-white xl:block"
+    className={`relative hidden h-full min-h-0 overflow-hidden bg-[#f4f3ec] text-black xl:block ${
+      side === "left" ? "border-r border-black/20" : "border-l border-black/20"
+    }`}
   >
     <svg
       aria-hidden="true"
@@ -2465,7 +2468,8 @@ const HeroMarginRail = ({
     >
       <motion.path
         fill="none"
-        stroke="rgba(255,255,255,.48)"
+        stroke="currentColor"
+        strokeOpacity=".42"
         strokeWidth="1"
         vectorEffect="non-scaling-stroke"
         animate={{
@@ -2502,12 +2506,12 @@ const HeroMarginRail = ({
         side === "left" ? "right-0" : "left-0"
       }`}
     >
-      <span className="absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-white/35" />
-      <span className="absolute left-0 top-1/2 h-px w-full -translate-y-1/2 bg-white/35" />
+      <span className="absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-current opacity-35" />
+      <span className="absolute left-0 top-1/2 h-px w-full -translate-y-1/2 bg-current opacity-35" />
       <span className="absolute left-1/2 top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rotate-45 bg-[#d8ff36]" />
     </div>
 
-    <span className="absolute left-1/2 top-8 -translate-x-1/2 font-kode text-[5px] uppercase tracking-[0.2em] text-white/40 [writing-mode:vertical-rl]">
+    <span className="absolute left-1/2 top-8 -translate-x-1/2 font-kode text-[5px] uppercase tracking-[0.2em] text-black/40 [writing-mode:vertical-rl]">
       {side === "left" ? "Pointer trace" : "Visual field"}
     </span>
 
@@ -2523,7 +2527,7 @@ const HeroMarginRail = ({
             className={`h-2.5 w-2.5 rotate-45 border transition ${
               mode === item.id
                 ? "border-[#d8ff36] bg-[#d8ff36]"
-                : "border-white/40 bg-black hover:border-white hover:bg-white"
+                : "border-current bg-transparent opacity-35 hover:bg-current hover:opacity-100"
             }`}
           />
         ))}
@@ -2645,6 +2649,67 @@ const HeroCommitField = ({
   );
 };
 
+const HeaderContactCluster = ({ compact = false }: { compact?: boolean }) => {
+  const contacts = [
+    {
+      label: "GitHub",
+      href: SOCIAL_LINKS.github,
+      icon: <Github className="h-3.5 w-3.5" />,
+    },
+    {
+      label: "LinkedIn",
+      href: SOCIAL_LINKS.linkedin,
+      icon: <Linkedin className="h-3.5 w-3.5" />,
+    },
+    {
+      label: "X",
+      href: SOCIAL_LINKS.x,
+      icon: <span className="font-telegraf text-[10px] font-black">X</span>,
+    },
+    {
+      label: "Email",
+      href: `mailto:${SOCIAL_LINKS.email}`,
+      icon: <Mail className="h-3.5 w-3.5" />,
+    },
+  ];
+
+  return (
+    <motion.nav
+      layoutId="header-contact-cluster"
+      aria-label="Contact Kevin Liu"
+      className={`flex items-center overflow-hidden border border-black/20 bg-white ${
+        compact ? "h-8" : "h-10"
+      }`}
+      transition={{ type: "spring", stiffness: 320, damping: 30 }}
+    >
+      {!compact && (
+        <span className="hidden h-full items-center bg-black px-3 font-kode text-[7px] uppercase tracking-[0.17em] text-white sm:flex">
+          Contact
+          <span className="ml-2 h-1.5 w-1.5 rotate-45 bg-[#d8ff36]" />
+        </span>
+      )}
+      {contacts.map((contact) => (
+        <Link
+          key={contact.label}
+          href={contact.href}
+          target={contact.href.startsWith("mailto:") ? undefined : "_blank"}
+          aria-label={contact.label}
+          className={`group flex h-full items-center justify-center gap-2 border-l border-black/15 text-black/55 transition first:border-l-0 hover:bg-black hover:text-white ${
+            compact ? "w-8" : "w-9 px-2 xl:w-auto xl:px-3"
+          }`}
+        >
+          {contact.icon}
+          {!compact && (
+            <span className="hidden font-kode text-[7px] uppercase tracking-[0.12em] xl:inline">
+              {contact.label}
+            </span>
+          )}
+        </Link>
+      ))}
+    </motion.nav>
+  );
+};
+
 const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
   const [isLaunching, setIsLaunching] = useState(false);
   const [heroMode, setHeroMode] = useState<HeroMode>("dither");
@@ -2741,9 +2806,9 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
         animate={{
           top: navDocked ? 12 : 0,
           width: navDocked
-            ? "min(232px, calc(100vw - 32px))"
+            ? "min(410px, calc(100vw - 32px))"
             : "min(1520px, calc(100vw - clamp(20px, 6.25vw, 80px)))",
-          height: navDocked ? 46 : 68,
+          height: navDocked ? 50 : 68,
           boxShadow: navDocked
             ? "0 16px 50px rgba(0,0,0,.32)"
             : "0 0 0 rgba(0,0,0,0)",
@@ -2752,33 +2817,32 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
             : "polygon(12px 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%, 0 12px)",
         }}
         transition={{ type: "spring", stiffness: 260, damping: 29, mass: 0.8 }}
-        className={`fixed left-1/2 z-[95] -translate-x-1/2 overflow-hidden border backdrop-blur-xl transition-colors duration-300 ${
-          navDocked
-            ? "border-white/20 bg-black/95 text-white"
-            : "border-black/25 bg-[#f4f3ec]/95 text-black"
-        }`}
+        className="fixed left-1/2 z-[95] -translate-x-1/2 overflow-hidden border border-black/30 bg-[#f4f3ec]/95 text-black backdrop-blur-xl"
       >
-        <AnimatePresence initial={false} mode="wait">
+        <AnimatePresence initial={false} mode="popLayout">
           {navDocked ? (
             <motion.div
               key="compact-kevin"
-              className="flex h-full items-center justify-center"
+              className="flex h-full items-center justify-center gap-3 px-3"
               initial={{ opacity: 0, scale: 0.86, filter: "blur(8px)" }}
               animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
               exit={{ opacity: 0, scale: 0.9, filter: "blur(6px)" }}
               transition={{ duration: 0.22 }}
             >
-              <Link
-                href="/#top"
-                className="group flex h-full w-full items-center justify-center gap-3 font-telegraf text-sm font-black uppercase tracking-[-0.01em]"
-              >
-                Kevin Liu
-                <motion.span
-                  className="h-1.5 w-1.5 rotate-45 bg-[#d8ff36]"
-                  animate={{ rotate: [45, 135, 45] }}
-                  transition={{ duration: 4, repeat: Infinity }}
-                />
-              </Link>
+              <motion.div layoutId="header-kevin-name">
+                <Link
+                  href="/#top"
+                  className="group flex h-8 items-center justify-center gap-2 px-2 font-telegraf text-sm font-black uppercase tracking-[-0.01em]"
+                >
+                  Kevin Liu
+                  <motion.span
+                    className="h-1.5 w-1.5 rotate-45 bg-[#d8ff36]"
+                    animate={{ rotate: [45, 135, 45] }}
+                    transition={{ duration: 4, repeat: Infinity }}
+                  />
+                </Link>
+              </motion.div>
+              <HeaderContactCluster compact />
             </motion.div>
           ) : (
             <motion.div
@@ -2789,63 +2853,25 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.2 }}
             >
-              <Link
-                href="/#top"
-                className="circuit-control group flex min-w-0 items-center gap-2 py-1 pl-1 pr-3 transition-colors hover:bg-black hover:text-white sm:gap-3"
-              >
-                <Image
-                  src="/images/logo.png"
-                  alt=""
-                  width={40}
-                  height={40}
-                  loading="eager"
-                  className="h-10 w-10 shrink-0 object-cover"
-                />
-                <span className="truncate font-telegraf text-sm font-black uppercase tracking-[-0.02em] sm:text-base">
-                  Kevin Liu
-                </span>
-                <span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-[#d8ff36]" />
-              </Link>
+              <motion.div layoutId="header-kevin-name">
+                <Link
+                  href="/#top"
+                  className="circuit-control group flex min-w-0 items-center gap-2 px-3 py-2 transition-colors hover:bg-black hover:text-white"
+                >
+                  <span className="truncate font-telegraf text-sm font-black uppercase tracking-[-0.02em] sm:text-base">
+                    Kevin Liu
+                  </span>
+                  <span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-[#d8ff36]" />
+                </Link>
+              </motion.div>
 
-              <div className="hidden min-w-0 flex-1 items-center gap-4 md:flex">
-                <span className="h-px min-w-8 flex-1 bg-black/20" />
-                <span className="font-kode text-[7px] uppercase tracking-[0.19em] text-black/40 lg:text-[8px]">
-                  Personal portfolio / 2026
-                </span>
-                <span className="h-px min-w-8 flex-1 bg-black/20" />
+              <div className="flex min-w-0 flex-1 items-center justify-center gap-4">
+                <span className="hidden h-px min-w-6 flex-1 bg-black/20 sm:block" />
+                <HeaderContactCluster />
+                <span className="hidden h-px min-w-6 flex-1 bg-black/20 sm:block" />
               </div>
 
               <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
-                <nav
-                  aria-label="Kevin Liu social links"
-                  className="hidden items-center lg:flex"
-                >
-                  <Link
-                    href={SOCIAL_LINKS.github}
-                    target="_blank"
-                    aria-label="GitHub"
-                    className="circuit-control flex h-8 w-8 items-center justify-center text-black/50 transition hover:bg-black hover:text-white"
-                  >
-                    <Github className="h-3.5 w-3.5" />
-                  </Link>
-                  <Link
-                    href={SOCIAL_LINKS.linkedin}
-                    target="_blank"
-                    aria-label="LinkedIn"
-                    className="circuit-control-reverse flex h-8 w-8 items-center justify-center text-black/50 transition hover:bg-black hover:text-white"
-                  >
-                    <Linkedin className="h-3.5 w-3.5" />
-                  </Link>
-                  <Link
-                    href={SOCIAL_LINKS.x}
-                    target="_blank"
-                    aria-label="X"
-                    className="circuit-control flex h-8 w-8 items-center justify-center font-telegraf text-[10px] font-black text-black/50 transition hover:bg-black hover:text-white"
-                  >
-                    X
-                  </Link>
-                </nav>
-
                 <button
                   type="button"
                   onClick={launch}
@@ -2873,12 +2899,16 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
       <section
         id="top"
         onMouseMove={followPointer}
-        className={`spotlight-field relative border-b border-white/20 bg-black ${SECTION_FRAME}`}
+        className="spotlight-field relative mx-3 max-w-[1520px] border-x border-b border-black/30 bg-[#f4f3ec] text-black sm:mx-6 lg:mx-10 2xl:mx-auto"
+        style={{
+          clipPath:
+            "polygon(0 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 14px 100%, 0 calc(100% - 14px))",
+        }}
       >
         <div className="mx-auto grid w-full grid-cols-1 xl:grid-cols-[64px_minmax(0,1fr)_64px]">
           <HeroMarginRail side="left" mode={heroMode} onMode={setHeroMode} />
 
-          <div className="mx-auto grid min-h-[590px] w-full grid-cols-1 border-x border-black/20 lg:h-[clamp(640px,72svh,760px)] lg:min-h-0 lg:grid-cols-12">
+          <div className="mx-auto grid min-h-[590px] w-full grid-cols-1 bg-[#f4f3ec] lg:h-[clamp(640px,72svh,760px)] lg:min-h-0 lg:grid-cols-12">
             <div className="relative z-10 flex min-w-0 flex-col justify-between border-b border-black p-5 sm:p-8 lg:col-span-7 lg:border-b-0 lg:border-r lg:p-10 xl:p-12">
               <div className="flex items-center justify-between gap-4 font-kode text-[8px] uppercase tracking-[0.2em] text-black/50 sm:text-[9px]">
                 <span>Kevin Liu / engineer + designer</span>
