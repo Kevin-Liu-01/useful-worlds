@@ -541,6 +541,14 @@ const DEFAULT_MEDIA_FOCUS = [0.5, 0.5] as const;
 const CHOPPED =
   "polygon(0 18px, 18px 0, calc(100% - 44px) 0, calc(100% - 32px) 12px, 100% 12px, 100% calc(100% - 18px), calc(100% - 18px) 100%, 32px 100%, 20px calc(100% - 12px), 0 calc(100% - 12px))";
 
+const MOTION_EASE = [0.22, 1, 0.36, 1] as const;
+const MOTION_SPRING = {
+  type: "spring" as const,
+  stiffness: 180,
+  damping: 24,
+  mass: 0.8,
+};
+
 const SECTION_FRAME =
   "circuit-chassis mx-3 max-w-[1520px] sm:mx-6 lg:mx-10 2xl:mx-auto";
 
@@ -743,38 +751,51 @@ const SectionSpacer = ({ index, label }: { index: string; label: string }) => (
     aria-hidden="true"
     data-scene={index}
     className={`relative flex h-[16dvh] max-h-[180px] min-h-[120px] items-center justify-center gap-4 overflow-hidden bg-black sm:gap-5 ${SECTION_FRAME}`}
-    initial={{ opacity: 0.6 }}
+    initial={{ opacity: 0.35 }}
     whileInView={{ opacity: 1 }}
-    viewport={{ amount: 0.6 }}
+    viewport={{ once: true, amount: 0.45 }}
+    transition={{ duration: 0.7, ease: MOTION_EASE }}
   >
     <svg
       viewBox="0 0 1000 100"
       preserveAspectRatio="none"
       className="pointer-events-none absolute inset-0 h-full w-full overflow-visible text-white"
     >
-      <path
+      <motion.path
         d="M 0 14 H 72 L 90 26 H 392 L 416 38 H 446 M 1000 14 H 928 L 910 26 H 608 L 584 38 H 554"
         fill="none"
         stroke="currentColor"
         strokeWidth="0.8"
         vectorEffect="non-scaling-stroke"
         className="opacity-25"
+        initial={{ pathLength: 0 }}
+        whileInView={{ pathLength: 1 }}
+        viewport={{ once: true, amount: 0.45 }}
+        transition={{ duration: 1.1, ease: MOTION_EASE }}
       />
-      <path
+      <motion.path
         d="M 0 86 H 58 L 78 74 H 402 L 424 61 H 446 M 1000 86 H 942 L 922 74 H 598 L 576 61 H 554"
         fill="none"
         stroke="currentColor"
         strokeWidth="0.8"
         vectorEffect="non-scaling-stroke"
         className="opacity-25"
+        initial={{ pathLength: 0 }}
+        whileInView={{ pathLength: 1 }}
+        viewport={{ once: true, amount: 0.45 }}
+        transition={{ duration: 1.1, delay: 0.08, ease: MOTION_EASE }}
       />
-      <path
+      <motion.path
         d="M 28 0 V 27 L 42 41 V 59 L 28 73 V 100 M 972 0 V 27 L 958 41 V 59 L 972 73 V 100"
         fill="none"
         stroke="currentColor"
         strokeWidth="1"
         vectorEffect="non-scaling-stroke"
         className="opacity-35"
+        initial={{ pathLength: 0 }}
+        whileInView={{ pathLength: 1 }}
+        viewport={{ once: true, amount: 0.45 }}
+        transition={{ duration: 0.9, delay: 0.16, ease: MOTION_EASE }}
       />
       {[28, 42, 958, 972].map((x) => (
         <rect
@@ -789,10 +810,22 @@ const SectionSpacer = ({ index, label }: { index: string; label: string }) => (
       ))}
     </svg>
 
-    <span className="h-2 w-2 rotate-45 bg-[#d8ff36]" />
-    <span className="font-telegraf text-xl font-black tracking-[-0.025em] text-white sm:text-2xl">
+    <motion.span
+      className="h-2 w-2 rotate-45 bg-[#d8ff36]"
+      initial={{ opacity: 0, scale: 0, rotate: 0 }}
+      whileInView={{ opacity: 1, scale: 1, rotate: 45 }}
+      viewport={{ once: true, amount: 0.45 }}
+      transition={{ ...MOTION_SPRING, delay: 0.12 }}
+    />
+    <motion.span
+      className="font-telegraf text-xl font-black tracking-[-0.025em] text-white sm:text-2xl"
+      initial={{ opacity: 0, y: 18, filter: "blur(6px)" }}
+      whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+      viewport={{ once: true, amount: 0.45 }}
+      transition={{ ...MOTION_SPRING, delay: 0.08 }}
+    >
       {label}
-    </span>
+    </motion.span>
   </motion.div>
 );
 
@@ -820,7 +853,7 @@ const SceneCurtain = ({
       className={`pointer-events-none absolute inset-0 z-[45] flex items-center justify-center overflow-hidden ${background}`}
       initial={{ clipPath: "inset(0 0 0 0)" }}
       whileInView={{ clipPath: "inset(0 0 100% 0)" }}
-      viewport={{ amount: 0.08 }}
+      viewport={{ once: true, amount: 0.08 }}
       transition={{
         duration: reduceMotion ? 0.12 : 0.9,
         ease: [0.76, 0, 0.24, 1],
@@ -830,7 +863,7 @@ const SceneCurtain = ({
         className="flex items-center gap-4"
         initial={{ y: 0, opacity: 1 }}
         whileInView={{ y: -56, opacity: 0 }}
-        viewport={{ amount: 0.08 }}
+        viewport={{ once: true, amount: 0.08 }}
         transition={{ duration: reduceMotion ? 0.1 : 0.55 }}
       >
         <span className="h-2 w-2 rotate-45 bg-[#d8ff36] mix-blend-difference" />
@@ -841,6 +874,26 @@ const SceneCurtain = ({
     </motion.div>
   );
 };
+
+const RevealBlock = ({
+  children,
+  className = "",
+  delay = 0,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  delay?: number;
+}) => (
+  <motion.div
+    className={className}
+    initial={{ opacity: 0, y: 34, filter: "blur(10px)" }}
+    whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+    viewport={{ once: true, margin: "-80px" }}
+    transition={{ duration: 0.72, delay, ease: MOTION_EASE }}
+  >
+    {children}
+  </motion.div>
+);
 
 const HERO_SOCIAL_FRAMES = [
   {
@@ -1150,7 +1203,8 @@ const DitherMedia = ({
         src={src}
         alt={alt}
         fill
-        priority={priority}
+        preload={priority}
+        loading={priority ? "eager" : "lazy"}
         sizes="(min-width: 1024px) 55vw, 100vw"
         style={{ objectPosition: `${focus[0] * 100}% ${focus[1] * 100}%` }}
         className={`${
@@ -1222,12 +1276,13 @@ const HeroSocialSequence = ({
           initial={false}
           animate={{
             opacity: index === activeIndex ? 1 : 0,
-            scale: index === activeIndex ? 1 : 1.075,
-            x: index === activeIndex ? 0 : index % 2 === 0 ? -22 : 22,
+            scale: index === activeIndex ? 1 : 1.025,
+            x: index === activeIndex ? 0 : index % 2 === 0 ? -16 : 16,
+            rotate: index === activeIndex ? 0 : index % 2 === 0 ? -0.35 : 0.35,
             filter:
               index === activeIndex
                 ? "contrast(1) brightness(1)"
-                : "contrast(1.45) brightness(.65)",
+                : "contrast(1.35) brightness(.65) blur(5px)",
             clipPath:
               index === activeIndex
                 ? "polygon(0 0, 100% 0, 100% 100%, 0 100%)"
@@ -1236,8 +1291,8 @@ const HeroSocialSequence = ({
                   : "polygon(93% 0, 100% 0, 100% 100%, 100% 100%)",
           }}
           transition={{
-            duration: reduceMotion ? 0.12 : 1.2,
-            ease: [0.22, 1, 0.36, 1],
+            duration: reduceMotion ? 0.12 : 1.05,
+            ease: MOTION_EASE,
           }}
           style={{ pointerEvents: index === activeIndex ? "auto" : "none" }}
           aria-hidden={index !== activeIndex}
@@ -1269,6 +1324,11 @@ const HeroSocialSequence = ({
           animate={{
             opacity: [0, 0.9, 0],
             backgroundSize: ["3px 3px", "12px 12px", "4px 4px"],
+            clipPath: [
+              "polygon(0 0, 14% 0, 0 100%, 0 100%)",
+              "polygon(0 0, 100% 0, 86% 100%, 0 100%)",
+              "polygon(100% 0, 100% 0, 100% 100%, 86% 100%)",
+            ],
           }}
           transition={{
             duration: 1.15,
@@ -1278,7 +1338,13 @@ const HeroSocialSequence = ({
         />
       )}
 
-      <div className="absolute inset-x-5 top-5 z-30 flex items-center justify-between gap-3 font-kode text-[7px] uppercase tracking-[0.16em] sm:inset-x-6 sm:text-[8px]">
+      <motion.div
+        key={`hero-controls-${activeIndex}`}
+        className="absolute inset-x-5 top-5 z-30 flex items-center justify-between gap-3 font-kode text-[7px] uppercase tracking-[0.16em] sm:inset-x-6 sm:text-[8px]"
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={MOTION_SPRING}
+      >
         <span className="circuit-control bg-white px-3 py-2 text-black">
           {String(activeIndex + 1).padStart(2, "0")} /
           {String(HERO_SOCIAL_FRAMES.length).padStart(2, "0")}
@@ -1287,33 +1353,45 @@ const HeroSocialSequence = ({
           Expand
           <Maximize2 className="h-3.5 w-3.5" />
         </span>
-      </div>
+      </motion.div>
 
       <div className="absolute inset-x-5 bottom-[116px] z-30 flex items-end justify-between gap-4 border-b border-white/45 pb-3 text-white sm:inset-x-6 sm:bottom-[132px]">
-        <div className="min-w-0">
-          <p className="truncate font-kode text-[7px] uppercase tracking-[0.18em] sm:text-[8px]">
-            {activeFrame.label}
-          </p>
-          <p className="mt-1 truncate font-nacelle text-[11px] text-white/60 sm:text-xs">
-            {activeFrame.note}
-          </p>
-        </div>
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={activeFrame.src}
+            className="min-w-0"
+            initial={{ opacity: 0, y: 12, filter: "blur(5px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            exit={{ opacity: 0, y: -8, filter: "blur(5px)" }}
+            transition={{ duration: 0.38, ease: MOTION_EASE }}
+          >
+            <p className="truncate font-kode text-[7px] uppercase tracking-[0.18em] sm:text-[8px]">
+              {activeFrame.label}
+            </p>
+            <p className="mt-1 truncate font-nacelle text-[11px] text-white/60 sm:text-xs">
+              {activeFrame.note}
+            </p>
+          </motion.div>
+        </AnimatePresence>
         <div
           className="flex shrink-0 items-center gap-1"
           aria-label="Hero image selection"
         >
           {HERO_SOCIAL_FRAMES.map((frame, index) => (
-            <button
+            <motion.button
               key={frame.src}
               type="button"
               onClick={() => setActiveIndex(index)}
               aria-label={`Show ${frame.label}`}
               aria-pressed={index === activeIndex}
-              className={`h-2.5 transition-[width,background-color] duration-300 ${
-                index === activeIndex
-                  ? "w-7 bg-[#d8ff36]"
-                  : "w-2.5 bg-white/45 hover:bg-white"
-              }`}
+              className="h-2.5 bg-white/45 hover:bg-white"
+              animate={{
+                width: index === activeIndex ? 28 : 10,
+                backgroundColor:
+                  index === activeIndex ? "#d8ff36" : "rgba(255,255,255,.45)",
+              }}
+              whileHover={{ y: -2 }}
+              transition={MOTION_SPRING}
             />
           ))}
         </div>
@@ -1340,7 +1418,7 @@ const MomentFieldArchive = ({
       <SceneCurtain index="00" label="Moments in the wild" />
       <SectionChrome index="00" label="Moments in the wild" surface="ink" />
 
-      <div className="grid gap-8 px-5 pb-7 pt-16 sm:px-8 sm:pb-10 sm:pt-20 lg:grid-cols-12 lg:gap-12 lg:px-12 lg:pb-7 lg:pt-14">
+      <RevealBlock className="grid gap-8 px-5 pb-7 pt-16 sm:px-8 sm:pb-10 sm:pt-20 lg:grid-cols-12 lg:gap-12 lg:px-12 lg:pb-7 lg:pt-14">
         <div className="lg:col-span-8">
           <h2 className="max-w-[12ch] font-telegraf text-[clamp(2.9rem,6vw,6.8rem)] font-black leading-[0.9] tracking-[-0.04em]">
             I like being in the room when it becomes real.
@@ -1352,7 +1430,7 @@ const MomentFieldArchive = ({
             make the work worth doing. A few frames from outside the mockup.
           </p>
         </div>
-      </div>
+      </RevealBlock>
 
       <div className="border-y border-white/20 lg:grid lg:min-h-[620px] lg:grid-cols-12">
         <button
@@ -1361,21 +1439,38 @@ const MomentFieldArchive = ({
           aria-label={`Expand moment: ${activeMoment.title}`}
           className="group relative aspect-[16/10] cursor-zoom-in overflow-hidden bg-[#141414] text-left outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-[#d8ff36] lg:col-span-8 lg:aspect-auto lg:min-h-0 lg:border-r lg:border-white/20"
         >
-          <motion.div
-            key={activeMoment.image}
-            className="absolute inset-0"
-            initial={{ opacity: 0.25, filter: "grayscale(1) contrast(1.2)" }}
-            animate={{ opacity: 1, filter: "grayscale(0) contrast(1)" }}
-            transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <Image
-              src={activeMoment.image}
-              alt={activeMoment.alt}
-              fill
-              sizes="(min-width: 1024px) 65vw, 100vw"
-              className="object-cover"
-            />
-          </motion.div>
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={activeMoment.image}
+              className="absolute inset-0"
+              initial={{
+                opacity: 0,
+                x: 22,
+                filter: "grayscale(1) contrast(1.25) blur(7px)",
+                clipPath: "polygon(8% 0,100% 0,92% 100%,0 100%)",
+              }}
+              animate={{
+                opacity: 1,
+                x: 0,
+                filter: "grayscale(0) contrast(1) blur(0px)",
+                clipPath: "polygon(0 0,100% 0,100% 100%,0 100%)",
+              }}
+              exit={{
+                opacity: 0,
+                x: -16,
+                filter: "grayscale(1) contrast(1.2) blur(5px)",
+              }}
+              transition={{ duration: 0.58, ease: MOTION_EASE }}
+            >
+              <Image
+                src={activeMoment.image}
+                alt={activeMoment.alt}
+                fill
+                sizes="(min-width: 1024px) 65vw, 100vw"
+                className="object-cover"
+              />
+            </motion.div>
+          </AnimatePresence>
 
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-black/15" />
           <div className="pointer-events-none absolute inset-x-4 top-4 flex items-center justify-between gap-2 font-kode text-[7px] uppercase tracking-[0.16em] sm:inset-x-6 sm:top-6 sm:text-[8px]">
@@ -1389,39 +1484,42 @@ const MomentFieldArchive = ({
           </div>
         </button>
 
-        <motion.div
-          key={`${activeMoment.image}-copy`}
-          aria-live="polite"
-          className="flex min-h-[380px] flex-col justify-between p-5 sm:p-8 lg:col-span-4 lg:min-h-0 lg:p-10"
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.35 }}
-        >
-          <div className="flex items-start justify-between gap-5 border-b border-white/25 pb-5 font-kode text-[7px] uppercase tracking-[0.17em] text-white/45 sm:text-[8px]">
-            <span>{activeMoment.meta}</span>
-            <span>
-              {String(activeIndex + 1).padStart(2, "0")} /{" "}
-              {FIELD_MOMENTS.length}
-            </span>
-          </div>
-          <div className="py-10">
-            <h3 className="font-telegraf text-4xl font-black leading-[0.95] tracking-[-0.035em] sm:text-5xl">
-              {activeMoment.title}
-            </h3>
-            <p className="mt-6 max-w-[38ch] font-nacelle text-[15px] leading-[1.75] text-white/65 sm:text-base">
-              {activeMoment.story}
-            </p>
-          </div>
-          <a
-            href={activeMoment.sourceUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group flex items-center justify-between border-t border-white/25 pt-5 font-kode text-[8px] uppercase tracking-[0.18em] text-white/70 transition hover:text-[#d8ff36] sm:text-[9px]"
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={`${activeMoment.image}-copy`}
+            aria-live="polite"
+            className="flex min-h-[380px] flex-col justify-between p-5 sm:p-8 lg:col-span-4 lg:min-h-0 lg:p-10"
+            initial={{ opacity: 0, y: 18, filter: "blur(7px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            exit={{ opacity: 0, y: -12, filter: "blur(6px)" }}
+            transition={{ duration: 0.42, ease: MOTION_EASE }}
           >
-            View the original / {activeMoment.source}
-            <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-          </a>
-        </motion.div>
+            <div className="flex items-start justify-between gap-5 border-b border-white/25 pb-5 font-kode text-[7px] uppercase tracking-[0.17em] text-white/45 sm:text-[8px]">
+              <span>{activeMoment.meta}</span>
+              <span>
+                {String(activeIndex + 1).padStart(2, "0")} /{" "}
+                {FIELD_MOMENTS.length}
+              </span>
+            </div>
+            <div className="py-10">
+              <h3 className="font-telegraf text-4xl font-black leading-[0.95] tracking-[-0.035em] sm:text-5xl">
+                {activeMoment.title}
+              </h3>
+              <p className="mt-6 max-w-[38ch] font-nacelle text-[15px] leading-[1.75] text-white/65 sm:text-base">
+                {activeMoment.story}
+              </p>
+            </div>
+            <a
+              href={activeMoment.sourceUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex items-center justify-between border-t border-white/25 pt-5 font-kode text-[8px] uppercase tracking-[0.18em] text-white/70 transition hover:text-[#d8ff36] sm:text-[9px]"
+            >
+              View the original / {activeMoment.source}
+              <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+            </a>
+          </motion.div>
+        </AnimatePresence>
       </div>
 
       <div
@@ -1432,7 +1530,7 @@ const MomentFieldArchive = ({
         {FIELD_MOMENTS.map((moment, index) => {
           const active = index === activeIndex;
           return (
-            <button
+            <motion.button
               key={moment.image}
               type="button"
               role="tab"
@@ -1447,6 +1545,9 @@ const MomentFieldArchive = ({
               className={`group relative aspect-[4/3] overflow-hidden bg-black text-left outline-none transition focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#d8ff36] lg:aspect-auto lg:h-[78px] ${
                 active ? "opacity-100" : "opacity-60 hover:opacity-90"
               }`}
+              animate={{ y: active ? -4 : 0 }}
+              whileHover={{ y: -4 }}
+              transition={MOTION_SPRING}
             >
               <Image
                 src={moment.image}
@@ -1467,7 +1568,7 @@ const MomentFieldArchive = ({
                   }`}
                 />
               </span>
-            </button>
+            </motion.button>
           );
         })}
       </div>
@@ -1916,13 +2017,18 @@ const ProjectCard = ({
 }) => {
   return (
     <motion.article
-      initial={{ opacity: 0, y: 32 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0, y: 38, filter: "blur(10px)" }}
+      whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+      whileHover={{
+        y: -7,
+        boxShadow: "0 20px 0 rgba(11,11,11,.16)",
+        transition: MOTION_SPRING,
+      }}
       viewport={{ once: true, margin: "-70px" }}
       transition={{
-        duration: 0.55,
-        delay: (index % 2) * 0.06,
-        ease: [0.22, 1, 0.36, 1],
+        duration: 0.65,
+        delay: (index % 2) * 0.08,
+        ease: MOTION_EASE,
       }}
       onClick={(event) => {
         if ((event.target as HTMLElement).closest("a, button")) return;
@@ -2508,7 +2614,12 @@ const HeroCommitField = ({ onMode }: { onMode: (mode: HeroMode) => void }) => {
   };
 
   return (
-    <div className="mt-6 max-w-[650px] border-y border-black/25 py-3 sm:mt-7 sm:py-4">
+    <motion.div
+      className="mt-6 max-w-[650px] border-y border-black/25 py-3 sm:mt-7 sm:py-4"
+      initial={{ opacity: 0, y: 22, filter: "blur(8px)" }}
+      animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+      transition={{ ...MOTION_SPRING, delay: 0.32 }}
+    >
       <div className="mb-3 flex items-center justify-between gap-4">
         <p className="font-telegraf text-sm font-black tracking-[-0.01em] sm:text-base">
           Commit history, 2026
@@ -2587,7 +2698,7 @@ const HeroCommitField = ({ onMode }: { onMode: (mode: HeroMode) => void }) => {
           Trace the commits
         </span>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
@@ -2844,16 +2955,41 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
             <div className="relative z-10 flex min-h-[620px] min-w-0 flex-col justify-between border-b border-black p-5 sm:min-h-[680px] sm:p-8 lg:min-h-[720px] lg:p-10 xl:p-12">
               <div className="flex flex-1 flex-col justify-center py-9 sm:py-11 lg:py-4">
                 <h1 className="max-w-[9ch] font-telegraf text-[clamp(3.8rem,7vw,7.6rem)] font-black leading-[0.86] tracking-[-0.045em]">
-                  Agents,
-                  <br />
-                  games &
-                  <br />
-                  <span className="font-normal italic">sharp tools.</span>
+                  {[
+                    { text: "Agents,", italic: false },
+                    { text: "games &", italic: false },
+                    { text: "sharp tools.", italic: true },
+                  ].map((line, index) => (
+                    <span
+                      key={line.text}
+                      className="block overflow-hidden pb-1"
+                    >
+                      <motion.span
+                        className={`block ${line.italic ? "font-normal italic" : ""}`}
+                        initial={{ y: "115%", opacity: 0, rotate: 1.4 }}
+                        animate={{ y: 0, opacity: 1, rotate: 0 }}
+                        transition={{
+                          ...MOTION_SPRING,
+                          delay: reduceMotion ? 0 : 0.08 + index * 0.09,
+                        }}
+                      >
+                        {line.text}
+                      </motion.span>
+                    </span>
+                  ))}
                 </h1>
                 <HeroCommitField onMode={setHeroMode} />
               </div>
 
-              <div className="grid gap-5 border-t border-black pt-4 sm:grid-cols-2">
+              <motion.div
+                className="grid gap-5 border-t border-black pt-4 sm:grid-cols-2"
+                initial={{ opacity: 0, y: 18 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  ...MOTION_SPRING,
+                  delay: reduceMotion ? 0 : 0.42,
+                }}
+              >
                 <p className="max-w-md font-nacelle text-base font-medium leading-snug sm:text-lg">
                   I ship agent systems, browser games, and small tools—then
                   document the people, decisions, and experiments behind them.
@@ -2865,10 +3001,16 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
                   View selected projects
                   <ArrowDown className="h-5 w-5 transition group-hover:translate-y-1" />
                 </Link>
-              </div>
+              </motion.div>
             </div>
 
-            <div className="relative w-full overflow-hidden bg-black p-3 sm:p-5 lg:p-7">
+            <motion.div
+              className="relative w-full overflow-hidden bg-black p-3 sm:p-5 lg:p-7"
+              initial={{ opacity: 0, y: 42, clipPath: "inset(0 8% 0 8%)" }}
+              whileInView={{ opacity: 1, y: 0, clipPath: "inset(0 0 0 0)" }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: 0.82, ease: MOTION_EASE }}
+            >
               <div
                 className="relative aspect-[4/5] w-full overflow-hidden bg-black sm:aspect-[3/2]"
                 style={{ clipPath: CHOPPED }}
@@ -2977,7 +3119,7 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
           </div>
 
           <HeroMarginRail side="right" mode={heroMode} onMode={setHeroMode} />
@@ -2994,7 +3136,7 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
       >
         <SceneCurtain index="01" label="Selected work" tone="paper" />
         <SectionChrome index="01" label="Built in the wild" />
-        <div className="mb-14 grid items-end gap-8 border-b border-black pb-6 sm:mx-4 lg:mx-8 lg:grid-cols-12">
+        <RevealBlock className="mb-14 grid items-end gap-8 border-b border-black pb-6 sm:mx-4 lg:mx-8 lg:grid-cols-12">
           <div className="lg:col-span-8">
             <h2 className="font-telegraf text-5xl font-black tracking-[-0.035em] sm:text-7xl lg:text-8xl">
               Built in the wild.
@@ -3005,7 +3147,7 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
             preview opens into a full visual case file with multiple screens,
             context, and direct project links.
           </p>
-        </div>
+        </RevealBlock>
 
         <div className="grid gap-5 sm:px-4 md:grid-cols-2 lg:gap-7 lg:px-8">
           {FEATURED_PROJECTS.map((project, index) => (
@@ -3039,7 +3181,7 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
       >
         <SceneCurtain index="03" label="Field manual" tone="acid" />
         <SectionChrome index="03" label="Personal doctrine" surface="acid" />
-        <div className="mx-auto grid w-full max-w-[1440px] gap-10 px-5 py-16 sm:px-8 sm:py-24 lg:grid-cols-12 lg:px-12">
+        <RevealBlock className="mx-auto grid w-full max-w-[1440px] gap-10 px-5 py-16 sm:px-8 sm:py-24 lg:grid-cols-12 lg:px-12">
           <div className="lg:col-span-8">
             <h2 className="max-w-5xl font-telegraf text-[clamp(3.8rem,7.5vw,8rem)] font-black leading-[0.9] tracking-[-0.025em]">
               How I decide what deserves to exist.
@@ -3051,7 +3193,7 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
               own field note, argument, and set of operating rules.
             </p>
           </div>
-        </div>
+        </RevealBlock>
       </section>
 
       {PHILOSOPHIES.map((philosophy, index) => (
@@ -3071,7 +3213,7 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
         <SceneCurtain index="04" label="Compounding memory" />
         <SectionChrome index="04" label="Kevin's Wiki" surface="ink" />
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_40%,rgba(216,255,54,.08),transparent_30%),radial-gradient(circle_at_85%_65%,rgba(255,255,255,.07),transparent_32%)]" />
-        <div className="relative mx-auto grid w-full max-w-[1440px] gap-10 px-5 py-20 sm:px-8 sm:py-28 lg:grid-cols-12 lg:px-12">
+        <RevealBlock className="relative mx-auto grid w-full max-w-[1440px] gap-10 px-5 py-20 sm:px-8 sm:py-28 lg:grid-cols-12 lg:px-12">
           <div className="lg:col-span-5">
             <h2 className="font-telegraf text-[clamp(3.8rem,7vw,7.8rem)] font-black leading-[0.9] tracking-[-0.035em]">
               A wiki
@@ -3138,7 +3280,7 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
               <ArrowRight className="h-7 w-7 transition group-hover:translate-x-2" />
             </Link>
           </div>
-        </div>
+        </RevealBlock>
       </section>
 
       <SectionSpacer index="05" label="Tool archive" />
@@ -3149,7 +3291,7 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
       >
         <SceneCurtain index="05" label="Tool archive" tone="paper" />
         <SectionChrome index="05" label="Utility belt" />
-        <div className="grid gap-12 lg:grid-cols-12">
+        <RevealBlock className="grid gap-12 lg:grid-cols-12">
           <div className="lg:col-span-3">
             <h2 className="font-telegraf text-5xl font-black leading-[0.95] tracking-[-0.03em] sm:text-6xl">
               Tools I keep reaching for.
@@ -3166,25 +3308,25 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
                 href={tool.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group grid grid-cols-[42px_1fr_auto] items-center gap-4 border-b border-black py-5 sm:grid-cols-[58px_minmax(0,1fr)_160px_minmax(0,1.35fr)_auto]"
+                className="group grid grid-cols-[42px_1fr_auto] items-center gap-4 border-b border-black py-5 transition-[padding,background-color,color] duration-300 ease-out hover:bg-black hover:px-3 hover:text-white sm:grid-cols-[58px_minmax(0,1fr)_160px_minmax(0,1.35fr)_auto]"
               >
-                <span className="font-kode text-[8px] text-black/40">
+                <span className="font-kode text-[8px] text-black/40 transition-colors group-hover:text-white/45">
                   T-{String(index + 1).padStart(2, "0")}
                 </span>
                 <span className="font-telegraf text-xl font-bold tracking-[-0.03em] sm:text-2xl">
                   {tool.name}
                 </span>
-                <span className="text-black/42 hidden font-kode text-[7px] uppercase tracking-[0.14em] sm:block">
+                <span className="text-black/42 hidden font-kode text-[7px] uppercase tracking-[0.14em] transition-colors group-hover:text-white/50 sm:block">
                   {tool.category}
                 </span>
-                <span className="col-start-2 max-w-[48ch] font-nacelle text-[15px] leading-[1.65] text-black/60 sm:col-start-auto">
+                <span className="col-start-2 max-w-[48ch] font-nacelle text-[15px] leading-[1.65] text-black/60 transition-colors group-hover:text-white/65 sm:col-start-auto">
                   {tool.description}
                 </span>
-                <ArrowUpRight className="h-5 w-5 transition group-hover:rotate-45" />
+                <ArrowUpRight className="h-5 w-5 transition duration-300 group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:rotate-45" />
               </Link>
             ))}
           </div>
-        </div>
+        </RevealBlock>
       </section>
 
       <SectionSpacer index="06" label="Contact" />
@@ -3195,7 +3337,7 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
       >
         <SceneCurtain index="06" label="Open channel" tone="acid" />
         <SectionChrome index="06" label="Open channel" surface="acid" />
-        <div className="mx-auto w-full max-w-[1440px] px-5 py-14 sm:px-8 sm:py-20 lg:px-12">
+        <RevealBlock className="mx-auto w-full max-w-[1440px] px-5 py-14 sm:px-8 sm:py-20 lg:px-12">
           <div className="flex flex-col justify-between gap-10 sm:flex-row sm:items-end">
             <Link
               href="mailto:k.bowen.liu@gmail.com"
@@ -3227,7 +3369,7 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
               </span>
             </div>
           </div>
-        </div>
+        </RevealBlock>
       </footer>
 
       <MomentGalleryOverlay

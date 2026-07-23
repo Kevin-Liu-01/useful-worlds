@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   Activity,
   ArrowUpRight,
@@ -56,6 +56,24 @@ type EggId =
   | "red-button";
 
 const EGG_TOTAL = 8;
+const LAB_EASE = [0.22, 1, 0.36, 1] as const;
+const LAB_SPRING = {
+  type: "spring" as const,
+  stiffness: 210,
+  damping: 24,
+  mass: 0.75,
+};
+const labCardMotion = (index: number) => ({
+  initial: { opacity: 0, y: 34, filter: "blur(10px)" },
+  whileInView: { opacity: 1, y: 0, filter: "blur(0px)" },
+  viewport: { once: true as const, margin: "-70px" },
+  transition: { duration: 0.62, delay: index * 0.055, ease: LAB_EASE },
+  whileHover: {
+    y: -6,
+    boxShadow: "0 18px 0 rgba(10,10,10,.13)",
+    transition: LAB_SPRING,
+  },
+});
 const TRAINER_CODE = [
   "ArrowUp",
   "ArrowUp",
@@ -211,7 +229,13 @@ const OperatorLab = () => {
   return (
     <>
       <div className="px-5 pb-10 pt-16 sm:px-10 sm:pb-14 sm:pt-20 lg:px-14 lg:pb-16">
-        <div className="grid items-end gap-8 border-b border-black/30 pb-8 lg:grid-cols-12">
+        <motion.div
+          className="grid items-end gap-8 border-b border-black/30 pb-8 lg:grid-cols-12"
+          initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
+          whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          viewport={{ once: true, margin: "-70px" }}
+          transition={{ duration: 0.72, ease: LAB_EASE }}
+        >
           <div className="lg:col-span-8">
             <LabLabel>Copmonents / operator lab / 08 secrets</LabLabel>
             <h2 className="mt-4 max-w-[12ch] font-telegraf text-[clamp(3.5rem,7vw,7.8rem)] font-black leading-[0.88] tracking-[-0.04em]">
@@ -231,10 +255,13 @@ const OperatorLab = () => {
               </strong>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         <div className="mt-8 grid gap-4 lg:grid-cols-12">
-          <article className="border border-black/30 p-5 sm:p-7 lg:col-span-8">
+          <motion.article
+            {...labCardMotion(0)}
+            className="border border-black/30 bg-[#f4f3ec] p-5 sm:p-7 lg:col-span-8"
+          >
             <div className="flex items-start justify-between gap-5">
               <div>
                 <LabLabel>Proof cadence / this repository</LabLabel>
@@ -325,9 +352,12 @@ const OperatorLab = () => {
                 ))}
               </div>
             </div>
-          </article>
+          </motion.article>
 
-          <article className="flex min-h-[420px] flex-col justify-between bg-black p-6 text-white sm:p-8 lg:col-span-4">
+          <motion.article
+            {...labCardMotion(1)}
+            className="flex min-h-[420px] flex-col justify-between bg-black p-6 text-white sm:p-8 lg:col-span-4"
+          >
             <div className="flex items-start justify-between">
               <LabLabel>Source document / résumé</LabLabel>
               <FileText className="h-7 w-7 text-[#d8ff36]" strokeWidth={1.25} />
@@ -344,19 +374,25 @@ const OperatorLab = () => {
                 the louder interfaces.
               </p>
             </div>
-            <button
+            <motion.button
               type="button"
               onClick={openResume}
               className="group mt-8 flex items-center justify-between bg-white px-4 py-4 text-left text-black transition hover:bg-[#d8ff36]"
+              whileHover={{ y: -3 }}
+              whileTap={{ scale: 0.985, y: 1 }}
+              transition={LAB_SPRING}
             >
               <span className="font-kode text-[8px] uppercase tracking-[0.16em]">
                 Launch PDF viewer
               </span>
               <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-            </button>
-          </article>
+            </motion.button>
+          </motion.article>
 
-          <article className="relative min-h-[390px] overflow-hidden bg-[#d8ff36] p-6 text-black sm:p-8 lg:col-span-4">
+          <motion.article
+            {...labCardMotion(2)}
+            className="relative min-h-[390px] overflow-hidden bg-[#d8ff36] p-6 text-black sm:p-8 lg:col-span-4"
+          >
             <div className="relative z-10 flex h-full flex-col justify-between">
               <div className="flex items-start justify-between">
                 <LabLabel>Unstable preference / reversible</LabLabel>
@@ -370,11 +406,14 @@ const OperatorLab = () => {
                   Overclock the portfolio.
                 </h3>
               </div>
-              <button
+              <motion.button
                 type="button"
                 onClick={toggleOverclock}
                 aria-pressed={overclock}
                 className="group mt-8 flex items-center justify-between border border-black bg-black px-4 py-4 text-white transition hover:bg-white hover:text-black"
+                whileHover={{ y: -3 }}
+                whileTap={{ scale: 0.985, y: 1 }}
+                transition={LAB_SPRING}
               >
                 <span className="font-kode text-[8px] uppercase tracking-[0.16em]">
                   {overclock ? "Return to nominal" : "Break visual containment"}
@@ -384,7 +423,7 @@ const OperatorLab = () => {
                 ) : (
                   <Sparkles className="h-4 w-4 transition-transform group-hover:rotate-12" />
                 )}
-              </button>
+              </motion.button>
             </div>
             <motion.span
               aria-hidden="true"
@@ -392,11 +431,13 @@ const OperatorLab = () => {
               animate={{ rotate: 360, scale: overclock ? [1, 1.3, 1] : 1 }}
               transition={{ duration: 9, repeat: Infinity, ease: "linear" }}
             />
-          </article>
+          </motion.article>
 
-          <button
+          <motion.button
             type="button"
             onClick={nextSignal}
+            {...labCardMotion(3)}
+            whileTap={{ scale: 0.985 }}
             className="group flex min-h-[390px] flex-col justify-between border border-black/30 p-6 text-left sm:p-8 lg:col-span-4"
           >
             <div className="flex items-start justify-between">
@@ -405,28 +446,35 @@ const OperatorLab = () => {
                 {String(signalIndex + 1).padStart(2, "0")} / 05
               </span>
             </div>
-            <motion.div
-              key={activeSignal.code}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
-              <p className="font-kode text-[7px] uppercase tracking-[0.16em] text-black/40">
-                {activeSignal.code}
-              </p>
-              <h3 className="mt-3 font-telegraf text-4xl font-black leading-[0.92] tracking-[-0.035em] sm:text-5xl">
-                {activeSignal.title}
-              </h3>
-              <p className="mt-5 font-nacelle text-[15px] leading-[1.7] text-black/60">
-                {activeSignal.text}
-              </p>
-            </motion.div>
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={activeSignal.code}
+                initial={{ opacity: 0, x: 22, filter: "blur(8px)" }}
+                animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+                exit={{ opacity: 0, x: -18, filter: "blur(8px)" }}
+                transition={{ duration: 0.36, ease: LAB_EASE }}
+              >
+                <p className="font-kode text-[7px] uppercase tracking-[0.16em] text-black/40">
+                  {activeSignal.code}
+                </p>
+                <h3 className="mt-3 font-telegraf text-4xl font-black leading-[0.92] tracking-[-0.035em] sm:text-5xl">
+                  {activeSignal.title}
+                </h3>
+                <p className="mt-5 font-nacelle text-[15px] leading-[1.7] text-black/60">
+                  {activeSignal.text}
+                </p>
+              </motion.div>
+            </AnimatePresence>
             <div className="flex items-center justify-between border-t border-black/25 pt-4 font-kode text-[7px] uppercase tracking-[0.15em]">
               Tune next signal
               <ArrowUpRight className="h-4 w-4 transition-transform group-hover:rotate-45" />
             </div>
-          </button>
+          </motion.button>
 
-          <article className="flex min-h-[390px] flex-col justify-between bg-black p-6 text-white sm:p-8 lg:col-span-4">
+          <motion.article
+            {...labCardMotion(4)}
+            className="flex min-h-[390px] flex-col justify-between bg-black p-6 text-white sm:p-8 lg:col-span-4"
+          >
             <div className="flex items-start justify-between">
               <LabLabel>Keyboard decoder / always listening</LabLabel>
               <Keyboard className="h-7 w-7 text-[#d8ff36]" strokeWidth={1.25} />
@@ -457,9 +505,12 @@ const OperatorLab = () => {
                 />
               ))}
             </div>
-          </article>
+          </motion.article>
 
-          <article className="flex min-h-[390px] flex-col justify-between border border-black/30 p-6 sm:p-8 lg:col-span-4">
+          <motion.article
+            {...labCardMotion(5)}
+            className="flex min-h-[390px] flex-col justify-between border border-black/30 bg-[#f4f3ec] p-6 sm:p-8 lg:col-span-4"
+          >
             <div className="flex items-start justify-between">
               <LabLabel>Restraint test / definitely safe</LabLabel>
               <span className="font-kode text-[8px] uppercase tracking-[0.14em] text-black/40">
@@ -472,7 +523,9 @@ const OperatorLab = () => {
                 onClick={pressRedButton}
                 aria-label="Do not press the red button"
                 className="relative flex h-36 w-36 items-center justify-center rounded-full border-[10px] border-black bg-[#ff3b30] shadow-[0_13px_0_#111] outline-none focus-visible:ring-4 focus-visible:ring-[#d8ff36]"
+                whileHover={{ scale: 1.035, rotate: -1.5 }}
                 whileTap={{ y: 10, boxShadow: "0 3px 0 #111" }}
+                transition={LAB_SPRING}
               >
                 <span className="h-16 w-16 rounded-full border border-black/30 bg-white/20" />
               </motion.button>
@@ -484,7 +537,7 @@ const OperatorLab = () => {
               </p>
             </div>
             <div className="h-px bg-black/25" />
-          </article>
+          </motion.article>
         </div>
 
         {allUnlocked && (
@@ -504,115 +557,131 @@ const OperatorLab = () => {
         )}
       </div>
 
-      {overclock && (
-        <div
-          aria-hidden="true"
-          className="pointer-events-none fixed inset-0 z-[105] overflow-hidden opacity-30 mix-blend-difference"
-        >
-          <div className="absolute inset-0 bg-[repeating-linear-gradient(0deg,transparent_0,transparent_5px,rgba(255,255,255,.18)_6px)]" />
-          <motion.span
-            className="absolute inset-x-0 h-px bg-white shadow-[0_0_24px_white]"
-            animate={{ top: ["0%", "100%", "0%"] }}
-            transition={{ duration: 2.4, repeat: Infinity, ease: "linear" }}
-          />
-          {Array.from({ length: 18 }, (_, index) => (
-            <motion.span
-              key={index}
-              className="absolute h-1.5 w-1.5 bg-white"
-              style={{
-                left: `${(index * 37) % 100}%`,
-                top: `${(index * 19) % 100}%`,
-              }}
-              animate={{ opacity: [0.1, 1, 0.1], scale: [1, 2.5, 1] }}
-              transition={{
-                duration: 1.2 + (index % 5) * 0.24,
-                repeat: Infinity,
-                delay: index * 0.05,
-              }}
-            />
-          ))}
-        </div>
-      )}
-
-      {pdfOpen && (
-        <motion.div
-          role="dialog"
-          aria-modal="true"
-          aria-label="Kevin Liu résumé PDF viewer"
-          className="fixed inset-0 z-[140] flex items-center justify-center p-3 sm:p-8"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-        >
-          <button
-            type="button"
-            aria-label="Close résumé viewer"
-            onClick={() => setPdfOpen(false)}
-            className="absolute inset-0 bg-black/85 backdrop-blur-md"
-          />
+      <AnimatePresence>
+        {overclock && (
           <motion.div
-            className="relative z-10 flex h-[92vh] w-full max-w-6xl flex-col border border-white/30 bg-black text-white shadow-2xl"
-            initial={{ y: 28, scale: 0.97 }}
-            animate={{ y: 0, scale: 1 }}
+            aria-hidden="true"
+            className="pointer-events-none fixed inset-0 z-[105] overflow-hidden mix-blend-difference"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.3 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.35, ease: LAB_EASE }}
           >
-            <header className="flex h-14 shrink-0 items-center justify-between border-b border-white/25 px-4 sm:px-5">
-              <div>
-                <span className="font-kode text-[7px] uppercase tracking-[0.16em] text-white/45">
-                  Source document / live viewer
-                </span>
-                <strong className="ml-3 hidden font-telegraf text-sm sm:inline">
-                  Kevin Liu — Résumé
-                </strong>
-              </div>
-              <div className="flex items-center gap-2">
-                <a
-                  href="/kevin_liu_resume_25.pdf"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="border border-white/30 px-3 py-2 font-kode text-[7px] uppercase tracking-[0.14em] hover:bg-white hover:text-black"
-                >
-                  Open source
-                </a>
-                <button
-                  type="button"
-                  onClick={() => setPdfOpen(false)}
-                  aria-label="Close résumé viewer"
-                  className="border border-white/30 p-2 hover:bg-white hover:text-black"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-            </header>
-            <iframe
-              src="/kevin_liu_resume_25.pdf#view=FitH"
-              title="Kevin Liu résumé"
-              className="min-h-0 flex-1 bg-[#e8e8e8]"
-            />
+            {Array.from({ length: 7 }, (_, index) => (
+              <motion.span
+                key={index}
+                className="absolute h-9 border-y border-white/40 bg-white/[0.06]"
+                style={{
+                  left: `${8 + ((index * 17) % 58)}%`,
+                  right: `${6 + ((index * 11) % 26)}%`,
+                  top: `${10 + index * 13}%`,
+                  clipPath:
+                    "polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px)",
+                }}
+                animate={{
+                  x: index % 2 === 0 ? [-8, 12, -8] : [9, -11, 9],
+                  opacity: [0.08, 0.55, 0.08],
+                }}
+                transition={{
+                  duration: 1.7 + index * 0.17,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: index * 0.08,
+                }}
+              />
+            ))}
           </motion.div>
-        </motion.div>
-      )}
+        )}
+      </AnimatePresence>
 
-      {secretMessage && (
-        <motion.div
-          role="status"
-          className="fixed left-1/2 top-24 z-[150] w-[min(92vw,620px)] -translate-x-1/2 border border-black bg-[#d8ff36] p-5 text-black shadow-[12px_12px_0_#000] sm:p-7"
-          initial={{ opacity: 0, y: -24, rotate: -1 }}
-          animate={{ opacity: 1, y: 0, rotate: 0 }}
-        >
-          <button
-            type="button"
-            onClick={() => setSecretMessage(null)}
-            aria-label="Dismiss secret message"
-            className="absolute right-3 top-3 border border-black p-1.5 hover:bg-black hover:text-white"
+      <AnimatePresence>
+        {pdfOpen && (
+          <motion.div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Kevin Liu résumé PDF viewer"
+            className="fixed inset-0 z-[140] flex items-center justify-center p-3 sm:p-8"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.28, ease: LAB_EASE }}
           >
-            <X className="h-3.5 w-3.5" />
-          </button>
-          <LabLabel>Secret recovered / {eggs.size} of 8</LabLabel>
-          <p className="mt-3 pr-8 font-telegraf text-2xl font-black leading-tight sm:text-3xl">
-            {secretMessage}
-          </p>
-        </motion.div>
-      )}
+            <button
+              type="button"
+              aria-label="Close résumé viewer"
+              onClick={() => setPdfOpen(false)}
+              className="absolute inset-0 bg-black/85 backdrop-blur-md"
+            />
+            <motion.div
+              className="relative z-10 flex h-[92vh] w-full max-w-6xl flex-col border border-white/30 bg-black text-white shadow-2xl"
+              initial={{ y: 38, scale: 0.97, filter: "blur(10px)" }}
+              animate={{ y: 0, scale: 1, filter: "blur(0px)" }}
+              exit={{ y: 24, scale: 0.985, opacity: 0, filter: "blur(8px)" }}
+              transition={LAB_SPRING}
+            >
+              <header className="flex h-14 shrink-0 items-center justify-between border-b border-white/25 px-4 sm:px-5">
+                <div>
+                  <span className="font-kode text-[7px] uppercase tracking-[0.16em] text-white/45">
+                    Source document / live viewer
+                  </span>
+                  <strong className="ml-3 hidden font-telegraf text-sm sm:inline">
+                    Kevin Liu — Résumé
+                  </strong>
+                </div>
+                <div className="flex items-center gap-2">
+                  <a
+                    href="/kevin_liu_resume_25.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="border border-white/30 px-3 py-2 font-kode text-[7px] uppercase tracking-[0.14em] hover:bg-white hover:text-black"
+                  >
+                    Open source
+                  </a>
+                  <button
+                    type="button"
+                    onClick={() => setPdfOpen(false)}
+                    aria-label="Close résumé viewer"
+                    className="border border-white/30 p-2 hover:bg-white hover:text-black"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              </header>
+              <iframe
+                src="/kevin_liu_resume_25.pdf#view=FitH"
+                title="Kevin Liu résumé"
+                className="min-h-0 flex-1 bg-[#e8e8e8]"
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {secretMessage && (
+          <motion.div
+            role="status"
+            className="fixed left-1/2 top-24 z-[150] w-[min(92vw,620px)] -translate-x-1/2 border border-black bg-[#d8ff36] p-5 text-black shadow-[12px_12px_0_#000] sm:p-7"
+            initial={{ opacity: 0, y: -24, rotate: -1 }}
+            animate={{ opacity: 1, y: 0, rotate: 0 }}
+            exit={{ opacity: 0, y: -18, scale: 0.98 }}
+            transition={LAB_SPRING}
+          >
+            <button
+              type="button"
+              onClick={() => setSecretMessage(null)}
+              aria-label="Dismiss secret message"
+              className="absolute right-3 top-3 border border-black p-1.5 hover:bg-black hover:text-white"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+            <LabLabel>Secret recovered / {eggs.size} of 8</LabLabel>
+            <p className="mt-3 pr-8 font-telegraf text-2xl font-black leading-tight sm:text-3xl">
+              {secretMessage}
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 };
