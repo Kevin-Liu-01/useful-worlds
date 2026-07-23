@@ -1308,7 +1308,6 @@ const HeroSocialSequence = ({
             alt={index === activeIndex ? frame.alt : ""}
             priority={index === 0}
             tone="soft"
-            fit="contain"
             focus={frame.focus}
             revealOnParentHover
             className="absolute inset-0"
@@ -1701,7 +1700,7 @@ const MomentGalleryOverlay = ({
                     fill
                     priority
                     sizes="(min-width: 1024px) calc(100vw - 390px), 100vw"
-                    className="object-cover lg:object-contain"
+                    className="object-cover"
                   />
                 </motion.div>
               </AnimatePresence>
