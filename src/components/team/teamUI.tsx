@@ -9,7 +9,6 @@ import {
   useSpring,
   type Variants,
 } from "framer-motion";
-import { Tooltip } from "@radix-ui/themes";
 import { useGame } from "../../providers/gameProvider";
 import {
   type PortfolioMon,
@@ -206,10 +205,10 @@ const StatBar = ({
     pct >= 75
       ? "from-emerald-400 to-cyan-400 shadow-[0_0_8px_theme(colors.emerald.500)]"
       : pct >= 50
-      ? "from-cyan-400 to-blue-500 shadow-[0_0_8px_theme(colors.cyan.500)]"
-      : pct >= 30
-      ? "from-amber-400 to-orange-500 shadow-[0_0_8px_theme(colors.amber.500)]"
-      : "from-red-400 to-rose-600 shadow-[0_0_8px_theme(colors.red.500)]";
+        ? "from-cyan-400 to-blue-500 shadow-[0_0_8px_theme(colors.cyan.500)]"
+        : pct >= 30
+          ? "from-amber-400 to-orange-500 shadow-[0_0_8px_theme(colors.amber.500)]"
+          : "from-red-400 to-rose-600 shadow-[0_0_8px_theme(colors.red.500)]";
 
   return (
     <div className="grid grid-cols-6 items-center gap-2">
@@ -236,7 +235,7 @@ const StatBar = ({
 };
 const STATUS_EFFECT_TAG_STYLES: Record<
   string,
-  { icon: JSX.Element; bg: string }
+  { icon: React.ReactElement; bg: string }
 > = {
   stun: {
     icon: <Zap className="h-2.5 w-2.5" />,
@@ -267,7 +266,7 @@ const StatusEffectTag = ({ move }: { move: Move }) => {
 
 const SELF_EFFECT_TAG_STYLES: Record<
   string,
-  { icon: JSX.Element; bg: string; label: string }
+  { icon: React.ReactElement; bg: string; label: string }
 > = {
   atkUp: {
     icon: <Swords className="h-2.5 w-2.5" />,
@@ -421,10 +420,10 @@ const MonDetailView = ({
 
   const hasVariants = mon.variants && mon.variants.length > 0;
   const [variantIndex, setVariantIndex] = useState(() =>
-    hasVariants ? Math.floor(Math.random() * mon.variants!.length) : 0
+    hasVariants ? Math.floor(Math.random() * mon.variants!.length) : 0,
   );
   const resolvedVariant = hasVariants
-    ? mon.variants![variantIndex % mon.variants!.length] ?? null
+    ? (mon.variants![variantIndex % mon.variants!.length] ?? null)
     : null;
 
   const cycleVariant = () => {
@@ -437,11 +436,11 @@ const MonDetailView = ({
     ? `${mon.name}: ${resolvedVariant.nameSuffix}`
     : mon.name;
 
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { staggerChildren: 0.08 } },
   };
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 10 },
     visible: {
       opacity: 1,
@@ -750,7 +749,7 @@ const MonDetailView = ({
 
                 <div className="flex items-start gap-2">
                   <ShieldCheck
-                    title="Resistant to"
+                    aria-label="Resistant to"
                     className="mt-0.5 h-3 w-3 flex-shrink-0 text-green-400"
                   />
                   <div className="flex flex-wrap gap-1">
@@ -761,7 +760,7 @@ const MonDetailView = ({
                 </div>
                 <div className="flex items-start gap-2">
                   <AlertTriangle
-                    title="Weak against"
+                    aria-label="Weak against"
                     className="mt-0.5 h-3 w-3 flex-shrink-0 text-red-400"
                   />
                   <div className="flex flex-wrap gap-1">
@@ -777,7 +776,7 @@ const MonDetailView = ({
         <div className="flex w-1/2 flex-col gap-3">
           <UpgradedClippedContainer
             variants={itemVariants}
-            className="flex-1 pr-1 "
+            className="flex-1 pr-1"
             clipPath="polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%)"
           >
             <div className="flex h-full flex-col p-2.5 pt-2">
@@ -1133,21 +1132,21 @@ const TrainerInfoPanel = ({
   const springConfig = { stiffness: 200, damping: 30 };
   const rotateX = useSpring(
     useTransform(mouseY, [-400, 400], [10, -10]),
-    springConfig
+    springConfig,
   );
   const rotateY = useSpring(
     useTransform(mouseX, [-250, 250], [-10, 10]),
-    springConfig
+    springConfig,
   );
 
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: { staggerChildren: 0.15, delayChildren: 0.2 },
     },
   };
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
       opacity: 1,
@@ -1156,7 +1155,7 @@ const TrainerInfoPanel = ({
     },
   };
 
-  const popoutVariants = {
+  const popoutVariants: Variants = {
     hidden: { x: "-100%", opacity: 0.5 },
     visible: {
       x: 0,
@@ -1381,7 +1380,7 @@ const TrainerInfoPanel = ({
           className="relative z-10 mt-auto flex flex-col gap-4"
         >
           <UpgradedClippedContainer
-            className="flex-shrink-0 px-1  transition-all hover:px-2"
+            className="flex-shrink-0 px-1 transition-all hover:px-2"
             clipPath="polygon(16px 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%, 0 16px)"
           >
             <div className="p-3">
@@ -1414,7 +1413,9 @@ const TrainerInfoPanel = ({
                   {teamSlots.map((mon, index) => (
                     <div
                       key={mon?.id || `empty-${index}`}
-                      ref={(el) => (slotRefs.current[index] = el)}
+                      ref={(el) => {
+                        slotRefs.current[index] = el;
+                      }}
                       className="relative z-10 mx-auto h-16 w-16"
                     >
                       <TargetingReticule />
@@ -1911,7 +1912,7 @@ export const TeamSelectScreen = () => {
   const { playerTeam, handleTeamSelect, handleConfirmTeam, handleClearTeam } =
     useGame();
   const [selectedId, setSelectedId] = useState<number | null>(
-    portfolioMonData[0]?.id ?? null
+    portfolioMonData[0]?.id ?? null,
   );
   const selectedMon = portfolioMonData.find((m) => m.id === selectedId);
   const [searchTerm, setSearchTerm] = useState("");
@@ -1934,7 +1935,7 @@ export const TeamSelectScreen = () => {
     (mon) =>
       mon.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       mon.type1.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      mon.type2?.toLowerCase().includes(searchTerm.toLowerCase())
+      mon.type2?.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   return (

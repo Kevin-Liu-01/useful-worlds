@@ -67,7 +67,7 @@ const ExperiencePage = () => (
                   <h2 className="font-telegraf text-3xl font-black tracking-[-0.035em] sm:text-4xl">
                     {entry.company}
                   </h2>
-                  {entry.status === "incoming" && (
+                  {"status" in entry && entry.status === "incoming" && (
                     <span className="bg-[#d8ff36] px-2 py-1 text-[8px] uppercase tracking-[0.12em]">
                       Incoming
                     </span>

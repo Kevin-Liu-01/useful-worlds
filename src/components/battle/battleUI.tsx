@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, type Variants } from "framer-motion";
 import {
   ShieldCheck,
   Star,
@@ -36,6 +36,7 @@ import type {
   NotificationType,
   ActionState,
   StatModifiers,
+  StatusEffectType,
 } from "../../context/gameContext";
 import {
   statusEffectStyles,
@@ -58,7 +59,7 @@ import { MonFrame } from "./monFrames";
 
 interface SelfEffectStyle {
   label: string;
-  icon: JSX.Element;
+  icon: React.ReactElement;
   bg: string;
   border: string;
   text: string;
@@ -85,6 +86,20 @@ const SELF_EFFECT_STYLES: Record<SelfEffectType, SelfEffectStyle> = {
     bg: "bg-yellow-500",
     border: "bg-yellow-300",
     text: "text-black",
+  },
+  critUp: {
+    label: "CRIT ▲",
+    icon: <Sparkles className="h-full w-full" />,
+    bg: "bg-pink-600",
+    border: "bg-pink-400",
+    text: "text-white",
+  },
+  barrier: {
+    label: "BARRIER",
+    icon: <ShieldCheck className="h-full w-full" />,
+    bg: "bg-cyan-600",
+    border: "bg-cyan-400",
+    text: "text-white",
   },
   heal: {
     label: "HEAL",
@@ -241,7 +256,7 @@ const ItemMenu = ({
   onCancel: () => void;
 }) => {
   const hasItems = Object.values(inventory).some(
-    (invItem) => invItem.quantity > 0
+    (invItem) => invItem.quantity > 0,
   );
 
   return (
@@ -357,7 +372,10 @@ const StatusIcon = ({
   if (!status) return null;
 
   const styles: {
-    [key in StatusEffect & string]: { icon: JSX.Element; className: string };
+    [key in StatusEffectType]: {
+      icon: React.ReactElement;
+      className: string;
+    };
   } = {
     burn: {
       icon: <Flame className="h-full w-full" />,
@@ -764,7 +782,7 @@ const GeometricBurst = () => (
           style={{
             clipPath: "polygon(50% 0%, 100% 100%, 0% 100%)",
             rotate: angle + 90,
-            origin: "center center",
+            transformOrigin: "center center",
           }}
           animate={{
             x: [0, Math.cos((angle * Math.PI) / 180) * distance],
@@ -822,14 +840,16 @@ const PlatformEffects = ({
           />
           <motion.div
             className="absolute inset-0 rounded-[50%] opacity-30"
-            style={{
-              "--hex-color": `${platformColor}0.5)`,
-              background: `
+            style={
+              {
+                "--hex-color": `${platformColor}0.5)`,
+                background: `
         linear-gradient(30deg, transparent 48%, var(--hex-color) 49%, var(--hex-color) 51%, transparent 52%),
         linear-gradient(-30deg, transparent 48%, var(--hex-color) 49%, var(--hex-color) 51%, transparent 52%),
         linear-gradient(90deg, transparent 48%, var(--hex-color) 49%, var(--hex-color) 51%, transparent 52%)`,
-              backgroundSize: `34.64px 20px`,
-            }}
+                backgroundSize: `34.64px 20px`,
+              } as React.CSSProperties
+            }
             animate={{ opacity: [0.1, 0.4, 0.1] }}
             transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
           />
@@ -1032,8 +1052,8 @@ const HealthBar = ({
     healthPercentage < 0.2
       ? "#ef4444" // red-500
       : healthPercentage < 0.5
-      ? "#f59e0b" // amber-500
-      : "#22c55e"; // green-500
+        ? "#f59e0b" // amber-500
+        : "#22c55e"; // green-500
 
   return (
     <div className="relative w-full">
@@ -1119,7 +1139,7 @@ const TeamStatusIcon = React.memo(
         )}
       </motion.div>
     );
-  }
+  },
 );
 TeamStatusIcon.displayName = "TeamStatusIcon";
 
@@ -1276,7 +1296,7 @@ const PortfolioMonSprite = ({
   const colorRgb = isPlayer ? "0, 220, 255" : "255, 80, 80";
   const defaultShadow = "drop-shadow(0px 5px 10px rgba(0,0,0,0.5))";
 
-  const variants = {
+  const variants: Variants = {
     idle: {
       x: 0,
       y: 0,
@@ -1416,7 +1436,7 @@ const TeamBar = ({
   opponentMon: BattleReadyMon;
   getTypeEffectiveness: (
     moveType: string,
-    targetMon: BattleReadyMon
+    targetMon: BattleReadyMon,
   ) => { multiplier: number; message: string };
 }) => {
   const cardClipPath =
@@ -1502,7 +1522,7 @@ const TeamBar = ({
                   {mon.moves.map((move) => {
                     const { multiplier } = getTypeEffectiveness(
                       move.type,
-                      opponentMon
+                      opponentMon,
                     );
 
                     return (
@@ -1584,8 +1604,8 @@ const BattleLogMessage = ({ msg }: { msg: string }) => {
   const getMessageInfo = (message: string) => {
     const lowerMsg = message.toLowerCase();
     const statusInfo: {
-      [key in StatusEffect & string]: {
-        icon: JSX.Element;
+      [key in StatusEffectType]: {
+        icon: React.ReactElement;
         color: string;
         verb: string;
       };
@@ -1614,10 +1634,10 @@ const BattleLogMessage = ({ msg }: { msg: string }) => {
 
     for (const status in statusInfo) {
       if (lowerMsg.includes(status)) {
-        const { icon, color, verb } = statusInfo[status as StatusEffect];
+        const { icon, color, verb } = statusInfo[status as StatusEffectType];
         const correctedText = message.replace(
           new RegExp(`(is|was) ${status}`, "gi"),
-          `$1 ${verb}`
+          `$1 ${verb}`,
         );
         return { icon, color, text: correctedText };
       }
@@ -1700,8 +1720,8 @@ const EffectivenessTag = ({ multiplier }: { multiplier: number }) => {
     multiplier > 1
       ? "bg-green-500"
       : multiplier < 1
-      ? "bg-red-500"
-      : "bg-gray-600";
+        ? "bg-red-500"
+        : "bg-gray-600";
   return (
     <span
       className={`absolute -right-1 -top-1.5 z-20 pb-0.5 pl-2 pr-1.5 font-kode text-[10px] font-bold text-white ${tagColor}`}
@@ -1720,8 +1740,7 @@ const MoveInfoHover = ({
   clipPath: string;
 }) => {
   const statusType = move.effect?.type;
-  const statusStyle =
-    statusType && statusEffectStyles[statusType as StatusEffect];
+  const statusStyle = statusType && statusEffectStyles[statusType];
 
   return (
     <motion.div
@@ -1753,13 +1772,13 @@ const MoveInfoHover = ({
                     {move.accuracy * 100}%
                   </p>
                 </div>
-                {move.critChance > 0 && (
+                {(move.critChance ?? 0) > 0 && (
                   <div className="flex flex-col items-end">
                     <p className="text-end text-[9px] font-bold uppercase text-slate-500 dark:text-slate-400">
                       Crit Chance
                     </p>
                     <p className="font-kode text-sm font-bold text-yellow-500 dark:text-yellow-300">
-                      {move.critChance * 100}%
+                      {(move.critChance ?? 0) * 100}%
                     </p>
                   </div>
                 )}
@@ -1773,7 +1792,7 @@ const MoveInfoHover = ({
                   style={{ clipPath: CLIP.typeBadge }}
                 >
                   <div className={`h-3.5 w-3.5 ${statusStyle.text}`}>
-                    {statusEffectIcons[statusType as StatusEffect]}
+                    {statusEffectIcons[statusType]}
                   </div>
                   <p
                     className={`text-[10px] font-bold uppercase tracking-wide ${statusStyle.text}`}
@@ -1808,7 +1827,7 @@ const MoveButton = ({
   opponentMon: BattleReadyMon;
   getTypeEffectiveness: (
     moveType: string,
-    targetMon: BattleReadyMon
+    targetMon: BattleReadyMon,
   ) => { multiplier: number; message: string };
 }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -1826,9 +1845,7 @@ const MoveButton = ({
     text: "text-white",
   };
   const statusStyle =
-    hasStatusEffect && statusType
-      ? statusEffectStyles[statusType as StatusEffect]
-      : null;
+    hasStatusEffect && statusType ? statusEffectStyles[statusType] : null;
 
   let frameBgClass =
     "bg-slate-400 enabled:hover:bg-cyan-300 dark:bg-slate-600 dark:enabled:hover:bg-cyan-400";
@@ -1907,7 +1924,7 @@ const MoveButton = ({
                   }}
                 >
                   <div className="size-4">
-                    {statusEffectIcons[statusType as StatusEffect]}
+                    {statusType && statusEffectIcons[statusType]}
                   </div>
                   <span className="font-kode text-[10px] font-bold sm:text-sm">
                     {move.effect.chance * 100}%
@@ -2036,7 +2053,9 @@ const NotificationDisplay = ({
           icon: <Sparkles className="h-full w-full" />,
         };
       case "status":
-        let icon: JSX.Element = <AlertTriangle className="h-full w-full" />;
+        let icon: React.ReactElement = (
+          <AlertTriangle className="h-full w-full" />
+        );
         if (lowerMsg.includes("burn"))
           icon = <Flame className="h-full w-full" />;
         if (lowerMsg.includes("poison"))
@@ -2161,10 +2180,10 @@ const Corner = ({ position }: { position: string }) => (
           position.includes("top-8 left-8")
             ? ""
             : position.includes("top-8 right-8")
-            ? "rotate(90 25 25)"
-            : position.includes("bottom") && position.includes("right")
-            ? "rotate(180 25 25)"
-            : "rotate(270 25 25)"
+              ? "rotate(90 25 25)"
+              : position.includes("bottom") && position.includes("right")
+                ? "rotate(180 25 25)"
+                : "rotate(270 25 25)"
         }
       />
     </svg>
@@ -2294,7 +2313,7 @@ export const FightScreen = () => {
   const [isPlayerHudHovered, setPlayerHudHovered] = useState(false);
   const [isCpuHudHovered, setCpuHudHovered] = useState(false);
   const [mobileView, setMobileView] = useState<"actions" | "team" | "log">(
-    "actions"
+    "actions",
   );
 
   useEffect(() => {
@@ -2323,7 +2342,7 @@ export const FightScreen = () => {
     }
   };
 
-  const playerTrainerVariants = {
+  const playerTrainerVariants: Variants = {
     idle: { y: 0 },
     commanding: { y: -5, x: 5 },
     win: {
@@ -2335,7 +2354,7 @@ export const FightScreen = () => {
     },
     lose: { y: 5, rotate: 2, opacity: 0.8 },
   };
-  const cpuTrainerVariants = {
+  const cpuTrainerVariants: Variants = {
     idle: { y: 0 },
     commanding: { y: -5, x: -5 },
     win: {
@@ -2448,7 +2467,7 @@ export const FightScreen = () => {
             part="front"
           />
 
-          <div className="absolute inset-0 z-20 ">
+          <div className="absolute inset-0 z-20">
             <AnimatePresence>
               {isPlayerTurn &&
                 actionState === "moves" &&
@@ -2680,7 +2699,7 @@ export const FightScreen = () => {
                         initial={{ opacity: 0, x: -50 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -50 }}
-                        className="my-auto grid h-full grid-cols-2 grid-rows-2 gap-1.5 sm:my-0 sm:gap-3 "
+                        className="my-auto grid h-full grid-cols-2 grid-rows-2 gap-1.5 sm:my-0 sm:gap-3"
                       >
                         {playerMon.moves.map((move) => (
                           <MoveButton

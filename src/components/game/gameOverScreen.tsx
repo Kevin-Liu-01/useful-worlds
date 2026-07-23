@@ -1,7 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import { useGame } from "../../providers/gameProvider";
-import { motion } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 import {
   BarChart2,
   Zap,
@@ -56,7 +56,7 @@ const TrainerPodium = ({
     ? `/images/trainer/${trainerState}.png`
     : `/images/cynthia/${trainerState}.png`;
 
-  const variants = {
+  const variants: Variants = {
     hidden: { opacity: 0, x: isPlayer ? -80 : 80 },
     visible: {
       opacity: 1,
@@ -144,7 +144,7 @@ export const GameOverScreen = () => {
     useGame();
   const isPlayerWinner = winner === "Player";
 
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -152,7 +152,7 @@ export const GameOverScreen = () => {
     },
   };
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
       opacity: 1,

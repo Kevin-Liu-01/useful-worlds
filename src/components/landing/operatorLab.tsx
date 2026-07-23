@@ -59,7 +59,7 @@ const COMMIT_CELLS = Array.from({ length: 53 * 7 }, (_, index) => {
 });
 
 const DEFAULT_ACTIVE_DAY = COMMIT_CELLS.find(
-  (cell) => cell.key === CONTRIBUTION_END
+  (cell) => cell.key === CONTRIBUTION_END,
 ) ?? {
   key: CONTRIBUTION_END,
   count: 0,
@@ -146,7 +146,7 @@ const contributionClass = (count: number) => {
   return "bg-black/[0.065] dark:bg-white/[0.08]";
 };
 
-const LabLabel = ({ children }: { children: string }) => (
+const LabLabel = ({ children }: { children: React.ReactNode }) => (
   <span className="font-kode text-[7px] uppercase tracking-[0.17em] opacity-45 sm:text-[8px]">
     {children}
   </span>
@@ -209,7 +209,7 @@ const OperatorLab = () => {
           trainerIndex.current = 0;
           markEgg("trainer");
           setSecretMessage(
-            "TRAINER CODE ACCEPTED / A patient sequence beats a loud shortcut."
+            "TRAINER CODE ACCEPTED / A patient sequence beats a loud shortcut.",
           );
         }
       } else {
@@ -221,13 +221,13 @@ const OperatorLab = () => {
         if (typedBuffer.current.endsWith("kevin")) {
           markEgg("name");
           setSecretMessage(
-            "NAME SIGNAL FOUND / Kevin is centered because the work is not the whole person."
+            "NAME SIGNAL FOUND / Kevin is centered because the work is not the whole person.",
           );
         }
         if (typedBuffer.current.endsWith("kl028")) {
           markEgg("identity");
           setSecretMessage(
-            "TRAINER ID KL-028 / Princeton, Los Angeles, and everywhere a laptop opens."
+            "TRAINER ID KL-028 / Princeton, Los Angeles, and everywhere a laptop opens.",
           );
         }
       }
@@ -270,7 +270,7 @@ const OperatorLab = () => {
         markEgg("red-button");
         setOverclock(true);
         setSecretMessage(
-          "YOU PRESSED IT FIVE TIMES / Restraint was never the experiment."
+          "YOU PRESSED IT FIVE TIMES / Restraint was never the experiment.",
         );
       }
       return next;
@@ -361,10 +361,10 @@ const OperatorLab = () => {
                       onFocus={() => selectDay(cell)}
                       onClick={() => selectDay(cell)}
                       className={`h-2.5 w-2.5 outline-none ring-[#d8ff36] transition-transform hover:scale-150 focus-visible:scale-150 focus-visible:ring-2 ${contributionClass(
-                        cell.count
+                        cell.count,
                       )}`}
                     />
-                  )
+                  ),
                 )}
               </div>
             </div>

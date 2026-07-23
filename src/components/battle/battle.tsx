@@ -217,7 +217,7 @@ export const BackgroundEffects = ({
   lastMoveType: string | null;
 }) => {
   const typeColor = lastMoveType
-    ? TYPE_ATTACK_COLORS[lastMoveType] ?? "0, 220, 255"
+    ? (TYPE_ATTACK_COLORS[lastMoveType] ?? "0, 220, 255")
     : "0, 220, 255";
 
   return (
@@ -318,6 +318,8 @@ const EFFECT_COLORS: Record<SelfEffectType, { primary: string; glow: string }> =
     atkUp: { primary: "239, 68, 68", glow: "248, 113, 113" },
     defUp: { primary: "59, 130, 246", glow: "96, 165, 250" },
     spdUp: { primary: "234, 179, 8", glow: "250, 204, 21" },
+    critUp: { primary: "236, 72, 153", glow: "244, 114, 182" },
+    barrier: { primary: "6, 182, 212", glow: "103, 232, 249" },
     heal: { primary: "34, 197, 94", glow: "74, 222, 128" },
     drain: { primary: "139, 92, 246", glow: "167, 139, 250" },
     recoil: { primary: "249, 115, 22", glow: "251, 146, 60" },
@@ -506,6 +508,8 @@ const EFFECT_RENDERERS: Record<
   atkUp: StatBoostEffect,
   defUp: StatBoostEffect,
   spdUp: StatBoostEffect,
+  critUp: StatBoostEffect,
+  barrier: StatBoostEffect,
   heal: HealEffect,
   drain: DrainEffect,
   recoil: RecoilEffect,
@@ -543,7 +547,7 @@ export const ActionButton = ({
   onClick: () => void;
   disabled?: boolean;
   children: React.ReactNode;
-  icon: JSX.Element;
+  icon: React.ReactElement;
   color: string;
 }) => (
   <motion.button
@@ -596,7 +600,7 @@ export const ItemMenu = ({
 }) => {
   const items = Object.values(inventory).filter((i) => i.quantity > 0);
 
-  const itemIcons: { [key: string]: JSX.Element } = {
+  const itemIcons: { [key: string]: React.ReactElement } = {
     "API Key": <Heart className="h-5 w-5 text-red-400" />,
     Debugger: <PlusCircle className="h-5 w-5 text-green-400" />,
   };
@@ -674,10 +678,10 @@ const StatBar = ({
     pct >= 75
       ? "from-emerald-400 to-cyan-400 shadow-[0_0_8px_theme(colors.emerald.500)]"
       : pct >= 50
-      ? "from-cyan-400 to-blue-500 shadow-[0_0_8px_theme(colors.cyan.500)]"
-      : pct >= 30
-      ? "from-amber-400 to-orange-500 shadow-[0_0_8px_theme(colors.amber.500)]"
-      : "from-red-400 to-rose-600 shadow-[0_0_8px_theme(colors.red.500)]";
+        ? "from-cyan-400 to-blue-500 shadow-[0_0_8px_theme(colors.cyan.500)]"
+        : pct >= 30
+          ? "from-amber-400 to-orange-500 shadow-[0_0_8px_theme(colors.amber.500)]"
+          : "from-red-400 to-rose-600 shadow-[0_0_8px_theme(colors.red.500)]";
 
   return (
     <div className="grid grid-cols-6 items-center gap-2">
@@ -931,8 +935,8 @@ export const GuideModal = ({
                                       multiplier > 1
                                         ? "bg-green-500/80"
                                         : multiplier < 1
-                                        ? "bg-red-500/80"
-                                        : "bg-slate-700 text-slate-400"
+                                          ? "bg-red-500/80"
+                                          : "bg-slate-700 text-slate-400"
                                     }`}
                                     style={{
                                       clipPath:

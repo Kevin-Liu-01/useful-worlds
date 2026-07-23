@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { Html, Head, Main, NextScript } from "next/document";
 import { buildSchemaGraph } from "../utils/structuredData";
 import {

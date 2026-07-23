@@ -1,5 +1,4 @@
 /** @type {import('tailwindcss').Config} */
-// import 'tailwindcss-bg-patterns';
 
 const config = {
   darkMode: "class",
@@ -25,9 +24,7 @@ const config = {
       },
     },
   },
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  plugins: [require("tailwindcss-bg-patterns")],
+  plugins: [],
 };
 
 module.exports = config;

@@ -15,20 +15,20 @@ Kevin Liu's black-and-white interactive portfolio: shipped projects, field momen
 ## Development
 
 ```bash
-npm install
-npm run dev
+pnpm install
+pnpm dev
 ```
 
 The local portfolio runs at [http://localhost:3000](http://localhost:3000) by default. To use port 3001:
 
 ```bash
-npm run dev -- -p 3001
+pnpm exec next dev -p 3001
 ```
 
-The application requires the environment variables declared in `src/env.mjs`. Local builds can skip environment validation when only the static portfolio surface is being tested:
+The portfolio does not require environment variables. Run the complete local verification with:
 
 ```bash
-SKIP_ENV_VALIDATION=1 npm run build
+pnpm check
 ```
 
 ## Stack

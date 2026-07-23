@@ -34,12 +34,7 @@ import { HIDDEN_PROJECT_GITHUB } from "../constants/game";
 export type StatusEffect = "burn" | "poison" | "sleep" | "stun" | null;
 
 export type AnimationState =
-  | "idle"
-  | "attack"
-  | "hit"
-  | "faint"
-  | "switchIn"
-  | "switchOut";
+  "idle" | "attack" | "hit" | "faint" | "switchIn" | "switchOut";
 
 export type TrainerState = "idle" | "commanding" | "win" | "lose";
 
@@ -2560,7 +2555,7 @@ export const typeChart: { [attacker: string]: { [defender: string]: number } } =
 
 export const getTypeEffectiveness = (
   moveType: string,
-  defender: BattleReadyMon
+  defender: PortfolioMon,
 ): { multiplier: number; message: string } => {
   if (!typeChart[moveType]) return { multiplier: 1, message: "" };
 

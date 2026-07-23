@@ -47,8 +47,8 @@ const markersFor = (selectedIndex: number): Marker[] =>
       index === selectedIndex
         ? [0.847, 1, 0.212]
         : index === 0
-        ? [0.847, 1, 0.212]
-        : [0.96, 0.96, 0.93],
+          ? [0.847, 1, 0.212]
+          : [0.96, 0.96, 0.93],
   }));
 
 const ARCS: Arc[] = KEVBOOK_COORDINATES.slice(1).map((location, index) => ({
@@ -59,8 +59,8 @@ const ARCS: Arc[] = KEVBOOK_COORDINATES.slice(1).map((location, index) => ({
     index % 3 === 0
       ? [0.847, 1, 0.212]
       : index % 3 === 1
-      ? [0.75, 0.75, 0.72]
-      : [0.45, 0.45, 0.43],
+        ? [0.75, 0.75, 0.72]
+        : [0.45, 0.45, 0.43],
 }));
 
 type KevBookGlobeProps = {
@@ -91,7 +91,7 @@ const KevBookGlobe = ({ selectedIndex, selectedLabel }: KevBookGlobeProps) => {
     selectedIndexRef.current = selectedIndex;
     const coordinate = KEVBOOK_COORDINATES[selectedIndex];
     if (!coordinate) return;
-    targetRef.current = locationToAngles(...coordinate);
+    targetRef.current = locationToAngles(coordinate[0], coordinate[1]);
     globeRef.current?.update({ markers: markersFor(selectedIndex) });
   }, [selectedIndex]);
 
@@ -189,8 +189,8 @@ const KevBookGlobe = ({ selectedIndex, selectedLabel }: KevBookGlobeProps) => {
         left: "anchor(center)",
         opacity: `var(--cobe-visible-kev-${selectedIndex}, 0)`,
         transform: "translate(-50%, -12px)",
-      } as CSSProperties & { positionAnchor: string }),
-    [selectedIndex]
+      }) as CSSProperties & { positionAnchor: string },
+    [selectedIndex],
   );
 
   const handlePointerDown = (event: ReactPointerEvent<HTMLCanvasElement>) => {
@@ -211,7 +211,7 @@ const KevBookGlobe = ({ selectedIndex, selectedLabel }: KevBookGlobeProps) => {
     phiRef.current = drag.phi + (event.clientX - drag.x) / 160;
     thetaRef.current = Math.max(
       -0.75,
-      Math.min(0.75, drag.theta + (event.clientY - drag.y) / 260)
+      Math.min(0.75, drag.theta + (event.clientY - drag.y) / 260),
     );
   };
 

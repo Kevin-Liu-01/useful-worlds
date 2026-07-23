@@ -7,7 +7,6 @@ const BATTLE_CATEGORY = "Category:Generation V Trainer sprites";
 const OVERWORLD_CATEGORY = "Category:Overworld Trainer sprites";
 const EXTRA_OVERWORLD_FILES = ["Benga OD.png", "Shadow Triad OD.png"];
 const ROOT = process.cwd();
-const ASSET_ROOT = path.join(ROOT, "public/images/trainers/gen-v");
 const DATA_PATH = path.join(ROOT, "src/data/genVTrainerRoster.json");
 const USER_AGENT =
   "PortfolioMon-Showdown asset sync (non-commercial portfolio; source attribution in repository)";
