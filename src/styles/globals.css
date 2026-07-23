@@ -192,9 +192,7 @@
 }
 
 .bw-portfolio {
-  background-image: linear-gradient(rgb(11 11 11 / 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(11 11 11 / 0.035) 1px, transparent 1px);
-  background-size: 56px 56px;
+  background-image: none;
 }
 
 .portfolio-ui {
@@ -204,7 +202,9 @@
   --portfolio-line: rgb(36 33 29 / 0.24);
   color-scheme: light;
   font-family: "PP Mori", system-ui, sans-serif;
-  transition: background-color 240ms ease, color 240ms ease;
+  transition:
+    background-color 240ms ease,
+    color 240ms ease;
 }
 
 .portfolio-ui .font-kode,
@@ -297,11 +297,7 @@
 }
 
 .dark .portfolio-ui .bw-portfolio {
-  background-image: linear-gradient(
-      rgb(244 243 236 / 0.025) 1px,
-      transparent 1px
-    ),
-    linear-gradient(90deg, rgb(244 243 236 / 0.025) 1px, transparent 1px);
+  background-image: none;
 }
 
 .dark .portfolio-ui .project-index-grid {
@@ -438,10 +434,14 @@
 
 @keyframes arena-grid-drift {
   from {
-    background-position: 0 0, 0 0;
+    background-position:
+      0 0,
+      0 0;
   }
   to {
-    background-position: 48px 24px, 24px 48px;
+    background-position:
+      48px 24px,
+      24px 48px;
   }
 }
 
@@ -512,10 +512,8 @@
 }
 
 .arena-grid {
-  background-image: linear-gradient(
-      rgb(255 255 255 / 0.035) 1px,
-      transparent 1px
-    ),
+  background-image:
+    linear-gradient(rgb(255 255 255 / 0.035) 1px, transparent 1px),
     linear-gradient(90deg, rgb(255 255 255 / 0.035) 1px, transparent 1px);
   background-size: 48px 48px;
   animation: arena-grid-drift 26s linear infinite;
@@ -558,8 +556,11 @@
 .arena-card,
 .arena-interactive {
   position: relative;
-  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
-    border-color 220ms ease, background-color 220ms ease, box-shadow 220ms ease,
+  transition:
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 220ms ease,
+    background-color 220ms ease,
+    box-shadow 220ms ease,
     color 220ms ease;
 }
 
@@ -586,7 +587,8 @@
 
 .arena-card:hover,
 .arena-card:focus-within {
-  box-shadow: 0 14px 32px rgb(0 0 0 / 0.24),
+  box-shadow:
+    0 14px 32px rgb(0 0 0 / 0.24),
     inset 0 0 0 1px rgb(255 255 255 / 0.025);
 }
 

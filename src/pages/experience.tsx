@@ -27,8 +27,8 @@ const ExperiencePage = () => (
       <PortfolioPageHeader
         index="03"
         eyebrow="Experience / résumé"
-        title="Artifacts, then titles."
-        deck="Agent infrastructure, research tooling, product systems, and the roles behind them. The résumé is a receipt; the work is the proof."
+        title="Work experience."
+        deck="The teams, systems, and products I have worked on across agent infrastructure, research, and software engineering."
         aside={
           <a
             href="/kevin_liu_resume_25.pdf"
@@ -44,7 +44,7 @@ const ExperiencePage = () => (
       <PortfolioSection
         index="01"
         label="Work history"
-        title="Operating across agents, infra, research, and products."
+        title="Roles, systems, and what shipped."
       >
         <div className="border-t border-black/30">
           {EXPERIENCE.map((entry, index) => (

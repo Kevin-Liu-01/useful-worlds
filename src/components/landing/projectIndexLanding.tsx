@@ -627,7 +627,7 @@ const SectionCircuitRail = ({
 }) => {
   const seed = Array.from(index).reduce(
     (total, character) => total + character.charCodeAt(0),
-    0
+    0,
   );
   const pattern =
     SECTION_RAIL_PATTERNS[seed % SECTION_RAIL_PATTERNS.length] ??
@@ -646,14 +646,14 @@ const SectionCircuitRail = ({
     surface === "ink"
       ? "text-white/38"
       : surface === "acid"
-      ? "text-black/45"
-      : "text-black/38 dark:text-white/38";
+        ? "text-black/45"
+        : "text-black/38 dark:text-white/38";
   const labelColor =
     surface === "ink"
       ? "text-white/35"
       : surface === "acid"
-      ? "text-black/40"
-      : "text-black/35 dark:text-white/35";
+        ? "text-black/40"
+        : "text-black/35 dark:text-white/35";
   const signalColor = surface === "acid" ? "#0b0b0b" : "#d8ff36";
   const focusStart = mapRailX(pattern[1] ?? 16);
   const focusEnd = side === "left" ? 48 : -8;
@@ -886,15 +886,15 @@ const HERO_SOCIAL_FRAMES = [
     src: "/images/hero-social/gym-mirror.jpg",
     alt: "Kevin Liu working from a gym bench between sets",
     source: "X / @kevskgs",
-    label: "Work / train / repeat",
-    note: "The other half of the studio",
+    label: "Code between sets",
+    note: "Projects ship from stranger places than desks",
   },
   {
     src: "/images/hero-social/ship-mode.jpg",
     alt: "Kevin Liu in a black work jacket",
     source: "X / @kevskgs",
-    label: "Ship mode",
-    note: "Language changes / the drip does not",
+    label: "Design is part of the build",
+    note: "Tools should feel authored, not assembled",
   },
 ] as const;
 
@@ -1032,8 +1032,8 @@ const DitherMedia = ({
             ? 2
             : 2.5
           : bounds.width < 520
-          ? 2.6
-          : 3.2;
+            ? 2.6
+            : 3.2;
       const width = Math.max(1, Math.ceil(bounds.width / pixelSize));
       const height = Math.max(1, Math.ceil(bounds.height / pixelSize));
       canvas.width = width;
@@ -1048,7 +1048,7 @@ const DitherMedia = ({
         context.fillRect(0, 0, width, height);
         const scale = Math.min(
           width / image.naturalWidth,
-          height / image.naturalHeight
+          height / image.naturalHeight,
         );
         const drawWidth = image.naturalWidth * scale;
         const drawHeight = image.naturalHeight * scale;
@@ -1057,7 +1057,7 @@ const DitherMedia = ({
           (width - drawWidth) / 2,
           (height - drawHeight) / 2,
           drawWidth,
-          drawHeight
+          drawHeight,
         );
       } else {
         const sourceRatio = image.naturalWidth / image.naturalHeight;
@@ -1084,7 +1084,7 @@ const DitherMedia = ({
           0,
           0,
           width,
-          height
+          height,
         );
       }
 
@@ -1104,8 +1104,8 @@ const DitherMedia = ({
             tone === "soft"
               ? Math.max(16, Math.min(244, quantized))
               : luminance > threshold
-              ? 244
-              : 12;
+                ? 244
+                : 12;
           pixels.data[offset] = value;
           pixels.data[offset + 1] = value;
           pixels.data[offset + 2] = value;
@@ -1534,7 +1534,7 @@ const MomentGalleryOverlay = ({
   const move = (direction: number) =>
     setActiveIndex(
       (current) =>
-        (current + direction + FIELD_MOMENTS.length) % FIELD_MOMENTS.length
+        (current + direction + FIELD_MOMENTS.length) % FIELD_MOMENTS.length,
     );
 
   return (
@@ -1690,7 +1690,7 @@ const ProjectGalleryOverlay = ({
   const move = (direction: number) => {
     if (!shots.length) return;
     setActiveIndex(
-      (current) => (current + direction + shots.length) % shots.length
+      (current) => (current + direction + shots.length) % shots.length,
     );
   };
 
@@ -2438,30 +2438,30 @@ type HeroMode = "dither" | "orbit" | "signal";
 const HERO_MODES: Array<{
   id: HeroMode;
   short: string;
-  index: string;
+  value: string;
   label: string;
   detail: string;
 }> = [
   {
     id: "signal",
     short: "SIG",
-    index: "01",
-    label: "Agents",
-    detail: "that act",
+    value: "40+",
+    label: "Shipped projects",
+    detail: "Agents to games",
   },
   {
     id: "dither",
     short: "DTH",
-    index: "02",
-    label: "Interfaces",
-    detail: "that move",
+    value: "26",
+    label: "Playable maps",
+    detail: "Princeton TD",
   },
   {
     id: "orbit",
     short: "ORB",
-    index: "03",
-    label: "Games",
-    detail: "that explain",
+    value: "1st",
+    label: "PennApps hardware",
+    detail: "RecyclAIble",
   },
 ];
 
@@ -2482,9 +2482,6 @@ const HeroMarginRail = ({
   >
     {side === "left" ? (
       <>
-        <span className="absolute left-1/2 top-5 -translate-x-1/2 font-kode text-[6px] uppercase tracking-[0.18em] text-white/40 [writing-mode:vertical-rl]">
-          Pointer telemetry / live
-        </span>
         <motion.div
           aria-hidden="true"
           className="absolute left-1/2 z-10 h-10 w-10 -translate-x-1/2 -translate-y-1/2"
@@ -2508,16 +2505,10 @@ const HeroMarginRail = ({
               }}
             />
           ))}
-          <span className="mt-2 font-kode text-[6px] tracking-[0.16em] text-white/40 [writing-mode:vertical-rl]">
-            Y / 028
-          </span>
         </div>
       </>
     ) : (
       <>
-        <span className="absolute left-1/2 top-5 -translate-x-1/2 font-kode text-[6px] uppercase tracking-[0.18em] text-white/40 [writing-mode:vertical-rl]">
-          Image channel / select
-        </span>
         <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col gap-2">
           {HERO_MODES.map((item) => (
             <button
@@ -2584,10 +2575,10 @@ const HeroSignalDeck = ({
           whileHover={{ y: -4 }}
           transition={{ type: "spring", stiffness: 360, damping: 24 }}
         >
-          <span className="font-kode text-[6px] uppercase tracking-[0.16em] opacity-45">
-            Channel / {item.index}
+          <span className="font-telegraf text-2xl font-black leading-none sm:text-3xl">
+            {item.value}
           </span>
-          <strong className="mt-5 block truncate font-telegraf text-sm font-black sm:text-base">
+          <strong className="mt-3 block truncate font-telegraf text-xs font-black sm:text-sm">
             {item.label}
           </strong>
           <span className="block truncate font-kode text-[6px] uppercase tracking-[0.14em] opacity-50 sm:text-[7px]">
@@ -2609,10 +2600,10 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
   const [heroMode, setHeroMode] = useState<HeroMode>("dither");
   const [navDocked, setNavDocked] = useState(false);
   const [momentGalleryIndex, setMomentGalleryIndex] = useState<number | null>(
-    null
+    null,
   );
   const [galleryProject, setGalleryProject] = useState<FeaturedProject | null>(
-    null
+    null,
   );
   const reduceMotion = useReducedMotion();
 
@@ -2678,11 +2669,11 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
     const bounds = event.currentTarget.getBoundingClientRect();
     event.currentTarget.style.setProperty(
       "--spot-x",
-      `${event.clientX - bounds.left}px`
+      `${event.clientX - bounds.left}px`,
     );
     event.currentTarget.style.setProperty(
       "--spot-y",
-      `${event.clientY - bounds.top}px`
+      `${event.clientY - bounds.top}px`,
     );
   };
 
@@ -2694,151 +2685,100 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
       transition={{ duration: reduceMotion ? 0.1 : 0.45 }}
       className="bw-portfolio min-h-screen overflow-hidden bg-black text-[#0b0b0b]"
     >
-      <div aria-hidden="true" className="h-[68px]" />
+      <div aria-hidden="true" className="h-[76px]" />
       <motion.header
         initial={false}
         animate={{
-          top: 0,
-          width: "min(1520px, calc(100vw - clamp(20px, 6.25vw, 80px)))",
-          height: navDocked ? 54 : 68,
+          top: navDocked ? 10 : 0,
+          width: navDocked
+            ? "min(940px, calc(100vw - 24px))"
+            : "min(1520px, calc(100vw - clamp(20px, 6.25vw, 80px)))",
+          height: navDocked ? 58 : 68,
           boxShadow: navDocked
-            ? "0 16px 45px rgba(0,0,0,.2)"
+            ? "0 18px 60px rgba(0,0,0,.28)"
             : "0 0 0 rgba(0,0,0,0)",
         }}
-        transition={{ type: "spring", stiffness: 280, damping: 30 }}
-        className={`fixed left-1/2 z-[95] -translate-x-1/2 overflow-hidden backdrop-blur-xl transition-colors duration-300 ${
+        transition={{ type: "spring", stiffness: 260, damping: 29, mass: 0.8 }}
+        className={`fixed left-1/2 z-[95] -translate-x-1/2 overflow-hidden border backdrop-blur-xl transition-colors duration-300 ${
           navDocked
-            ? "border border-white/20 bg-black text-white"
-            : "border-b border-black/30 bg-[#f4f3ec]/95 text-black"
+            ? "border-white/20 bg-black/95 text-white"
+            : "border-black/25 bg-[#f4f3ec]/95 text-black"
         }`}
         style={{
           clipPath:
-            "polygon(10px 0, calc(100% - 10px) 0, 100% 10px, 100% calc(100% - 10px), calc(100% - 10px) 100%, 10px 100%, 0 calc(100% - 10px), 0 10px)",
+            "polygon(12px 0, calc(100% - 12px) 0, 100% 12px, 100% calc(100% - 12px), calc(100% - 12px) 100%, 12px 100%, 0 calc(100% - 12px), 0 12px)",
         }}
       >
-        <AnimatePresence mode="wait" initial={false}>
-          {navDocked ? (
-            <motion.div
-              key="floating-social-dock"
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.18 }}
-              className="flex h-full items-center justify-between gap-2 px-2"
-            >
-              <span className="pointer-events-none absolute bottom-0 left-0 h-3 w-3 border-b border-l border-[#d8ff36]" />
-              <span className="pointer-events-none absolute bottom-0 right-0 h-3 w-3 border-b border-r border-white/40" />
-              <Link
-                href="/#top"
-                className="circuit-control flex min-w-0 items-center gap-2 py-1 pl-1 pr-2 sm:gap-3 sm:pr-3"
-              >
-                <Image
-                  src="/images/logo.png"
-                  alt=""
-                  width={36}
-                  height={36}
-                  loading="eager"
-                  className="h-9 w-9 shrink-0 object-cover"
-                />
-                <span className="hidden truncate font-telegraf text-sm font-black uppercase sm:block">
-                  Kevin Liu
-                </span>
-                <span className="h-1.5 w-1.5 shrink-0 animate-pulse rounded-full bg-[#d8ff36]" />
-              </Link>
+        <motion.div className="relative flex h-full items-center justify-between gap-2 px-2 sm:gap-4 sm:px-3">
+          <Link
+            href="/#top"
+            className={`circuit-control group flex min-w-0 items-center gap-2 py-1 pl-1 pr-3 transition-colors sm:gap-3 ${
+              navDocked
+                ? "hover:bg-white hover:text-black"
+                : "hover:bg-black hover:text-white"
+            }`}
+          >
+            <Image
+              src="/images/logo.png"
+              alt=""
+              width={40}
+              height={40}
+              loading="eager"
+              className="h-10 w-10 shrink-0 object-cover"
+            />
+            <span className="truncate font-telegraf text-sm font-black uppercase tracking-[-0.02em] sm:text-base">
+              Kevin Liu
+            </span>
+            <motion.span
+              className="h-1.5 w-1.5 shrink-0 rotate-45 bg-[#d8ff36]"
+              animate={{ rotate: navDocked ? 135 : 45 }}
+            />
+          </Link>
 
-              <nav
-                aria-label="Kevin Liu social links"
-                className="flex items-center gap-1 border-x border-white/20 px-1.5 sm:px-3"
-              >
+          <nav
+            aria-label="Primary navigation"
+            className={`hidden items-center gap-1 border-x px-2 md:flex ${
+              navDocked ? "border-white/20" : "border-black/20"
+            }`}
+          >
+            {[
+              ["Work", "/#work"],
+              ["Writing", "/#philosophy"],
+              ["Experience", "/experience"],
+              ["People", "/people"],
+              ["Photos", "/photography"],
+            ].map(([label, href], index) => (
+              <motion.div key={href} whileHover={{ y: -2 }} whileTap={{ y: 0 }}>
                 <Link
-                  href={SOCIAL_LINKS.github}
-                  target="_blank"
-                  aria-label="GitHub"
-                  title="GitHub"
-                  className="circuit-control flex h-8 w-8 items-center justify-center text-white/65 transition hover:bg-white hover:text-black"
+                  href={href ?? "/"}
+                  className={`block px-3 py-2 font-kode text-[7px] uppercase tracking-[0.13em] transition lg:px-4 lg:text-[8px] ${
+                    navDocked
+                      ? "text-white/60 hover:bg-white hover:text-black"
+                      : "text-black/55 hover:bg-black hover:text-white"
+                  } ${index > 2 && navDocked ? "hidden lg:block" : ""}`}
                 >
-                  <Github className="h-3.5 w-3.5" />
+                  {label}
                 </Link>
-                <Link
-                  href={SOCIAL_LINKS.linkedin}
-                  target="_blank"
-                  aria-label="LinkedIn"
-                  title="LinkedIn"
-                  className="circuit-control-reverse flex h-8 w-8 items-center justify-center text-white/65 transition hover:bg-white hover:text-black"
-                >
-                  <Linkedin className="h-3.5 w-3.5" />
-                </Link>
-                <Link
-                  href={SOCIAL_LINKS.x}
-                  target="_blank"
-                  aria-label="X"
-                  title="X"
-                  className="circuit-control flex h-8 w-8 items-center justify-center font-telegraf text-[11px] font-black text-white/65 transition hover:bg-white hover:text-black"
-                >
-                  X
-                </Link>
-                <a
-                  href="mailto:k.bowen.liu@gmail.com"
-                  aria-label="Email Kevin"
-                  title="Email Kevin"
-                  className="circuit-control-reverse hidden h-8 items-center gap-1.5 px-3 font-kode text-[7px] uppercase tracking-[0.13em] text-white/65 transition hover:bg-white hover:text-black md:flex"
-                >
-                  Hello <ArrowUpRight className="h-3 w-3" />
-                </a>
-              </nav>
+              </motion.div>
+            ))}
+          </nav>
 
-              <button
-                type="button"
-                onClick={launch}
-                className="circuit-action group relative flex h-9 shrink-0 items-center gap-2 bg-[#d8ff36] pl-4 pr-1.5 font-kode text-[7px] uppercase tracking-[0.13em] text-black transition hover:bg-white sm:pl-5 sm:pr-2 sm:text-[8px]"
-              >
-                <span className="absolute left-1.5 top-1.5 h-1 w-1 rotate-45 bg-black/35" />
-                <span className="hidden sm:inline">PortfolioMon</span>
-                <span className="sm:hidden">Mon</span>
-                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-black text-white transition-transform group-hover:rotate-180">
-                  <Play className="h-2.5 w-2.5 fill-current" />
-                </span>
-              </button>
-            </motion.div>
-          ) : (
-            <motion.div
-              key="full-identity-bar"
-              initial={{ opacity: 0, y: 6 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 6 }}
-              transition={{ duration: 0.18 }}
-              className="relative mx-auto grid h-full max-w-[1600px] grid-cols-[1fr_auto_1fr] items-center px-5 sm:px-8 lg:px-12"
-            >
-              <div className="flex min-w-0 items-center gap-4 font-kode text-[7px] uppercase tracking-[0.18em] text-black/45 sm:text-[8px]">
-                <span className="sm:hidden">No. 028</span>
-                <span className="hidden sm:inline">Portfolio / 2026</span>
-                <span className="hidden h-4 w-px bg-black/20 lg:block" />
-                <span className="hidden lg:inline">LA ↔ Princeton</span>
-              </div>
-
-              <Link href="/#top" className="group relative text-center">
-                <span className="font-telegraf text-[15px] font-black uppercase leading-none tracking-[-0.02em] sm:text-base">
-                  Kevin Liu
-                </span>
-                <span className="absolute -bottom-[25px] left-1/2 h-[3px] w-12 -translate-x-1/2 bg-black transition-[width] group-hover:w-20 dark:bg-white" />
-              </Link>
-
-              <div className="flex min-w-0 items-center justify-end gap-2 sm:gap-3">
-                <span className="hidden items-center gap-2 font-kode text-[7px] uppercase tracking-[0.16em] text-black/45 xl:flex">
-                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-black dark:bg-white" />
-                  Founding engineer / Dedalus
-                </span>
-
-                <nav
+          <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+            <AnimatePresence initial={false}>
+              {!navDocked && (
+                <motion.nav
+                  key="header-socials"
                   aria-label="Kevin Liu social links"
-                  className="hidden items-center border-l border-black/20 pl-2 lg:flex"
+                  className="hidden items-center lg:flex"
+                  initial={{ opacity: 0, width: 0 }}
+                  animate={{ opacity: 1, width: "auto" }}
+                  exit={{ opacity: 0, width: 0 }}
                 >
                   <Link
                     href={SOCIAL_LINKS.github}
                     target="_blank"
                     aria-label="GitHub"
-                    title="GitHub"
-                    className="circuit-control flex h-8 w-8 items-center justify-center text-black/45 transition hover:bg-black hover:text-white"
+                    className="circuit-control flex h-8 w-8 items-center justify-center text-black/50 transition hover:bg-black hover:text-white"
                   >
                     <Github className="h-3.5 w-3.5" />
                   </Link>
@@ -2846,8 +2786,7 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
                     href={SOCIAL_LINKS.linkedin}
                     target="_blank"
                     aria-label="LinkedIn"
-                    title="LinkedIn"
-                    className="circuit-control-reverse flex h-8 w-8 items-center justify-center text-black/45 transition hover:bg-black hover:text-white"
+                    className="circuit-control-reverse flex h-8 w-8 items-center justify-center text-black/50 transition hover:bg-black hover:text-white"
                   >
                     <Linkedin className="h-3.5 w-3.5" />
                   </Link>
@@ -2855,36 +2794,42 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
                     href={SOCIAL_LINKS.x}
                     target="_blank"
                     aria-label="X"
-                    title="X"
-                    className="circuit-control flex h-8 w-8 items-center justify-center font-telegraf text-[11px] font-black text-black/45 transition hover:bg-black hover:text-white"
+                    className="circuit-control flex h-8 w-8 items-center justify-center font-telegraf text-[10px] font-black text-black/50 transition hover:bg-black hover:text-white"
                   >
                     X
                   </Link>
-                </nav>
+                </motion.nav>
+              )}
+            </AnimatePresence>
 
-                <a
-                  href="mailto:k.bowen.liu@gmail.com"
-                  className="circuit-control-reverse group hidden h-8 items-center gap-1.5 border-l border-black/20 px-3 font-kode text-[7px] uppercase tracking-[0.17em] transition hover:bg-black hover:text-white 2xl:flex"
-                >
-                  Say hello
-                  <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-                </a>
-                <button
-                  type="button"
-                  onClick={launch}
-                  className="circuit-action group relative flex h-9 items-center gap-2 bg-black pl-4 pr-1.5 font-kode text-[7px] uppercase tracking-[0.13em] text-white transition hover:bg-[#d8ff36] hover:text-black sm:h-10 sm:pl-5 sm:pr-2 sm:text-[8px]"
-                >
-                  <span className="absolute left-1.5 top-1.5 h-1 w-1 rotate-45 bg-white/40 group-hover:bg-black/40" />
-                  <span className="sm:hidden">Mon</span>
-                  <span className="hidden sm:inline">PortfolioMon</span>
-                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-black transition-transform group-hover:rotate-180">
-                    <Play className="h-2.5 w-2.5 fill-current" />
-                  </span>
-                </button>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            <button
+              type="button"
+              onClick={launch}
+              className={`circuit-action group relative flex h-10 items-center gap-2 px-2 pl-4 font-kode text-[7px] uppercase tracking-[0.12em] transition sm:pl-5 sm:text-[8px] ${
+                navDocked
+                  ? "bg-[#d8ff36] text-black hover:bg-white"
+                  : "bg-black text-white hover:bg-[#d8ff36] hover:text-black"
+              }`}
+            >
+              <span className="hidden sm:inline">Play PortfolioMon</span>
+              <span className="sm:hidden">Play</span>
+              <span
+                className={`flex h-7 w-7 items-center justify-center rounded-full transition-transform duration-500 group-hover:rotate-[360deg] ${
+                  navDocked ? "bg-black text-white" : "bg-white text-black"
+                }`}
+              >
+                <Play className="h-3 w-3 fill-current" />
+              </span>
+            </button>
+          </div>
+
+          <motion.span
+            aria-hidden="true"
+            className="absolute bottom-0 left-0 h-0.5 bg-[#d8ff36]"
+            animate={{ width: navDocked ? "34%" : "12%" }}
+            transition={{ type: "spring", stiffness: 220, damping: 28 }}
+          />
+        </motion.div>
       </motion.header>
 
       <section
@@ -2895,45 +2840,34 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
         <div className="mx-auto grid w-full max-w-[1760px] grid-cols-1 min-[1800px]:grid-cols-[80px_1600px_80px]">
           <HeroMarginRail side="left" mode={heroMode} onMode={setHeroMode} />
 
-          <div className="mx-auto grid min-h-[620px] w-full max-w-[1600px] grid-cols-1 border-x border-black/20 lg:h-[clamp(640px,72svh,780px)] lg:min-h-0 lg:grid-cols-12">
+          <div className="mx-auto grid min-h-[590px] w-full max-w-[1600px] grid-cols-1 border-x border-black/20 lg:h-[clamp(620px,70svh,740px)] lg:min-h-0 lg:grid-cols-12">
             <div className="relative z-10 flex min-w-0 flex-col justify-between border-b border-black p-5 sm:p-8 lg:col-span-7 lg:border-b-0 lg:border-r lg:p-10 xl:p-12">
               <div className="flex items-center justify-between gap-4 font-kode text-[8px] uppercase tracking-[0.2em] text-black/50 sm:text-[9px]">
-                <span>Trainer file / No. 028</span>
-                <span className="flex items-center gap-2">
-                  <span className="h-2 w-2 animate-pulse rounded-full bg-black" />
-                  Building now
-                </span>
+                <span>Kevin Liu / engineer + designer</span>
+                <span>Princeton CS ’28</span>
               </div>
 
-              <div className="py-10 sm:py-12 lg:py-5">
-                <motion.p
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.15 }}
-                  className="mb-5 font-kode text-[8px] uppercase tracking-[0.22em] sm:text-[9px]"
-                >
-                  Software with utility / interfaces with bite
-                </motion.p>
-                <h1 className="font-telegraf text-[clamp(4rem,7.5vw,8.2rem)] font-black leading-[0.82] tracking-[-0.04em]">
-                  I build
+              <div className="py-9 sm:py-11 lg:py-4">
+                <h1 className="max-w-[9ch] font-telegraf text-[clamp(3.8rem,7vw,7.6rem)] font-black leading-[0.86] tracking-[-0.045em]">
+                  Agents,
                   <br />
-                  <span className="font-normal italic">useful</span>
+                  games &
                   <br />
-                  worlds.
+                  <span className="font-normal italic">sharp tools.</span>
                 </h1>
                 <HeroSignalDeck mode={heroMode} onMode={setHeroMode} />
               </div>
 
               <div className="grid gap-5 border-t border-black pt-4 sm:grid-cols-2">
                 <p className="max-w-md font-nacelle text-base font-medium leading-snug sm:text-lg">
-                  Founding engineer at Dedalus. I make agents, interfaces, and
-                  games feel inevitable.
+                  I ship agent systems, browser games, and small tools—then
+                  document the people, decisions, and experiments behind them.
                 </p>
                 <Link
                   href="/#work"
                   className="group flex items-end justify-between font-kode text-[8px] uppercase tracking-[0.18em] sm:text-[9px]"
                 >
-                  Scan selected work
+                  View selected projects
                   <ArrowDown className="h-5 w-5 transition group-hover:translate-y-1" />
                 </Link>
               </div>
@@ -3050,33 +2984,14 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
                 )}
 
                 <div className="absolute inset-x-0 bottom-0 p-5 text-white sm:p-6">
-                  <div className="mb-3 flex items-center justify-between border-b border-white/45 pb-3 font-kode text-[7px] uppercase tracking-[0.18em] sm:text-[8px]">
-                    <span>Kevin Bowen Liu</span>
-                    <span>Princeton ’28</span>
-                  </div>
-                  <div className="grid grid-cols-3 gap-1.5 text-center">
-                    {[
-                      ["40+", "Projects", "signal"],
-                      ["06", "Disciplines", "dither"],
-                      ["∞", "Curiosity", "orbit"],
-                    ].map(([value, label, linkedMode]) => (
-                      <motion.button
-                        key={label}
-                        type="button"
-                        onMouseEnter={() => setHeroMode(linkedMode as HeroMode)}
-                        onFocus={() => setHeroMode(linkedMode as HeroMode)}
-                        onClick={() => setHeroMode(linkedMode as HeroMode)}
-                        className="border border-white/35 p-2 text-white transition hover:bg-white hover:text-black sm:p-3"
-                        whileHover={{ y: -3 }}
-                      >
-                        <span className="block font-telegraf text-xl font-black sm:text-2xl">
-                          {value}
-                        </span>
-                        <span className="font-kode text-[6px] uppercase tracking-[0.14em] opacity-60 sm:text-[7px]">
-                          {label}
-                        </span>
-                      </motion.button>
-                    ))}
+                  <div className="flex flex-col items-start justify-between gap-4 border-t border-white/45 pt-4 sm:flex-row sm:items-end sm:gap-5">
+                    <p className="max-w-[34ch] font-nacelle text-sm leading-snug text-white/70 sm:text-base">
+                      Talks, demos, teams, and the wonderfully odd places the
+                      work gets made.
+                    </p>
+                    <span className="circuit-action flex shrink-0 items-center gap-2 bg-white px-3 py-2 font-kode text-[7px] uppercase tracking-[0.13em] text-black sm:text-[8px]">
+                      Open moments <Maximize2 className="h-3.5 w-3.5" />
+                    </span>
                   </div>
                 </div>
               </div>
@@ -3099,7 +3014,7 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
         <div className="mb-14 grid items-end gap-8 border-b border-black pb-6 sm:mx-4 lg:mx-8 lg:grid-cols-12">
           <div className="lg:col-span-8">
             <p className="font-kode text-[9px] uppercase tracking-[0.2em] text-black/45">
-              Field research / 12 selected
+              12 selected projects
             </p>
             <h2 className="mt-3 font-telegraf text-5xl font-black tracking-[-0.035em] sm:text-7xl lg:text-8xl">
               Built in the wild.
