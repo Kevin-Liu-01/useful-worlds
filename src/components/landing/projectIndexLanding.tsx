@@ -24,7 +24,13 @@ import {
 } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { SOCIAL_LINKS } from "../../constants/site";
-import { COMMIT_CELLS, DEFAULT_ACTIVE_DAY } from "../../data/commitActivity";
+import {
+  ACTIVE_CONTRIBUTION_DAYS,
+  COMMIT_CELLS,
+  CONTRIBUTION_SNAPSHOT,
+  DEFAULT_ACTIVE_DAY,
+  TOTAL_CONTRIBUTIONS,
+} from "../../data/commitActivity";
 import { PHILOSOPHIES, type Philosophy } from "../../data/philosophies";
 import OperatorLab from "./operatorLab";
 
@@ -2600,13 +2606,15 @@ const HeroMarginRail = ({
   </aside>
 );
 
+const HERO_COMMIT_CELLS = COMMIT_CELLS.filter((cell) => !cell.future);
+
 const HeroCommitField = ({ onMode }: { onMode: (mode: HeroMode) => void }) => {
   const defaultIndex = Math.max(
     0,
-    COMMIT_CELLS.findIndex((cell) => cell.key === DEFAULT_ACTIVE_DAY.key),
+    HERO_COMMIT_CELLS.findIndex((cell) => cell.key === DEFAULT_ACTIVE_DAY.key),
   );
   const [activeIndex, setActiveIndex] = useState(defaultIndex);
-  const activeCell = COMMIT_CELLS[activeIndex] ?? DEFAULT_ACTIVE_DAY;
+  const activeCell = HERO_COMMIT_CELLS[activeIndex] ?? DEFAULT_ACTIVE_DAY;
 
   const wakeCell = (index: number) => {
     setActiveIndex(index);
@@ -2615,88 +2623,108 @@ const HeroCommitField = ({ onMode }: { onMode: (mode: HeroMode) => void }) => {
 
   return (
     <motion.div
-      className="mt-6 max-w-[650px] border-y border-black/25 py-3 sm:mt-7 sm:py-4"
-      initial={{ opacity: 0, y: 22, filter: "blur(8px)" }}
-      animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+      className="relative min-w-0 overflow-hidden py-5 lg:py-8 lg:pl-4"
+      initial={{ opacity: 0, x: 38, filter: "blur(12px)" }}
+      animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
       transition={{ ...MOTION_SPRING, delay: 0.32 }}
     >
-      <div className="mb-3 flex items-center justify-between gap-4">
-        <p className="font-telegraf text-sm font-black tracking-[-0.01em] sm:text-base">
-          Commit history, 2026
-        </p>
-        <motion.div
-          key={activeCell.key}
-          initial={{ opacity: 0, x: 5 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="text-right font-kode text-[6px] uppercase tracking-[0.13em] text-black/50 sm:text-[7px]"
-        >
-          <strong className="block text-black">{activeCell.label}</strong>
-          {activeCell.count} commit{activeCell.count === 1 ? "" : "s"}
-        </motion.div>
-      </div>
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-[88%] bg-[radial-gradient(circle_at_82%_48%,rgba(216,255,54,.19),transparent_38%),linear-gradient(90deg,transparent,rgba(10,10,10,.035))]" />
 
-      <div className="overflow-x-auto overflow-y-visible py-2">
-        <div
-          className="grid min-w-[520px] gap-[3px]"
-          style={{
-            gridTemplateRows: "repeat(7, 7px)",
-            gridAutoFlow: "column",
-            gridAutoColumns: "7px",
-          }}
-          role="grid"
-          aria-label="Interactive portfolio commit history for 2026"
-        >
-          {COMMIT_CELLS.map((cell, index) => {
-            const columnDistance = Math.abs(
-              Math.floor(index / 7) - Math.floor(activeIndex / 7),
-            );
-            const rowDistance = Math.abs((index % 7) - (activeIndex % 7));
-            const energy = Math.max(0, 3 - columnDistance - rowDistance);
-            const unavailable = !cell.inYear || cell.future;
-            const baseColor = unavailable
-              ? "rgba(10,10,10,.035)"
-              : cell.count >= 3
-                ? "rgba(10,10,10,1)"
-                : cell.count === 2
-                  ? "rgba(10,10,10,.58)"
-                  : cell.count === 1
-                    ? "rgba(10,10,10,.28)"
-                    : "rgba(10,10,10,.09)";
-
-            return (
-              <motion.button
-                key={cell.key}
-                type="button"
-                role="gridcell"
-                aria-label={`${cell.label}: ${cell.count} commits`}
-                disabled={unavailable}
-                onPointerEnter={() => !unavailable && wakeCell(index)}
-                onFocus={() => !unavailable && wakeCell(index)}
-                onClick={() => !unavailable && wakeCell(index)}
-                animate={{
-                  scale: index === activeIndex ? 1.9 : 1 + energy * 0.13,
-                  rotate:
-                    index === activeIndex ? 45 : energy > 0 ? energy * 5 : 0,
-                  backgroundColor:
-                    index === activeIndex
-                      ? "#d8ff36"
-                      : energy > 0
-                        ? `rgba(10,10,10,${0.16 + energy * 0.18})`
-                        : baseColor,
-                }}
-                transition={{ type: "spring", stiffness: 520, damping: 25 }}
-                className="h-[7px] w-[7px] outline-none ring-black focus-visible:ring-1 disabled:cursor-default"
-              />
-            );
-          })}
+      <div className="relative lg:pl-10 lg:[mask-image:linear-gradient(90deg,transparent_0%,rgba(0,0,0,.28)_12%,black_34%)]">
+        <div className="mb-5 flex items-end justify-between gap-5 border-b border-black/25 pb-4">
+          <div>
+            <p className="font-telegraf text-2xl font-black tracking-[-0.035em] sm:text-3xl">
+              {TOTAL_CONTRIBUTIONS.toLocaleString()} contributions
+            </p>
+            <p className="mt-1 font-kode text-[7px] uppercase tracking-[0.16em] text-black/45 sm:text-[8px]">
+              Kevin-Liu-01 / GitHub / 2026
+            </p>
+          </div>
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={activeCell.key}
+              initial={{ opacity: 0, y: 8, filter: "blur(5px)" }}
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              exit={{ opacity: 0, y: -6, filter: "blur(4px)" }}
+              transition={{ duration: 0.24, ease: MOTION_EASE }}
+              className="text-right font-kode text-[6px] uppercase tracking-[0.13em] text-black/50 sm:text-[7px]"
+            >
+              <strong className="block text-black">{activeCell.label}</strong>
+              {activeCell.count} contribution
+              {activeCell.count === 1 ? "" : "s"}
+            </motion.div>
+          </AnimatePresence>
         </div>
-      </div>
 
-      <div className="mt-3 flex items-center justify-end gap-4 font-kode text-[6px] uppercase tracking-[0.14em] text-black/40 sm:text-[7px]">
-        <span className="flex items-center gap-2 text-black/65">
-          <span className="h-1.5 w-1.5 rotate-45 bg-[#d8ff36]" />
-          Trace the commits
-        </span>
+        <div className="overflow-x-auto overflow-y-visible py-3">
+          <div
+            className="ml-auto grid min-w-[480px] gap-1"
+            style={{
+              gridTemplateRows: "repeat(7, 12px)",
+              gridAutoFlow: "column",
+              gridAutoColumns: "12px",
+            }}
+            role="grid"
+            aria-label={`Interactive GitHub contribution history for 2026, ${TOTAL_CONTRIBUTIONS.toLocaleString()} contributions`}
+          >
+            {HERO_COMMIT_CELLS.map((cell, index) => {
+              const columnDistance = Math.abs(
+                Math.floor(index / 7) - Math.floor(activeIndex / 7),
+              );
+              const rowDistance = Math.abs((index % 7) - (activeIndex % 7));
+              const energy = Math.max(0, 3 - columnDistance - rowDistance);
+              const unavailable = !cell.inYear;
+              const intensity =
+                cell.count === 0
+                  ? 0.075
+                  : Math.min(1, 0.12 + Math.log2(cell.count + 1) / 7);
+              const baseColor = unavailable
+                ? "rgba(10,10,10,.025)"
+                : `rgba(10,10,10,${intensity})`;
+
+              return (
+                <motion.button
+                  key={cell.key}
+                  type="button"
+                  role="gridcell"
+                  aria-label={`${cell.label}: ${cell.count} contributions`}
+                  disabled={unavailable}
+                  onPointerEnter={() => !unavailable && wakeCell(index)}
+                  onFocus={() => !unavailable && wakeCell(index)}
+                  onClick={() => !unavailable && wakeCell(index)}
+                  animate={{
+                    scale: index === activeIndex ? 1.9 : 1 + energy * 0.13,
+                    rotate:
+                      index === activeIndex ? 45 : energy > 0 ? energy * 5 : 0,
+                    backgroundColor:
+                      index === activeIndex
+                        ? "#d8ff36"
+                        : energy > 0
+                          ? `rgba(10,10,10,${Math.max(intensity, 0.2 + energy * 0.18)})`
+                          : baseColor,
+                    boxShadow:
+                      index === activeIndex
+                        ? "0 0 0 2px rgba(216,255,54,.25)"
+                        : "0 0 0 0 rgba(216,255,54,0)",
+                  }}
+                  transition={{ type: "spring", stiffness: 520, damping: 25 }}
+                  className="h-3 w-3 outline-none ring-black focus-visible:ring-1 disabled:cursor-default"
+                />
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="mt-4 flex items-center justify-between gap-4 border-t border-black/20 pt-4 font-kode text-[6px] uppercase tracking-[0.14em] text-black/40 sm:text-[7px]">
+          <span>
+            {ACTIVE_CONTRIBUTION_DAYS} active days / through{" "}
+            {CONTRIBUTION_SNAPSHOT}
+          </span>
+          <span className="flex shrink-0 items-center gap-2 text-black/65">
+            <span className="h-1.5 w-1.5 rotate-45 bg-[#d8ff36]" />
+            Trace the graph
+          </span>
+        </div>
       </div>
     </motion.div>
   );
@@ -2952,9 +2980,9 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
           <HeroMarginRail side="left" mode={heroMode} onMode={setHeroMode} />
 
           <div className="mx-auto flex w-full flex-col bg-[#f4f3ec]">
-            <div className="relative z-10 flex min-h-[620px] min-w-0 flex-col justify-between border-b border-black p-5 sm:min-h-[680px] sm:p-8 lg:min-h-[720px] lg:p-10 xl:p-12">
-              <div className="flex flex-1 flex-col justify-center py-9 sm:py-11 lg:py-4">
-                <h1 className="max-w-[9ch] font-telegraf text-[clamp(3.8rem,7vw,7.6rem)] font-black leading-[0.86] tracking-[-0.045em]">
+            <div className="relative z-10 flex min-h-[520px] min-w-0 flex-col justify-between border-b border-black p-5 sm:min-h-[560px] sm:p-8 lg:min-h-[520px] lg:p-10 xl:p-12">
+              <div className="grid flex-1 items-center gap-2 py-5 sm:py-7 xl:grid-cols-[minmax(0,.82fr)_minmax(560px,1.18fr)] xl:py-2">
+                <h1 className="relative z-10 max-w-[10ch] font-telegraf text-[clamp(3.8rem,5.9vw,6.4rem)] font-black leading-[0.86] tracking-[-0.045em]">
                   {[
                     { text: "Agents,", italic: false },
                     { text: "games &", italic: false },

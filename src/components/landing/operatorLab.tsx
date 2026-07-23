@@ -11,10 +11,12 @@ import {
   X,
 } from "lucide-react";
 import {
+  ACTIVE_CONTRIBUTION_DAYS,
   COMMIT_CELLS,
   CONTRIBUTION_END,
   DEFAULT_ACTIVE_DAY,
   RECENT_COMMITS,
+  TOTAL_CONTRIBUTIONS,
 } from "../../data/commitActivity";
 
 const PERSONAL_SIGNALS = [
@@ -88,10 +90,10 @@ const TRAINER_CODE = [
 ] as const;
 
 const contributionClass = (count: number) => {
-  if (count >= 4) return "bg-black dark:bg-white";
-  if (count === 3) return "bg-black/75 dark:bg-white/80";
-  if (count === 2) return "bg-black/45 dark:bg-white/55";
-  if (count === 1) return "bg-black/20 dark:bg-white/25";
+  if (count >= 50) return "bg-black dark:bg-white";
+  if (count >= 25) return "bg-black/75 dark:bg-white/80";
+  if (count >= 10) return "bg-black/50 dark:bg-white/60";
+  if (count >= 1) return "bg-black/25 dark:bg-white/30";
   return "bg-black/[0.065] dark:bg-white/[0.08]";
 };
 
@@ -266,8 +268,11 @@ const OperatorLab = () => {
               <div>
                 <LabLabel>Proof cadence / this repository</LabLabel>
                 <h3 className="mt-2 font-telegraf text-3xl font-black tracking-[-0.03em] sm:text-4xl">
-                  38 commits in 2026.
+                  {TOTAL_CONTRIBUTIONS.toLocaleString()} contributions in 2026.
                 </h3>
+                <p className="mt-2 font-kode text-[7px] uppercase tracking-[0.14em] text-black/40">
+                  {ACTIVE_CONTRIBUTION_DAYS} active days / GitHub verified
+                </p>
               </div>
               <Activity className="h-7 w-7" strokeWidth={1.25} />
             </div>
