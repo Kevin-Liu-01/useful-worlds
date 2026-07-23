@@ -189,7 +189,6 @@ const PortfolioDock = ({ onPlay }: { onPlay?: () => void }) => {
   });
 
   useMotionValueEvent(scrollY, "change", (latest) => {
-    if (document.querySelector("[data-portfolio-scroll-root]")) return;
     setScrolled(latest > 84);
     const maxScroll = Math.max(
       1,
@@ -197,21 +196,6 @@ const PortfolioDock = ({ onPlay }: { onPlay?: () => void }) => {
     );
     rawFrameProgress.set(latest / maxScroll);
   });
-
-  useEffect(() => {
-    const syncPortfolioScroll = (event: Event) => {
-      const detail = (event as CustomEvent).detail as {
-        scrollY?: number;
-        progress?: number;
-      };
-      setScrolled((detail.scrollY ?? 0) > 84);
-      rawFrameProgress.set(detail.progress ?? 0);
-    };
-
-    window.addEventListener("portfolio-scroll", syncPortfolioScroll);
-    return () =>
-      window.removeEventListener("portfolio-scroll", syncPortfolioScroll);
-  }, [rawFrameProgress]);
 
   return (
     <motion.nav

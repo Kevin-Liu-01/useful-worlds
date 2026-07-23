@@ -6,7 +6,6 @@ import {
   useRef,
   useState,
   type MouseEvent,
-  type UIEvent,
 } from "react";
 import {
   ArrowDown,
@@ -1336,7 +1335,7 @@ const MomentFieldArchive = ({
   return (
     <section
       id="moments"
-      className={`group/section relative snap-start scroll-mt-20 border border-black bg-black text-white md:snap-always lg:flex lg:h-[100dvh] lg:flex-col lg:overflow-hidden ${SECTION_FRAME}`}
+      className={`group/section relative scroll-mt-20 border border-black bg-black text-white ${SECTION_FRAME}`}
     >
       <SceneCurtain index="00" label="Moments in the wild" />
       <SectionChrome index="00" label="Moments in the wild" surface="ink" />
@@ -1355,7 +1354,7 @@ const MomentFieldArchive = ({
         </div>
       </div>
 
-      <div className="border-y border-white/20 lg:grid lg:min-h-0 lg:flex-1 lg:grid-cols-12">
+      <div className="border-y border-white/20 lg:grid lg:min-h-[620px] lg:grid-cols-12">
         <button
           type="button"
           onClick={() => onExpand(activeIndex)}
@@ -2654,7 +2653,6 @@ const HeaderContactCluster = ({ compact = false }: { compact?: boolean }) => {
 };
 
 const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
-  const sceneRootRef = useRef<HTMLElement>(null);
   const [isLaunching, setIsLaunching] = useState(false);
   const [heroMode, setHeroMode] = useState<HeroMode>("dither");
   const [navDocked, setNavDocked] = useState(false);
@@ -2693,10 +2691,7 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
   useEffect(() => {
     if (momentGalleryIndex === null && !galleryProject) return;
     const previousOverflow = document.body.style.overflow;
-    const sceneRoot = sceneRootRef.current;
-    const previousSceneOverflow = sceneRoot?.style.overflowY;
     document.body.style.overflow = "hidden";
-    if (sceneRoot) sceneRoot.style.overflowY = "hidden";
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setMomentGalleryIndex(null);
@@ -2706,10 +2701,16 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
     window.addEventListener("keydown", handleKeyDown);
     return () => {
       document.body.style.overflow = previousOverflow;
-      if (sceneRoot) sceneRoot.style.overflowY = previousSceneOverflow ?? "";
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [galleryProject, momentGalleryIndex]);
+
+  useEffect(() => {
+    const syncNavToWindow = () => setNavDocked(window.scrollY > 112);
+    syncNavToWindow();
+    window.addEventListener("scroll", syncNavToWindow, { passive: true });
+    return () => window.removeEventListener("scroll", syncNavToWindow);
+  }, []);
 
   const followPointer = (event: MouseEvent<HTMLElement>) => {
     const bounds = event.currentTarget.getBoundingClientRect();
@@ -2723,30 +2724,13 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
     );
   };
 
-  const handleSceneScroll = (event: UIEvent<HTMLElement>) => {
-    const root = event.currentTarget;
-    const maxScroll = Math.max(1, root.scrollHeight - root.clientHeight);
-    setNavDocked(root.scrollTop > 112);
-    window.dispatchEvent(
-      new CustomEvent("portfolio-scroll", {
-        detail: {
-          scrollY: root.scrollTop,
-          progress: root.scrollTop / maxScroll,
-        },
-      }),
-    );
-  };
-
   return (
     <motion.main
-      ref={sceneRootRef}
-      data-portfolio-scroll-root
-      onScroll={handleSceneScroll}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, filter: "contrast(1.8) grayscale(1)" }}
       transition={{ duration: reduceMotion ? 0.1 : 0.45 }}
-      className="bw-portfolio h-[100dvh] snap-y snap-proximity overflow-y-auto overflow-x-hidden overscroll-y-contain scroll-smooth bg-black pb-20 text-[#0b0b0b] [scrollbar-width:none] sm:pb-24 [&::-webkit-scrollbar]:hidden"
+      className="bw-portfolio min-h-screen overflow-x-hidden bg-black pb-20 text-[#0b0b0b] sm:pb-24"
     >
       <div aria-hidden="true" className="h-[68px]" />
       <motion.header
@@ -2847,7 +2831,7 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
       <section
         id="top"
         onMouseMove={followPointer}
-        className="spotlight-field relative mx-3 min-h-[calc(100dvh-68px)] max-w-[1520px] snap-start border-x border-b border-black/30 bg-[#f4f3ec] text-black sm:mx-6 lg:mx-10 2xl:mx-auto"
+        className="spotlight-field relative mx-3 max-w-[1520px] border-x border-b border-black/30 bg-[#f4f3ec] text-black sm:mx-6 lg:mx-10 2xl:mx-auto"
         style={{
           clipPath:
             "polygon(0 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 14px 100%, 0 calc(100% - 14px))",
@@ -2857,7 +2841,7 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
           <HeroMarginRail side="left" mode={heroMode} onMode={setHeroMode} />
 
           <div className="mx-auto flex w-full flex-col bg-[#f4f3ec]">
-            <div className="relative z-10 flex min-h-[620px] min-w-0 flex-col justify-between border-b border-black p-5 sm:min-h-[680px] sm:p-8 lg:min-h-[min(760px,calc(100dvh-68px))] lg:p-10 xl:p-12">
+            <div className="relative z-10 flex min-h-[620px] min-w-0 flex-col justify-between border-b border-black p-5 sm:min-h-[680px] sm:p-8 lg:min-h-[720px] lg:p-10 xl:p-12">
               <div className="flex flex-1 flex-col justify-center py-9 sm:py-11 lg:py-4">
                 <h1 className="max-w-[9ch] font-telegraf text-[clamp(3.8rem,7vw,7.6rem)] font-black leading-[0.86] tracking-[-0.045em]">
                   Agents,
@@ -3006,7 +2990,7 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
 
       <section
         id="work"
-        className={`group/section relative min-h-[100dvh] snap-start scroll-mt-20 border border-black/20 bg-[#f4f3ec] px-5 py-20 sm:px-8 sm:py-28 lg:px-12 ${SECTION_FRAME}`}
+        className={`group/section relative scroll-mt-20 border border-black/20 bg-[#f4f3ec] px-5 py-20 sm:px-8 sm:py-28 lg:px-12 ${SECTION_FRAME}`}
       >
         <SceneCurtain index="01" label="Selected work" tone="paper" />
         <SectionChrome index="01" label="Built in the wild" />
@@ -3040,7 +3024,7 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
 
       <section
         id="components"
-        className={`group/section relative min-h-[100dvh] snap-start scroll-mt-20 border border-black/25 bg-[#f4f3ec] ${SECTION_FRAME}`}
+        className={`group/section relative scroll-mt-20 border border-black/25 bg-[#f4f3ec] ${SECTION_FRAME}`}
       >
         <SceneCurtain index="02" label="Operator lab" tone="paper" />
         <SectionChrome index="02" label="Copmonents / hidden systems" />
@@ -3051,7 +3035,7 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
 
       <section
         id="philosophy"
-        className={`group/section relative flex min-h-[100dvh] snap-start snap-always scroll-mt-20 items-center border border-black bg-[#d8ff36] ${SECTION_FRAME}`}
+        className={`group/section relative flex scroll-mt-20 items-center border border-black bg-[#d8ff36] ${SECTION_FRAME}`}
       >
         <SceneCurtain index="03" label="Field manual" tone="acid" />
         <SectionChrome index="03" label="Personal doctrine" surface="acid" />
@@ -3082,7 +3066,7 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
 
       <section
         id="wiki"
-        className={`group/section relative flex min-h-[100dvh] snap-start snap-always items-center border border-black bg-black text-white ${SECTION_FRAME}`}
+        className={`group/section relative flex items-center border border-black bg-black text-white ${SECTION_FRAME}`}
       >
         <SceneCurtain index="04" label="Compounding memory" />
         <SectionChrome index="04" label="Kevin's Wiki" surface="ink" />
@@ -3161,7 +3145,7 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
 
       <section
         id="archive"
-        className={`group/section relative min-h-[100dvh] snap-start scroll-mt-20 border border-black/20 bg-[#f4f3ec] px-5 py-20 sm:px-8 sm:py-28 lg:px-12 ${SECTION_FRAME}`}
+        className={`group/section relative scroll-mt-20 border border-black/20 bg-[#f4f3ec] px-5 py-20 sm:px-8 sm:py-28 lg:px-12 ${SECTION_FRAME}`}
       >
         <SceneCurtain index="05" label="Tool archive" tone="paper" />
         <SectionChrome index="05" label="Utility belt" />
@@ -3207,7 +3191,7 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
 
       <footer
         id="contact"
-        className={`group/section relative mb-3 flex min-h-[72dvh] snap-start items-center border border-black bg-[#d8ff36] ${SECTION_FRAME}`}
+        className={`group/section relative mb-3 flex items-center border border-black bg-[#d8ff36] ${SECTION_FRAME}`}
       >
         <SceneCurtain index="06" label="Open channel" tone="acid" />
         <SectionChrome index="06" label="Open channel" surface="acid" />
