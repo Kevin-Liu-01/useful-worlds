@@ -597,7 +597,7 @@ const RoundedBracketCross = ({
       aria-hidden="true"
     >
       <path
-        d="M14 4H9a5 5 0 0 0-5 5v5M22 4h5a5 5 0 0 1 5 5v5M32 22v5a5 5 0 0 1-5 5h-5M14 32H9a5 5 0 0 1-5-5v-5"
+        d="M14 4H9L4 9v5M22 4h5l5 5v5M32 22v5l-5 5h-5M14 32H9l-5-5v-5"
         stroke="currentColor"
         strokeWidth="1.25"
       />
@@ -606,7 +606,7 @@ const RoundedBracketCross = ({
         stroke="currentColor"
         strokeWidth="1.5"
       />
-      <circle cx="18" cy="18" r="2" fill="currentColor" />
+      <path d="m18 15 3 3-3 3-3-3 3-3Z" fill="currentColor" />
     </svg>
   </span>
 );
@@ -622,12 +622,10 @@ const SECTION_RAIL_PATTERNS = [
 const SectionCircuitRail = ({
   side,
   index,
-  label,
   surface,
 }: {
   side: "left" | "right";
   index: string;
-  label: string;
   surface: FrameSurface;
 }) => {
   const seed = Array.from(index).reduce(
@@ -653,15 +651,7 @@ const SectionCircuitRail = ({
       : surface === "acid"
         ? "text-black/45"
         : "text-black/38 dark:text-white/38";
-  const labelColor =
-    surface === "ink"
-      ? "text-white/35"
-      : surface === "acid"
-        ? "text-black/40"
-        : "text-black/35 dark:text-white/35";
   const signalColor = surface === "acid" ? "#0b0b0b" : "#d8ff36";
-  const focusStart = mapRailX(pattern[1] ?? 16);
-  const focusEnd = side === "left" ? 48 : -8;
 
   return (
     <div
@@ -679,59 +669,18 @@ const SectionCircuitRail = ({
           strokeWidth="1"
           vectorEffect="non-scaling-stroke"
         />
-        <motion.path
-          d={path}
-          fill="none"
-          stroke={signalColor}
-          strokeWidth="1.35"
-          strokeDasharray="4 15"
-          vectorEffect="non-scaling-stroke"
-          animate={{ strokeDashoffset: [0, -38] }}
-          transition={{ duration: 3.4, repeat: Infinity, ease: "linear" }}
-        />
-        <motion.path
-          d={`M ${focusStart} 525 L ${focusEnd} 545`}
-          fill="none"
-          stroke={signalColor}
-          strokeWidth="1.4"
-          vectorEffect="non-scaling-stroke"
-          initial={{ pathLength: 0.25, opacity: 0.3 }}
-          whileInView={{ pathLength: 1, opacity: 0.9 }}
-          viewport={{ amount: 0.35 }}
-          transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
-        />
         {SECTION_RAIL_STOPS.map((stop, stopIndex) => (
-          <motion.rect
+          <rect
             key={stop}
             x={mapRailX(pattern[stopIndex] ?? 20) - 2}
             y={stop + 23}
             width="4"
             height="4"
             fill={stopIndex === 1 ? signalColor : "currentColor"}
-            animate={
-              stopIndex === 1
-                ? { scale: [1, 1.8, 1], rotate: [0, 90, 0] }
-                : { opacity: [0.3, 0.7, 0.3] }
-            }
-            transition={{
-              duration: stopIndex === 1 ? 2.4 : 3.6 + stopIndex * 0.25,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
+            opacity={stopIndex === 1 ? 0.9 : 0.42}
           />
         ))}
       </svg>
-
-      <span
-        className={`absolute left-1/2 top-8 -translate-x-1/2 font-kode text-[5px] uppercase tracking-[0.17em] [writing-mode:vertical-rl] ${labelColor}`}
-      >
-        {side === "left" ? `Trace / ${index}` : `Field / ${label}`}
-      </span>
-      <span
-        className={`absolute bottom-8 left-1/2 -translate-x-1/2 font-kode text-[5px] uppercase tracking-[0.16em] [writing-mode:vertical-rl] ${labelColor}`}
-      >
-        {side === "left" ? "KBL / 028" : `Live / ${index}`}
-      </span>
     </div>
   );
 };
@@ -750,27 +699,12 @@ const SectionChrome = ({
   return (
     <div
       aria-hidden="true"
+      data-frame-label={label}
       className="pointer-events-none absolute inset-0 z-20"
     >
       <div className={`absolute inset-x-10 top-0 border-t ${styles.line}`} />
-      <div
-        className={`absolute left-1/2 top-2 -translate-x-1/2 border px-3 py-1.5 font-kode text-[6px] uppercase tracking-[0.18em] sm:text-[7px] ${styles.label}`}
-      >
-        {index} / {label}
-      </div>
-
-      <SectionCircuitRail
-        side="left"
-        index={index}
-        label={label}
-        surface={surface}
-      />
-      <SectionCircuitRail
-        side="right"
-        index={index}
-        label={label}
-        surface={surface}
-      />
+      <SectionCircuitRail side="left" index={index} surface={surface} />
+      <SectionCircuitRail side="right" index={index} surface={surface} />
 
       <RoundedBracketCross
         surface={surface}
@@ -808,6 +742,7 @@ const SectionChrome = ({
 const SectionSpacer = ({ index, label }: { index: string; label: string }) => (
   <motion.div
     aria-hidden="true"
+    data-scene={index}
     className={`relative flex h-[16dvh] max-h-[180px] min-h-[120px] items-center justify-center gap-4 overflow-hidden bg-black sm:gap-5 ${SECTION_FRAME}`}
     initial={{ opacity: 0.6 }}
     whileInView={{ opacity: 1 }}
@@ -842,16 +777,6 @@ const SectionSpacer = ({ index, label }: { index: string; label: string }) => (
         vectorEffect="non-scaling-stroke"
         className="opacity-35"
       />
-      <motion.path
-        d="M 28 0 V 27 L 42 41 V 59 L 28 73 V 100 M 972 0 V 27 L 958 41 V 59 L 972 73 V 100"
-        fill="none"
-        stroke="#d8ff36"
-        strokeWidth="1.35"
-        strokeDasharray="3 10"
-        vectorEffect="non-scaling-stroke"
-        animate={{ strokeDashoffset: [0, -28] }}
-        transition={{ duration: 2.8, repeat: Infinity, ease: "linear" }}
-      />
       {[28, 42, 958, 972].map((x) => (
         <rect
           key={x}
@@ -865,14 +790,7 @@ const SectionSpacer = ({ index, label }: { index: string; label: string }) => (
       ))}
     </svg>
 
-    <motion.span
-      className="h-2 w-2 rotate-45 bg-[#d8ff36]"
-      animate={{ rotate: [45, 225, 405], scale: [0.75, 1.25, 0.75] }}
-      transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
-    />
-    <span className="font-kode text-[7px] uppercase tracking-[0.2em] text-white/45 sm:text-[8px]">
-      Scene {index}
-    </span>
+    <span className="h-2 w-2 rotate-45 bg-[#d8ff36]" />
     <span className="font-telegraf text-xl font-black tracking-[-0.025em] text-white sm:text-2xl">
       {label}
     </span>
@@ -899,6 +817,7 @@ const SceneCurtain = ({
   return (
     <motion.div
       aria-hidden="true"
+      data-scene={index}
       className={`pointer-events-none absolute inset-0 z-[45] flex items-center justify-center overflow-hidden ${background}`}
       initial={{ clipPath: "inset(0 0 0 0)" }}
       whileInView={{ clipPath: "inset(0 0 100% 0)" }}
@@ -916,18 +835,10 @@ const SceneCurtain = ({
         transition={{ duration: reduceMotion ? 0.1 : 0.55 }}
       >
         <span className="h-2 w-2 rotate-45 bg-[#d8ff36] mix-blend-difference" />
-        <span className="font-kode text-[8px] uppercase tracking-[0.2em] opacity-55">
-          {index}
-        </span>
         <strong className="font-telegraf text-3xl font-black tracking-[-0.035em] sm:text-5xl">
           {label}
         </strong>
       </motion.div>
-      <motion.span
-        className="absolute inset-y-0 left-0 w-px bg-[#d8ff36]"
-        animate={{ left: ["0%", "100%"] }}
-        transition={{ duration: 1.4, repeat: Infinity, ease: "linear" }}
-      />
     </motion.div>
   );
 };
@@ -1272,11 +1183,9 @@ const DitherMedia = ({
 };
 
 const HeroSocialSequence = ({
-  mode,
   reduceMotion,
   onExpand,
 }: {
-  mode: HeroMode;
   reduceMotion: boolean;
   onExpand: () => void;
 }) => {
@@ -1347,78 +1256,37 @@ const HeroSocialSequence = ({
       ))}
 
       {!reduceMotion && (
-        <>
-          <motion.div
-            key={`dither-transition-${activeIndex}`}
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0 z-20 bg-black/35 mix-blend-hard-light"
-            style={{
-              backgroundImage:
-                "radial-gradient(circle, rgba(255,255,255,.98) 0 28%, rgba(8,8,8,.92) 31% 45%, transparent 48%)",
-              backgroundSize: "4px 4px",
-            }}
-            initial={{
-              clipPath: "polygon(0 0, 0 0, 0 100%, 0 100%)",
-              opacity: 0,
-              backgroundSize: "3px 3px",
-            }}
-            animate={{
-              clipPath: [
-                "polygon(0 0, 0 0, 0 100%, 0 100%)",
-                "polygon(0 0, 100% 0, 88% 100%, 0 100%)",
-                "polygon(100% 0, 100% 0, 100% 100%, 88% 100%)",
-              ],
-              opacity: [0, 0.9, 0],
-              backgroundSize: ["3px 3px", "12px 12px", "4px 4px"],
-            }}
-            transition={{
-              duration: 1.35,
-              times: [0, 0.48, 1],
-              ease: [0.7, 0, 0.2, 1],
-            }}
-          />
-          <motion.span
-            key={`scan-${activeIndex}`}
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-y-0 z-[21] w-px bg-[#d8ff36] shadow-[0_0_22px_4px_rgba(216,255,54,.55)]"
-            initial={{ left: "-4%", opacity: 0 }}
-            animate={{ left: "104%", opacity: [0, 1, 0] }}
-            transition={{ duration: 1.1, ease: [0.7, 0, 0.2, 1] }}
-          />
-        </>
-      )}
-
-      {!reduceMotion && (
-        <motion.span
-          key={`frame-progress-${activeIndex}-${isPaused}`}
+        <motion.div
+          key={`dither-transition-${activeIndex}`}
           aria-hidden="true"
-          className="absolute inset-x-0 bottom-0 z-40 h-1 origin-left bg-[#d8ff36]"
-          initial={{ scaleX: 0, opacity: 0.7 }}
-          animate={{ scaleX: isPaused ? 0 : 1, opacity: isPaused ? 0.25 : 1 }}
-          transition={{ duration: isPaused ? 0.2 : 5.2, ease: "linear" }}
+          className="pointer-events-none absolute inset-0 z-20 bg-black/35 mix-blend-hard-light"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle, rgba(255,255,255,.98) 0 28%, rgba(8,8,8,.92) 31% 45%, transparent 48%)",
+            backgroundSize: "4px 4px",
+          }}
+          initial={{ opacity: 0, backgroundSize: "3px 3px" }}
+          animate={{
+            opacity: [0, 0.9, 0],
+            backgroundSize: ["3px 3px", "12px 12px", "4px 4px"],
+          }}
+          transition={{
+            duration: 1.15,
+            times: [0, 0.48, 1],
+            ease: [0.7, 0, 0.2, 1],
+          }}
         />
       )}
 
-      <div className="absolute left-5 top-5 z-30 flex flex-wrap gap-2 font-kode text-[7px] uppercase tracking-[0.18em] sm:text-[8px]">
-        <span className="bg-white px-2 py-1 text-black">
-          Frame / {String(activeIndex + 1).padStart(2, "0")}·
+      <div className="absolute inset-x-5 top-5 z-30 flex items-center justify-between gap-3 font-kode text-[7px] uppercase tracking-[0.16em] sm:inset-x-6 sm:text-[8px]">
+        <span className="circuit-control bg-white px-3 py-2 text-black">
+          {String(activeIndex + 1).padStart(2, "0")} /
           {String(HERO_SOCIAL_FRAMES.length).padStart(2, "0")}
         </span>
-        <span className="bg-[#d8ff36] px-2 py-1 text-black">
-          {activeFrame.source}
+        <span className="circuit-action flex items-center gap-2 bg-[#d8ff36] px-3 py-2 text-black">
+          Expand
+          <Maximize2 className="h-3.5 w-3.5" />
         </span>
-        <span className="bg-black px-2 py-1 text-white">{mode} mode</span>
-        <span className="hidden border border-white/35 bg-black/70 px-2 py-1 text-white/65 backdrop-blur-sm group-hover/sequence:hidden sm:inline">
-          Hover / reveal color
-        </span>
-        <span className="hidden bg-white px-2 py-1 text-black sm:group-hover/sequence:inline">
-          Color signal / live
-        </span>
-      </div>
-
-      <div className="pointer-events-none absolute left-5 top-16 z-30 flex items-center gap-2 bg-[#d8ff36] px-3 py-2 font-kode text-[7px] uppercase tracking-[0.15em] text-black sm:left-6 sm:text-[8px]">
-        Click image / expand
-        <Maximize2 className="h-3.5 w-3.5" />
       </div>
 
       <div className="absolute inset-x-5 bottom-[116px] z-30 flex items-end justify-between gap-4 border-b border-white/45 pb-3 text-white sm:inset-x-6 sm:bottom-[132px]">
@@ -1474,11 +1342,7 @@ const MomentFieldArchive = ({
 
       <div className="grid gap-8 px-5 pb-7 pt-16 sm:px-8 sm:pb-10 sm:pt-20 lg:grid-cols-12 lg:gap-12 lg:px-12 lg:pb-7 lg:pt-14">
         <div className="lg:col-span-8">
-          <p className="font-kode text-[8px] uppercase tracking-[0.2em] text-white/45 sm:text-[9px]">
-            Field archive / {String(FIELD_MOMENTS.length).padStart(2, "0")}{" "}
-            moments
-          </p>
-          <h2 className="mt-4 max-w-[12ch] font-telegraf text-[clamp(2.9rem,6vw,6.8rem)] font-black leading-[0.9] tracking-[-0.04em]">
+          <h2 className="max-w-[12ch] font-telegraf text-[clamp(2.9rem,6vw,6.8rem)] font-black leading-[0.9] tracking-[-0.04em]">
             I like being in the room when it becomes real.
           </h2>
         </div>
@@ -1514,20 +1378,15 @@ const MomentFieldArchive = ({
           </motion.div>
 
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-black/15" />
-          <div className="pointer-events-none absolute left-4 top-4 flex gap-2 font-kode text-[7px] uppercase tracking-[0.16em] sm:left-6 sm:top-6 sm:text-[8px]">
-            <span className="bg-white px-2 py-1 text-black">
-              Frame / {String(activeIndex + 1).padStart(2, "0")}
+          <div className="pointer-events-none absolute inset-x-4 top-4 flex items-center justify-between gap-2 font-kode text-[7px] uppercase tracking-[0.16em] sm:inset-x-6 sm:top-6 sm:text-[8px]">
+            <span className="circuit-control bg-white px-3 py-2 text-black">
+              {String(activeIndex + 1).padStart(2, "0")} /{" "}
+              {FIELD_MOMENTS.length}
             </span>
-            <span className="bg-[#d8ff36] px-2 py-1 text-black">
-              In the wild
-            </span>
-            <span className="flex items-center gap-1.5 bg-white px-2 py-1 text-black">
+            <span className="circuit-action flex items-center gap-1.5 bg-[#d8ff36] px-3 py-2 text-black">
               Expand <Maximize2 className="h-3 w-3" />
             </span>
           </div>
-          <p className="pointer-events-none absolute bottom-4 left-4 right-4 border-t border-white/50 pt-3 font-kode text-[7px] uppercase tracking-[0.18em] text-white/75 sm:bottom-6 sm:left-6 sm:right-6 sm:text-[8px]">
-            {activeMoment.kicker}
-          </p>
         </button>
 
         <motion.div
@@ -1546,10 +1405,7 @@ const MomentFieldArchive = ({
             </span>
           </div>
           <div className="py-10">
-            <p className="font-kode text-[8px] uppercase tracking-[0.2em] text-[#d8ff36] sm:text-[9px]">
-              {activeMoment.kicker}
-            </p>
-            <h3 className="mt-4 font-telegraf text-4xl font-black leading-[0.95] tracking-[-0.035em] sm:text-5xl">
+            <h3 className="font-telegraf text-4xl font-black leading-[0.95] tracking-[-0.035em] sm:text-5xl">
               {activeMoment.title}
             </h3>
             <p className="mt-6 max-w-[38ch] font-nacelle text-[15px] leading-[1.75] text-white/65 sm:text-base">
@@ -1629,10 +1485,7 @@ const GalleryPlaceholder = ({ shot }: { shot: GalleryShot }) => (
       <span className="mx-auto flex h-16 w-16 items-center justify-center bg-[#d8ff36] text-black [clip-path:polygon(12px_0,100%_0,100%_calc(100%_-_12px),calc(100%_-_12px)_100%,0_100%,0_12px)]">
         <Images className="h-7 w-7" />
       </span>
-      <p className="mt-8 font-kode text-[8px] uppercase tracking-[0.24em] text-[#d8ff36]">
-        Capture slot / awaiting input
-      </p>
-      <strong className="mt-3 block font-telegraf text-[clamp(3.6rem,9vw,8rem)] font-black leading-[0.82] tracking-[-0.05em]">
+      <strong className="mt-8 block font-telegraf text-[clamp(3.6rem,9vw,8rem)] font-black leading-[0.82] tracking-[-0.05em]">
         ADD HERE
       </strong>
       <p className="mx-auto mt-6 max-w-[48ch] font-nacelle text-sm leading-relaxed text-white/55 sm:text-base">
@@ -1777,6 +1630,7 @@ const MomentGalleryOverlay = ({
                         src={moment.image}
                         alt=""
                         fill
+                        sizes="(min-width: 1024px) 10vw, (min-width: 640px) 20vw, 33vw"
                         className="object-cover"
                       />
                     </button>
@@ -1797,10 +1651,7 @@ const MomentGalleryOverlay = ({
                   <span>{activeMoment.meta}</span>
                   <span>{String(activeIndex + 1).padStart(2, "0")} / 08</span>
                 </div>
-                <p className="mt-12 font-kode text-[8px] uppercase tracking-[0.2em] text-[#d8ff36]">
-                  {activeMoment.kicker}
-                </p>
-                <h2 className="mt-4 font-telegraf text-[clamp(3rem,5vw,5.8rem)] font-black leading-[0.88] tracking-[-0.045em]">
+                <h2 className="mt-12 font-telegraf text-[clamp(3rem,5vw,5.8rem)] font-black leading-[0.88] tracking-[-0.045em]">
                   {activeMoment.title}
                 </h2>
                 <p className="mt-7 font-nacelle text-base leading-[1.8] text-white/65">
@@ -1974,10 +1825,7 @@ const ProjectGalleryOverlay = ({
                   <span>{project.year}</span>
                   <span>{project.types.join(" / ")}</span>
                 </div>
-                <p className="mt-10 font-kode text-[8px] uppercase tracking-[0.2em] text-black/45">
-                  Expanded project / {String(activeIndex + 1).padStart(2, "0")}
-                </p>
-                <h2 className="mt-3 font-telegraf text-[clamp(3.2rem,5.4vw,6rem)] font-black leading-[0.86] tracking-[-0.05em]">
+                <h2 className="mt-10 font-telegraf text-[clamp(3.2rem,5.4vw,6rem)] font-black leading-[0.86] tracking-[-0.05em]">
                   {project.name}
                 </h2>
                 <p className="mt-5 font-nacelle text-lg font-medium leading-tight">
@@ -2198,13 +2046,10 @@ const UnassignedArt = () => (
       fill="none"
       aria-hidden="true"
     >
-      <motion.path
+      <path
         d="M78 405 C 180 110, 480 90, 620 300 C 690 405, 510 500, 336 430 C 180 368, 230 190, 380 178"
         stroke="rgba(255,255,255,.42)"
         strokeWidth="1"
-        strokeDasharray="7 9"
-        animate={{ strokeDashoffset: [0, -64] }}
-        transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
       />
       <motion.circle
         r="8"
@@ -2258,10 +2103,7 @@ const UnassignedArt = () => (
       animate={{ rotate: [-2, 2, -2], scale: [1, 1.025, 1] }}
       transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
     >
-      <span className="font-kode text-[8px] uppercase tracking-[0.18em]">
-        Status / self-assigned
-      </span>
-      <strong className="mt-1 block font-telegraf text-3xl tracking-[-0.02em] sm:text-5xl">
+      <strong className="block font-telegraf text-3xl tracking-[-0.02em] sm:text-5xl">
         MAKE IT.
       </strong>
     </motion.div>
@@ -2458,10 +2300,7 @@ const AdditionalPhilosophyArt = ({
     >
       <div className="absolute inset-0 opacity-20 [background-image:linear-gradient(currentColor_1px,transparent_1px)] [background-size:100%_42px]" />
       <div className="border-current/30 absolute inset-6 border sm:inset-10" />
-      <span className="absolute left-10 top-10 font-kode text-[8px] uppercase tracking-[0.2em] opacity-55 sm:left-14 sm:top-14">
-        {config.code} / LIVE MODEL
-      </span>
-      <strong className="absolute left-10 top-24 max-w-[80%] font-telegraf text-[clamp(3.2rem,7vw,7rem)] font-black leading-[0.84] tracking-[-0.05em] sm:left-14 sm:top-28">
+      <strong className="absolute left-10 top-14 max-w-[80%] font-telegraf text-[clamp(3.2rem,7vw,7rem)] font-black leading-[0.84] tracking-[-0.05em] sm:left-14 sm:top-20">
         {config.title}
       </strong>
       <div className="absolute inset-x-10 bottom-10 grid grid-cols-2 gap-2 sm:inset-x-14 sm:bottom-14 sm:grid-cols-4">
@@ -2530,11 +2369,6 @@ const PhilosophyChapter = ({
               artFirst ? "lg:order-2" : "lg:order-1"
             }`}
           >
-            <div className="flex items-center justify-between font-kode text-[8px] uppercase tracking-[0.2em] opacity-50">
-              <span>Principle / {philosophy.number}</span>
-              <span>{philosophy.eyebrow}</span>
-            </div>
-
             <div className="my-14 lg:my-0">
               <h3 className="max-w-2xl font-telegraf text-[clamp(3.2rem,5.6vw,6.8rem)] font-black leading-[0.92] tracking-[-0.025em] transition-[font-style,transform] group-hover:-translate-y-1 group-hover:italic">
                 {philosophy.title}
@@ -2630,40 +2464,14 @@ const HeroMarginRail = ({
         }}
         transition={{ type: "spring", stiffness: 105, damping: 24 }}
       />
-      <motion.path
-        fill="none"
-        stroke="#d8ff36"
-        strokeWidth="1.5"
-        strokeDasharray="2 12"
-        vectorEffect="non-scaling-stroke"
-        animate={{
-          d:
-            side === "left"
-              ? `M 63 196 L ${mode === "orbit" ? 22 : mode === "signal" ? 38 : 30} 238 V 482 L 63 524`
-              : `M 1 196 L ${mode === "orbit" ? 42 : mode === "signal" ? 26 : 34} 238 V 482 L 1 524`,
-          strokeDashoffset: [0, -28],
-        }}
-        transition={{
-          d: { type: "spring", stiffness: 105, damping: 24 },
-          strokeDashoffset: { duration: 2.4, repeat: Infinity, ease: "linear" },
-        }}
-      />
     </svg>
 
     <div
       aria-hidden="true"
-      className={`absolute top-[var(--spot-y,50%)] h-7 w-7 -translate-y-1/2 transition-[left,right] duration-500 ${
+      className={`absolute top-[var(--spot-y,50%)] h-3 w-3 -translate-y-1/2 rotate-45 bg-[#d8ff36] transition-[left,right] duration-500 ${
         side === "left" ? "right-0" : "left-0"
       }`}
-    >
-      <span className="absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-current opacity-35" />
-      <span className="absolute left-0 top-1/2 h-px w-full -translate-y-1/2 bg-current opacity-35" />
-      <span className="absolute left-1/2 top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rotate-45 bg-[#d8ff36]" />
-    </div>
-
-    <span className="absolute left-1/2 top-8 -translate-x-1/2 font-kode text-[5px] uppercase tracking-[0.2em] text-black/40 [writing-mode:vertical-rl]">
-      {side === "left" ? "Pointer trace" : "Visual field"}
-    </span>
+    />
 
     {side === "right" && (
       <div className="absolute bottom-8 left-1/2 flex -translate-x-1/2 flex-col gap-2">
@@ -2686,13 +2494,7 @@ const HeroMarginRail = ({
   </aside>
 );
 
-const HeroCommitField = ({
-  mode,
-  onMode,
-}: {
-  mode: HeroMode;
-  onMode: (mode: HeroMode) => void;
-}) => {
+const HeroCommitField = ({ onMode }: { onMode: (mode: HeroMode) => void }) => {
   const defaultIndex = Math.max(
     0,
     COMMIT_CELLS.findIndex((cell) => cell.key === DEFAULT_ACTIVE_DAY.key),
@@ -2707,15 +2509,10 @@ const HeroCommitField = ({
 
   return (
     <div className="mt-6 max-w-[650px] border-y border-black/25 py-3 sm:mt-7 sm:py-4">
-      <div className="mb-3 flex items-end justify-between gap-4">
-        <div>
-          <span className="font-kode text-[7px] uppercase tracking-[0.18em] text-black/45">
-            Commit history / 2026
-          </span>
-          <p className="mt-1 font-telegraf text-sm font-black tracking-[-0.01em] sm:text-base">
-            Move through the build trail.
-          </p>
-        </div>
+      <div className="mb-3 flex items-center justify-between gap-4">
+        <p className="font-telegraf text-sm font-black tracking-[-0.01em] sm:text-base">
+          Commit history, 2026
+        </p>
         <motion.div
           key={activeCell.key}
           initial={{ opacity: 0, x: 5 }}
@@ -2723,7 +2520,7 @@ const HeroCommitField = ({
           className="text-right font-kode text-[6px] uppercase tracking-[0.13em] text-black/50 sm:text-[7px]"
         >
           <strong className="block text-black">{activeCell.label}</strong>
-          {activeCell.count} commit{activeCell.count === 1 ? "" : "s"} / {mode}
+          {activeCell.count} commit{activeCell.count === 1 ? "" : "s"}
         </motion.div>
       </div>
 
@@ -2784,15 +2581,10 @@ const HeroCommitField = ({
         </div>
       </div>
 
-      <div className="mt-3 flex items-center justify-between gap-4 font-kode text-[6px] uppercase tracking-[0.14em] text-black/40 sm:text-[7px]">
-        <span>Jan — Jul / this repository</span>
+      <div className="mt-3 flex items-center justify-end gap-4 font-kode text-[6px] uppercase tracking-[0.14em] text-black/40 sm:text-[7px]">
         <span className="flex items-center gap-2 text-black/65">
-          <motion.span
-            className="h-1.5 w-1.5 rotate-45 bg-[#d8ff36]"
-            animate={{ scale: [0.75, 1.35, 0.75] }}
-            transition={{ duration: 1.4, repeat: Infinity }}
-          />
-          Swipe your cursor
+          <span className="h-1.5 w-1.5 rotate-45 bg-[#d8ff36]" />
+          Trace the commits
         </span>
       </div>
     </div>
@@ -3065,12 +2857,7 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
 
           <div className="mx-auto grid min-h-[590px] w-full grid-cols-1 bg-[#f4f3ec] lg:h-[min(780px,calc(100dvh-68px))] lg:min-h-0 lg:grid-cols-12">
             <div className="relative z-10 flex min-w-0 flex-col justify-between border-b border-black p-5 sm:p-8 lg:col-span-7 lg:border-b-0 lg:border-r lg:p-10 xl:p-12">
-              <div className="flex items-center justify-between gap-4 font-kode text-[8px] uppercase tracking-[0.2em] text-black/50 sm:text-[9px]">
-                <span>Kevin Liu / engineer + designer</span>
-                <span>Princeton CS ’28</span>
-              </div>
-
-              <div className="py-9 sm:py-11 lg:py-4">
+              <div className="flex flex-1 flex-col justify-center py-9 sm:py-11 lg:py-4">
                 <h1 className="max-w-[9ch] font-telegraf text-[clamp(3.8rem,7vw,7.6rem)] font-black leading-[0.86] tracking-[-0.045em]">
                   Agents,
                   <br />
@@ -3078,7 +2865,7 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
                   <br />
                   <span className="font-normal italic">sharp tools.</span>
                 </h1>
-                <HeroCommitField mode={heroMode} onMode={setHeroMode} />
+                <HeroCommitField onMode={setHeroMode} />
               </div>
 
               <div className="grid gap-5 border-t border-black pt-4 sm:grid-cols-2">
@@ -3102,7 +2889,6 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
                 style={{ clipPath: CHOPPED }}
               >
                 <HeroSocialSequence
-                  mode={heroMode}
                   reduceMotion={Boolean(reduceMotion)}
                   onExpand={() => setMomentGalleryIndex(0)}
                 />
@@ -3162,9 +2948,6 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
                         />
                       ))}
                     </div>
-                    <span className="mt-2 block font-kode text-[6px] uppercase tracking-[0.16em] text-white/55">
-                      Bayer / 04×04
-                    </span>
                   </motion.div>
                 )}
 
@@ -3175,31 +2958,22 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                   >
-                    <motion.span
-                      className="absolute inset-x-0 h-px bg-[#d8ff36] shadow-[0_0_12px_#d8ff36]"
-                      animate={{ top: ["12%", "84%", "12%"] }}
-                      transition={{
-                        duration: 4.5,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                      }}
-                    />
                     {[
-                      "left-7 top-[28%]",
-                      "right-8 top-[42%]",
-                      "left-[38%] top-[66%]",
-                    ].map((position, index) => (
+                      "left-7 top-[28%] border-l border-t",
+                      "right-8 top-[42%] rotate-180 border-l border-t",
+                      "left-[38%] top-[66%] -rotate-90 border-l border-t",
+                    ].map((position) => (
                       <motion.span
                         key={position}
-                        className={`absolute ${position} h-3 w-3 border border-[#d8ff36]`}
+                        className={`absolute ${position} h-6 w-6 border-[#d8ff36]`}
                         animate={{
-                          scale: [1, 1.8, 1],
-                          opacity: [0.45, 1, 0.45],
+                          scale: [0.9, 1.08, 0.9],
+                          opacity: [0.35, 0.9, 0.35],
                         }}
                         transition={{
-                          duration: 2.1,
+                          duration: 2.6,
                           repeat: Infinity,
-                          delay: index * 0.35,
+                          ease: "easeInOut",
                         }}
                       />
                     ))}
@@ -3237,10 +3011,7 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
         <SectionChrome index="01" label="Built in the wild" />
         <div className="mb-14 grid items-end gap-8 border-b border-black pb-6 sm:mx-4 lg:mx-8 lg:grid-cols-12">
           <div className="lg:col-span-8">
-            <p className="font-kode text-[9px] uppercase tracking-[0.2em] text-black/45">
-              12 selected projects
-            </p>
-            <h2 className="mt-3 font-telegraf text-5xl font-black tracking-[-0.035em] sm:text-7xl lg:text-8xl">
+            <h2 className="font-telegraf text-5xl font-black tracking-[-0.035em] sm:text-7xl lg:text-8xl">
               Built in the wild.
             </h2>
           </div>
@@ -3285,10 +3056,7 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
         <SectionChrome index="03" label="Personal doctrine" surface="acid" />
         <div className="mx-auto grid w-full max-w-[1440px] gap-10 px-5 py-16 sm:px-8 sm:py-24 lg:grid-cols-12 lg:px-12">
           <div className="lg:col-span-8">
-            <p className="font-kode text-[9px] uppercase tracking-[0.2em] text-black/55">
-              Field manual / 06 linked essays
-            </p>
-            <h2 className="mt-4 max-w-5xl font-telegraf text-[clamp(3.8rem,7.5vw,8rem)] font-black leading-[0.9] tracking-[-0.025em]">
+            <h2 className="max-w-5xl font-telegraf text-[clamp(3.8rem,7.5vw,8rem)] font-black leading-[0.9] tracking-[-0.025em]">
               How I decide what deserves to exist.
             </h2>
           </div>
@@ -3320,11 +3088,7 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_40%,rgba(216,255,54,.08),transparent_30%),radial-gradient(circle_at_85%_65%,rgba(255,255,255,.07),transparent_32%)]" />
         <div className="relative mx-auto grid w-full max-w-[1440px] gap-10 px-5 py-20 sm:px-8 sm:py-28 lg:grid-cols-12 lg:px-12">
           <div className="lg:col-span-5">
-            <div className="flex items-center gap-3 font-kode text-[9px] uppercase tracking-[0.2em] text-white/55">
-              <BallGlyph inverted />
-              Compounding memory / Public viewer
-            </div>
-            <h2 className="mt-10 font-telegraf text-[clamp(3.8rem,7vw,7.8rem)] font-black leading-[0.9] tracking-[-0.035em]">
+            <h2 className="font-telegraf text-[clamp(3.8rem,7vw,7.8rem)] font-black leading-[0.9] tracking-[-0.035em]">
               A wiki
               <br />
               that thinks
@@ -3383,13 +3147,8 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
               className="group mt-4 flex w-full items-center justify-between bg-white px-5 py-5 text-left text-black transition hover:bg-[#d8ff36] disabled:cursor-wait sm:px-7 sm:py-6"
               style={{ clipPath: CHOPPED }}
             >
-              <span>
-                <span className="block font-kode text-[8px] uppercase tracking-[0.2em] text-black/50">
-                  Browse the public memory
-                </span>
-                <span className="mt-1 block font-telegraf text-2xl font-black tracking-[-0.02em] sm:text-4xl">
-                  Open Kevin&apos;s Wiki
-                </span>
+              <span className="font-telegraf text-2xl font-black tracking-[-0.02em] sm:text-4xl">
+                Open Kevin&apos;s Wiki
               </span>
               <ArrowRight className="h-7 w-7 transition group-hover:translate-x-2" />
             </Link>
@@ -3407,10 +3166,7 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
         <SectionChrome index="05" label="Utility belt" />
         <div className="grid gap-12 lg:grid-cols-12">
           <div className="lg:col-span-3">
-            <p className="font-kode text-[9px] uppercase tracking-[0.2em] text-black/45">
-              Utility belt / Open source
-            </p>
-            <h2 className="mt-3 font-telegraf text-5xl font-black leading-[0.95] tracking-[-0.03em] sm:text-6xl">
+            <h2 className="font-telegraf text-5xl font-black leading-[0.95] tracking-[-0.03em] sm:text-6xl">
               Tools I keep reaching for.
             </h2>
             <p className="mt-6 max-w-sm font-nacelle text-base leading-relaxed text-black/55">
@@ -3455,10 +3211,7 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
         <SceneCurtain index="06" label="Open channel" tone="acid" />
         <SectionChrome index="06" label="Open channel" surface="acid" />
         <div className="mx-auto w-full max-w-[1440px] px-5 py-14 sm:px-8 sm:py-20 lg:px-12">
-          <p className="font-kode text-[9px] uppercase tracking-[0.2em] text-black/55">
-            New encounter available
-          </p>
-          <div className="mt-4 flex flex-col justify-between gap-10 sm:flex-row sm:items-end">
+          <div className="flex flex-col justify-between gap-10 sm:flex-row sm:items-end">
             <Link
               href="mailto:k.bowen.liu@gmail.com"
               className="font-telegraf text-[clamp(3.4rem,8vw,8.5rem)] font-black leading-[0.88] tracking-[-0.035em] hover:italic"
