@@ -3054,16 +3054,16 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
       <section
         id="top"
         onMouseMove={followPointer}
-        className="spotlight-field relative mx-3 min-h-[calc(100dvh-68px)] max-w-[1520px] snap-start border-x border-b border-black/30 bg-[#f4f3ec] text-black sm:mx-6 md:snap-always lg:mx-10 2xl:mx-auto"
+        className="spotlight-field relative mx-3 min-h-[calc(100dvh-68px)] max-w-[1520px] snap-start border-x border-b border-black/30 bg-[#f4f3ec] text-black sm:mx-6 md:snap-always lg:mx-10 lg:h-[calc(100dvh-68px)] lg:min-h-0 lg:overflow-hidden 2xl:mx-auto"
         style={{
           clipPath:
             "polygon(0 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 14px 100%, 0 calc(100% - 14px))",
         }}
       >
-        <div className="mx-auto grid w-full grid-cols-1 xl:grid-cols-[64px_minmax(0,1fr)_64px]">
+        <div className="mx-auto grid w-full grid-cols-1 lg:h-full lg:items-center xl:grid-cols-[64px_minmax(0,1fr)_64px]">
           <HeroMarginRail side="left" mode={heroMode} onMode={setHeroMode} />
 
-          <div className="mx-auto grid min-h-[590px] w-full grid-cols-1 bg-[#f4f3ec] lg:h-[calc(100dvh-68px)] lg:max-h-[940px] lg:min-h-[640px] lg:grid-cols-12">
+          <div className="mx-auto grid min-h-[590px] w-full grid-cols-1 bg-[#f4f3ec] lg:h-[min(780px,calc(100dvh-68px))] lg:min-h-0 lg:grid-cols-12">
             <div className="relative z-10 flex min-w-0 flex-col justify-between border-b border-black p-5 sm:p-8 lg:col-span-7 lg:border-b-0 lg:border-r lg:p-10 xl:p-12">
               <div className="flex items-center justify-between gap-4 font-kode text-[8px] uppercase tracking-[0.2em] text-black/50 sm:text-[9px]">
                 <span>Kevin Liu / engineer + designer</span>
