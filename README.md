@@ -1,6 +1,8 @@
-# Kevin Liu — Portfolio
+# Useful Worlds
 
 Kevin Liu's black-and-white interactive portfolio: shipped projects, field moments, writing, tools, photography, people, and the playable PortfolioMon archive.
+
+> I build useful worlds.
 
 ## Highlights
 
