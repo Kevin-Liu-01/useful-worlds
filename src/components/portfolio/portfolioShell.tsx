@@ -12,6 +12,7 @@ import {
   useSpring,
 } from "framer-motion";
 import {
+  Blocks,
   BriefcaseBusiness,
   Camera,
   ContactRound,
@@ -30,6 +31,7 @@ const DOCK_ITEMS = [
   { label: "Experience", href: "/experience", icon: FileText },
   { label: "People", href: "/people", icon: ContactRound },
   { label: "KevBook", href: "/kevbook", icon: UsersRound },
+  { label: "Vault", href: "/vault", icon: Blocks },
   { label: "Photos", href: "/photography", icon: Camera },
 ] as const;
 
@@ -122,9 +124,6 @@ const PortfolioTopNavigation = () => {
       </nav>
 
       <div className="flex shrink-0 items-center gap-2">
-        <span className="hidden text-[8px] uppercase tracking-[0.14em] text-white/40 sm:block md:hidden xl:block">
-          {current}
-        </span>
         <Link
           href="/?play=1"
           className="circuit-action group flex h-10 items-center gap-2 bg-[#d8ff36] px-2 pl-4 text-[8px] uppercase tracking-[0.12em] text-black hover:bg-white"

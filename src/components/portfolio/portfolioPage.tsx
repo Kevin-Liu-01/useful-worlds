@@ -30,12 +30,12 @@ const PageMarginTracks = ({
     surface === "ink"
       ? "text-white/30"
       : surface === "acid"
-      ? "text-black/35"
-      : "text-black/28 dark:text-white/30";
+        ? "text-black/35"
+        : "text-black/28 dark:text-white/30";
   const signal = surface === "acid" ? "#0b0b0b" : "#d8ff36";
   const seed = Array.from(index).reduce(
     (total, character) => total + character.charCodeAt(0),
-    0
+    0,
   );
   const variants = [
     [18, 42, 22],
@@ -210,6 +210,7 @@ export const PortfolioPageFooter = () => (
     <div className="flex flex-wrap gap-2">
       {[
         ["Work", "/#work"],
+        ["Vault", "/vault"],
         ["People", "/people"],
         ["Photography", "/photography"],
         ["Wiki", "https://wiki.kevinliu.biz/"],
