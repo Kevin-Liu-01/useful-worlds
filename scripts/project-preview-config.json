@@ -1,0 +1,253 @@
+{
+  "viewport": { "width": 1280, "height": 720 },
+  "format": "png",
+  "defaults": { "waitMs": 5000 },
+  "projects": [
+    {
+      "id": 0,
+      "name": "Reticle",
+      "sourceUrl": "https://reticle-demo.vercel.app/",
+      "output": "public/images/reticle.png"
+    },
+    {
+      "id": 1,
+      "name": "Ariadne",
+      "sourceUrl": "https://ariadne.dedaluslabs.ai/",
+      "output": "public/images/ariadne.png"
+    },
+    {
+      "id": 2,
+      "name": "Sandbox Arena",
+      "sourceUrl": "https://sandboxarena.vercel.app/",
+      "output": "public/images/sandbox-arena.png"
+    },
+    {
+      "id": 3,
+      "name": "Aryan 21",
+      "sourceUrl": "https://aryan-birthday.vercel.app/",
+      "output": "public/images/aryan-21.png",
+      "waitMs": 6000
+    },
+    {
+      "id": 4,
+      "name": "Kevin's Wiki",
+      "sourceUrl": "https://wiki.kevinliu.biz/",
+      "output": "public/images/wiki.png"
+    },
+    {
+      "id": 5,
+      "name": "Agent Machines",
+      "sourceUrl": "https://www.agent-machines.dev/",
+      "output": "public/images/agentmachines.png"
+    },
+    {
+      "id": 6,
+      "name": "Dedalus",
+      "sourceUrl": "https://reticle-demo.vercel.app/",
+      "output": "public/images/dedaluslabs.ai.png"
+    },
+    {
+      "id": 7,
+      "name": "Sigil UI",
+      "sourceUrl": "https://sigil-ui-web.vercel.app/",
+      "output": "public/images/sigil-ui.png"
+    },
+    {
+      "id": 8,
+      "name": "050525",
+      "sourceUrl": "https://050525.vercel.app/",
+      "output": "public/images/050525.png"
+    },
+    {
+      "id": 9,
+      "name": "Loop",
+      "sourceUrl": "https://loooop.dev/",
+      "output": "public/images/loop-homepage.png"
+    },
+    {
+      "id": 10,
+      "name": "Princeton TD",
+      "sourceUrl": "https://ptd.quest/",
+      "output": "public/images/princetontd.png"
+    },
+    {
+      "id": 11,
+      "name": "Dedalus Demo",
+      "sourceUrl": "https://dedalus-demo.vercel.app/",
+      "output": "public/images/dedalus.png"
+    },
+    {
+      "id": 12,
+      "name": "Podium",
+      "sourceUrl": "https://hackprinceton-podium.vercel.app/",
+      "output": "public/images/podium.png"
+    },
+    {
+      "id": 13,
+      "name": "Sevenfold",
+      "sourceUrl": "https://sevenfold-demo.vercel.app/",
+      "output": "public/images/sevenfold.png"
+    },
+    {
+      "id": 14,
+      "name": "PortfolioMon",
+      "sourceUrl": "http://localhost:3000/",
+      "output": "public/images/kevinportfolio.png"
+    },
+    {
+      "id": 15,
+      "name": "Lumachor",
+      "sourceUrl": "https://lumachor.vercel.app/home",
+      "output": "public/images/lumachor.png"
+    },
+    {
+      "id": 16,
+      "name": "HackPrinceton '25F",
+      "sourceUrl": "https://hack-princeton-fall-2025-demo.vercel.app/",
+      "output": "public/images/hackprinceton25f.png"
+    },
+    {
+      "id": 17,
+      "name": "Splitway",
+      "sourceUrl": "https://splitway.vercel.app/",
+      "output": "public/images/splitway.png"
+    },
+    {
+      "id": 18,
+      "name": "Lootbox Simulator",
+      "sourceUrl": "https://lootboxsimulator.vercel.app/",
+      "output": "public/images/lootboxsimulator.png"
+    },
+    {
+      "id": 19,
+      "name": "PawPointClicker",
+      "sourceUrl": "https://pawpointclicker.vercel.app/",
+      "output": "public/images/pawpointclicker.png",
+      "actions": [
+        { "type": "click", "role": "button", "name": "Start Clicking!" },
+        { "type": "wait", "ms": 1500 }
+      ]
+    },
+    {
+      "id": 20,
+      "name": "HackPrinceton '25S",
+      "sourceUrl": "https://hack-princeton-spring-2025-demo.vercel.app/",
+      "output": "public/images/hackprinceton25s.png",
+      "waitMs": 9000
+    },
+    {
+      "id": 21,
+      "name": "HackPrinceton '24F",
+      "sourceUrl": "https://hack-princeton-fall-2024-demo.vercel.app/",
+      "output": "public/images/hackprinceton24f.png"
+    },
+    {
+      "id": 22,
+      "name": "SnellTech",
+      "sourceUrl": "https://snelltech.vercel.app/",
+      "output": "public/images/snelltech.png"
+    },
+    {
+      "id": 23,
+      "name": "LetMeCook",
+      "sourceUrl": "https://letmecook.vercel.app/",
+      "output": "public/images/letmecook.png"
+    },
+    {
+      "id": 24,
+      "name": "Balladeer",
+      "sourceUrl": "https://balladeer.vercel.app/",
+      "output": "public/images/balladeer.png"
+    },
+    {
+      "id": 25,
+      "name": "CompassUSA",
+      "sourceUrl": "https://compass-usa.vercel.app/",
+      "output": "public/images/compassusa.png"
+    },
+    {
+      "id": 26,
+      "name": "ApneaAlert",
+      "sourceUrl": "https://apnea-alert-git-main-kevin-liu-01.vercel.app/",
+      "output": "public/images/apnea-alert.png"
+    },
+    {
+      "id": 27,
+      "name": "Iron Triangle",
+      "sourceUrl": "https://iron-triangle.vercel.app/",
+      "output": "public/images/irontriangle.png"
+    },
+    {
+      "id": 28,
+      "name": "AdventureGPT",
+      "sourceUrl": "https://adventuregpt.vercel.app/",
+      "output": "public/images/adventuregpt.png"
+    },
+    {
+      "id": 29,
+      "name": "EditorGPT",
+      "sourceUrl": "https://editorgpt.vercel.app/",
+      "output": "public/images/editorgpt.png"
+    },
+    {
+      "id": 30,
+      "name": "OMMC Portal",
+      "sourceUrl": "https://ommc-test-portal.vercel.app/",
+      "output": "public/images/ommcportal.png"
+    },
+    {
+      "id": 31,
+      "name": "OMMC Sample Portal",
+      "sourceUrl": "https://ommc-sample-portal.vercel.app/",
+      "output": "public/images/ommcsampleportal.png"
+    },
+    {
+      "id": 32,
+      "name": "Enkrateia",
+      "sourceUrl": "https://enkrateia.vercel.app/",
+      "output": "public/images/enkrateia.png"
+    },
+    {
+      "id": 33,
+      "name": "HD Transcribe",
+      "sourceUrl": "https://hd-transcribe.vercel.app/",
+      "output": "public/images/hd-transcribe.png"
+    },
+    {
+      "id": 34,
+      "name": "OMMC",
+      "sourceUrl": "https://www.ommcofficial.org/",
+      "output": "public/images/ommc.png"
+    },
+    {
+      "id": 35,
+      "name": "OMMC Atlas",
+      "sourceUrl": "https://ommc-atlas.vercel.app/",
+      "output": "public/images/ommc-atlas.png"
+    },
+    {
+      "id": 36,
+      "name": "RecyclAIble",
+      "sourceUrl": "https://recyclaible.vercel.app/",
+      "output": "public/images/recyclaible.png"
+    },
+    {
+      "id": 37,
+      "name": "PlantSTEM",
+      "sourceUrl": "https://plant-stem.vercel.app/",
+      "output": "public/images/plantstem.png"
+    },
+    {
+      "id": 38,
+      "name": "Tutorial",
+      "sourceUrl": "https://tutorial-nu.vercel.app/",
+      "output": "public/images/tutorial.png"
+    },
+    {
+      "id": 39,
+      "name": "Satellite Crafter",
+      "sourceUrl": "https://satellite-crafter.vercel.app/",
+      "output": "public/images/satellitecrafter.png"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "name": "Kevin Liu — Engineer, Designer & Builder",
+  "short_name": "Kevin Liu Portfolio",
+  "description": "Experimental portfolio by Kevin Liu featuring agent infrastructure, expressive interfaces, games, and the playable PortfolioMon archive.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f4f3ec",
+  "theme_color": "#0b0b0b",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "any",
+      "type": "image/x-icon"
+    }
+  ],
+  "categories": ["portfolio", "games", "education"]
+}

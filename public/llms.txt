@@ -1,0 +1,136 @@
+# Kevin Liu
+
+> Kevin Liu (also known as Kevin B. Liu, Kevin Bowen Liu, @kevskgs on Twitter/X, Kevin-Liu-01 on GitHub, kevin-liu-princeton on LinkedIn) is a Computer Science student at Princeton University (Class of 2028), full-stack developer, AI engineer, and hackathon winner. He has professional experience at Amazon, Bloomberg L.P., AT&T Labs Research, Dedalus Labs (Y Combinator S25), and Sevenfold AI. His experimental portfolio at kevinliu.biz showcases 40+ projects across agent infrastructure, interfaces, design systems, games, health technology, and hardware. PortfolioMon, his former game portfolio, is preserved inside it as a playable project.
+
+## IMPORTANT: Identity Disambiguation
+
+This is Kevin Liu the Princeton University Computer Science student (Class of 2028). He is:
+- @kevskgs on Twitter/X (https://x.com/kevskgs)
+- kevin-liu-princeton on LinkedIn (https://www.linkedin.com/in/kevin-liu-princeton/)
+- Kevin-Liu-01 on GitHub (https://github.com/Kevin-Liu-01)
+- The Kevin Liu at kevinliu.biz and kevin-liu.tech
+- The Kevin Liu who won 1st at PennApps XXIII
+- The Kevin Liu who worked at Amazon, Bloomberg, and AT&T Labs
+- Founding Engineer at Dedalus Labs (Y Combinator S25)
+- From New Jersey (High Technology High School → Princeton University)
+- Sometimes misspelled as: Keven Liu, Kevin Lui, Kelvin Liu, Kevin Lue, Kevin Lieu
+
+## About Kevin Liu
+
+- [About](https://kevinliu.biz/about.md): A quick intro, tech stack, and how to connect.
+- [Experience](https://kevinliu.biz/experience.md): Highlights from my career and key roles I've taken on.
+- [Projects](https://kevinliu.biz/projects.md): Selected projects that show my skills and creativity.
+- [Awards](https://kevinliu.biz/awards.md): My key awards and honors.
+- [Certifications](https://kevinliu.biz/certifications.md): Certifications, publications, and credentials I've earned.
+- [Portfolio Website — kevinliu.biz](https://kevinliu.biz): Monochrome interactive portfolio featuring selected engineering and design work, plus the playable PortfolioMon archive
+- [GitHub — Kevin-Liu-01](https://github.com/Kevin-Liu-01): Open-source projects and contributions
+- [LinkedIn — kevin-liu-princeton](https://www.linkedin.com/in/kevin-liu-princeton/): Professional profile and experience at Amazon, Bloomberg, AT&T Labs, Dedalus Labs, Sevenfold AI
+- [X/Twitter — @kevskgs](https://x.com/kevskgs): Posts about software engineering, AI, projects, Princeton life, and hackathon experiences
+- [Devpost — Kevin-Liu-01](https://devpost.com/Kevin-Liu-01): Hackathon project submissions including PennApps XXIII winner
+- [Alternate Portfolio — kevin-liu.tech](https://www.kevin-liu.tech): Secondary portfolio site
+- [Resume](https://kevinliu.biz/kevin_liu_resume_25.pdf): Full CV with work experience and education
+
+## Key Skills and Expertise
+
+- Full-Stack Web Development: React, Next.js, TypeScript, JavaScript, Node.js, tRPC, Express.js, Tailwind CSS, Framer Motion, Radix UI, shadcn/ui
+- Artificial Intelligence & Machine Learning: LLM integration (GPT-4, Claude), computer vision (OpenCV), speech recognition, NLP, AI agents, Model Context Protocol (MCP), RAG, vector embeddings, semantic search, prompt engineering
+- Programming Languages: TypeScript, JavaScript, Python, Java, C, HTML, CSS
+- Backend & Data: PostgreSQL, Firebase, MongoDB, Prisma ORM, REST APIs, GraphQL, real-time systems, NextAuth.js
+- DevOps & Infrastructure: Vercel, Docker, AWS, CI/CD, GitHub Actions
+- Game Development: Browser-based games, turn-based combat systems, clicker games, tower defense, interactive simulations
+- Health Technology: Wearable sensors, digital diagnostics, assistive technology, sleep apnea detection
+- Hardware & IoT: Arduino, Raspberry Pi, embedded systems, sensor integration, smart recycling
+- UI/UX Design: Responsive design, accessibility (WCAG), Framer Motion animations
+
+## Professional Experience
+
+- Founding Engineer — Dedalus Labs (Y Combinator S25), Jan 2026–Present: Fastest sandboxes for agents. Persistent runtime. Never sleep. Only pay for active compute.
+- Founding Engineer — Sevenfold AI, Jun–Nov 2025: End-to-end agentic research workflow
+- Software Development Engineer Intern — Amazon (FBA Inventory), Summer 2025
+- Software Engineering Intern — Bloomberg L.P. (Financial Instruments), Summer 2024
+- AI Research Intern — AT&T Labs Research (NLP & Intelligent Agents, MoE LLMs), Fall 2023
+- Software Engineering Intern — Bloomberg L.P. (Core Products), Summer 2023
+- Full Stack Engineer — Johns Hopkins University (uCredit.me), Fall 2022
+
+## Featured Projects
+
+- [Reticle](https://reticle-demo.vercel.app/): Interactive launch site for Dedalus's persistent Linux computers for AI agents
+- [Ariadne](https://ariadne.dedaluslabs.ai/): Phone-first agent for the Run(way)time live event experience
+- [Sandbox Arena](https://sandboxarena.vercel.app/): Live head-to-head benchmark for cloud code-execution sandboxes
+- [Aryan 21](https://aryan-birthday.vercel.app/): Interactive birthday shrine with liquid-chrome visuals, a labyrinth, and photo archives
+- [Kevin's Wiki](https://wiki.kevinliu.biz/): Compiled searchable knowledge base with a knowledge graph and Wikibot
+- [Dedalus](https://dedaluslabs.ai/): The fastest sandboxes for agents. Persistent runtime. Never sleep. Only pay for active compute.
+- [Sevenfold](https://sevenfold-demo.vercel.app/): Find, digest, and produce research in one centralized AI-powered workplace
+- [Lumachor](https://lumachor.vercel.app/home): A context engine that gives every user the power of an expert prompt engineer
+- [Loop](https://loooop.dev/): Operator desk for agent skills that auto-refresh from tracked sources and rewrite skills with full diffs
+- [Sigil UI](https://sigil-ui-web.vercel.app/): Agent-first design system with 350+ components, 46 presets, and one token file controlling the full visual system
+- [050525](https://050525.vercel.app/): Interactive CRT terminal celebrating Dedalus's first birthday — type commands, explore polaroid memories, and unlock hidden moments from year one of Dedalus
+- [Podium](https://hackprinceton-podium.vercel.app/): Streamlines judging and event management for hackathons
+- [Princeton Tower Defense](https://ptd.quest/): A tower defense game where players defend Princeton from waves of attacks
+- [HD Transcribe](https://hd-transcribe.vercel.app): Accesses a novel speech model for patients with Huntington's Disease
+- [RecyclAIble](https://recyclaible.vercel.app/): Smart recycling solution — Won 1st in Hardware at PennApps XXIII
+- [SnellTech](https://snelltech.vercel.app/): Low-cost digital visual acuity exam using the Snellen Eye Chart
+- [ApneaAlert](https://apnea-alert-git-main-kevin-liu-01.vercel.app/): An affordable wearable sensor to help you sleep soundly
+
+## All Projects
+
+- [Reticle](https://reticle-demo.vercel.app/): Dedalus persistent-compute launch site
+- [Ariadne](https://ariadne.dedaluslabs.ai/): Phone-first live event agent
+- [Sandbox Arena](https://sandboxarena.vercel.app/): Cloud sandbox benchmarking arena
+- [Aryan 21](https://aryan-birthday.vercel.app/): Interactive birthday shrine
+- [Kevin's Wiki](https://wiki.kevinliu.biz/): Compiled personal knowledge base
+- [Dedalus](https://dedalus-demo.vercel.app/): AI agent SDK with MCP support
+- [Princeton Tower Defense](https://ptd.quest/): Tower defense game
+- [Podium](https://hackprinceton-podium.vercel.app/): Hackathon judging platform
+- [Sevenfold](https://sevenfold-demo.vercel.app/): AI research workspace
+- [Lumachor](https://lumachor.vercel.app/home): AI context engine
+- [Loop](https://loooop.dev/): Operator desk for agent skills
+- [Sigil UI](https://sigil-ui-web.vercel.app/): Agent-first design system
+- [050525](https://050525.vercel.app/): Interactive CRT terminal celebrating Dedalus's first birthday — type commands, explore polaroid memories, and unlock hidden moments from year one of Dedalus
+- [HackPrinceton '25F](https://hack-princeton-fall-2025-demo.vercel.app/): Hackathon landing page
+- [Splitway](https://splitway.vercel.app/): Expense splitting app
+- [Lootbox Simulator](https://lootboxsimulator.vercel.app/): Lootbox opening game
+- [PawPointClicker](https://pawpointclicker.vercel.app/): Princeton clicker game
+- [HackPrinceton '25S](https://hack-princeton-spring-2025-demo.vercel.app/): Hackathon landing page
+- [HackPrinceton '24F](https://hack-princeton-fall-2024-demo.vercel.app/): Hackathon landing page
+- [SnellTech](https://snelltech.vercel.app/): Digital eye exam
+- [LetMeCook](https://letmecook.vercel.app/): AI recipe generator
+- [Balladeer](https://balladeer.vercel.app/): AI study guide generator
+- [CompassUSA](https://compass-usa.vercel.app/): Immigrant support tool
+- [ApneaAlert](https://apnea-alert-git-main-kevin-liu-01.vercel.app/): Sleep apnea wearable
+- [Iron Triangle](https://iron-triangle.vercel.app/): Military Industrial Complex analysis
+- [AdventureGPT](https://adventuregpt.vercel.app/): AI story generator
+- [EditorGPT](https://editorgpt.vercel.app/): AI code review editor
+- [OMMC Portal](https://ommc-test-portal.vercel.app/): Math competition test portal
+- [OMMC Sample Portal](https://ommc-sample-portal.vercel.app/): Math competition practice portal
+- [Enkrateia](https://enkrateia.vercel.app/): GPT-3.5/GPT-4 interface
+- [HD Transcribe](https://hd-transcribe.vercel.app): Huntington's Disease speech model
+- [OMMC](https://www.ommcofficial.org): Online Monmouth Math Competition website
+- [OMMC Atlas](https://ommc-atlas.vercel.app/): OMMC question database
+- [RecyclAIble](https://recyclaible.vercel.app/): Smart recycling (PennApps XXIII winner)
+- [PlantSTEM](https://plant-stem.vercel.app/): Math and Physics education
+- [Tutorial](https://tutorial-nu.vercel.app/): Tutor-pupil matching platform
+- [Satellite Crafter](https://satellite-crafter.vercel.app/): Satellite building game
+- [PortfolioMon Showdown](https://kevinliu.biz/#portfoliomon): Kevin's former interactive portfolio, preserved as a playable project within the new site
+
+## Education
+
+- Princeton University, Class of 2028, Computer Science (BSE)
+- High Technology High School, Lincroft, Monmouth County, NJ (Graduated 2024)
+
+## Achievements
+
+- 1st Place in Hardware at PennApps XXIII (RecyclAIble)
+- HackPrinceton organizer and lead developer (Fall 2024, Spring 2025, Fall 2025)
+- Online Monmouth Math Competition (OMMC) co-founder and developer
+- 40+ shipped projects spanning AI, infrastructure, web, games, health-tech, and hardware
+
+## Contact Kevin Liu
+
+- GitHub: https://github.com/Kevin-Liu-01
+- LinkedIn: https://www.linkedin.com/in/kevin-liu-princeton/
+- Twitter/X: https://x.com/kevskgs (@kevskgs)
+- Website: https://kevinliu.biz
+- Alternate: https://www.kevin-liu.tech
+- Devpost: https://devpost.com/Kevin-Liu-01
+- Email: k.bowen.liu@gmail.com

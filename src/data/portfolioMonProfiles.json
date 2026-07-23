@@ -1,0 +1,442 @@
+{
+  "0": {
+    "tagline": "Persistent computers for agents, made tangible.",
+    "category": "Agent infrastructure",
+    "role": "Product engineering · interaction design",
+    "summary": "An interactive launch experience for Reticle, Dedalus's persistent Linux computers for AI agents. It turns sub-second startup, durable runtime state, and metered compute into a product story people can understand by using it.",
+    "highlights": [
+      "Sub-second machine startup",
+      "Durable runtime state",
+      "Motion-led product demo"
+    ]
+  },
+  "1": {
+    "tagline": "A phone-first agent for one very live room.",
+    "category": "Experiential AI",
+    "role": "Agent systems · live experience",
+    "summary": "Ariadne was the conversational layer for Dedalus's Run(way)time event at Lume Studios. Guests texted it to check in, receive identities and secret words, complete quests, request songs, and order drinks without installing an app.",
+    "highlights": [
+      "SMS-first interaction",
+      "Live quests and identity system",
+      "Music and venue operations"
+    ]
+  },
+  "2": {
+    "tagline": "Cloud sandboxes put under visible pressure.",
+    "category": "Infrastructure benchmark",
+    "role": "Full-stack engineering · data visualization",
+    "summary": "A public head-to-head benchmark for code-execution sandboxes. Providers run the same open workloads side by side while the arena streams timing, reliability, and resource results, then combines objective scores with crowd Elo.",
+    "highlights": [
+      "Live provider races",
+      "Auditable performance metrics",
+      "Crowd-ranked Elo"
+    ]
+  },
+  "3": {
+    "tagline": "A birthday archive built like a digital relic.",
+    "category": "Personal experience",
+    "role": "Creative direction · frontend engineering",
+    "summary": "An interactive twenty-first-birthday shrine combining liquid-chrome typography, cinematic monochrome imagery, an explorable labyrinth, photo archives, and a hidden reliquary into one deeply personal web experience.",
+    "highlights": [
+      "Liquid-chrome type system",
+      "Explorable labyrinth",
+      "Layered memory archive"
+    ]
+  },
+  "4": {
+    "tagline": "A personal knowledge base that stays source-first.",
+    "category": "Knowledge system",
+    "role": "Information architecture · agent tooling",
+    "summary": "A compiled personal wiki spanning architecture, agent operations, tools, skills, projects, and philosophy. Flat Markdown remains canonical while the interface adds instant search, native diagrams, a knowledge graph, and a corpus-aware Wikibot.",
+    "highlights": [
+      "Canonical Markdown corpus",
+      "Knowledge graph and diagrams",
+      "Corpus-aware assistant"
+    ]
+  },
+  "5": {
+    "tagline": "Durable computers for persistent workers.",
+    "category": "Agent infrastructure",
+    "role": "Systems engineering · developer experience",
+    "summary": "Agent Machines provisions persistent Linux environments for coding agents, with durable filesystems, resumable state, and tool access. Work survives beyond a single session instead of disappearing when the conversation ends.",
+    "highlights": [
+      "Persistent Linux machines",
+      "Resumable filesystem state",
+      "Agent-native tool access"
+    ]
+  },
+  "6": {
+    "tagline": "The operating layer for agents that need a real computer.",
+    "category": "Agent infrastructure",
+    "role": "Founding engineering",
+    "summary": "Dedalus builds fast, persistent Linux machines for agentic workloads. The platform gives agents durable compute, filesystems, networking, and tools so they can inhabit an environment rather than make isolated function calls.",
+    "highlights": [
+      "Persistent agent runtime",
+      "Durable compute and storage",
+      "Tool-connected environments"
+    ]
+  },
+  "7": {
+    "tagline": "A design system humans and agents can share.",
+    "category": "Design system",
+    "role": "Design systems · component engineering",
+    "summary": "An agent-first interface system with more than 350 React components, 46 visual presets, and one token-driven control layer for color, typography, radius, and motion. It is designed for both direct human use and programmatic composition.",
+    "highlights": [
+      "350+ React components",
+      "46 visual presets",
+      "Single token control layer"
+    ]
+  },
+  "8": {
+    "tagline": "Year one of Dedalus, hidden inside a CRT.",
+    "category": "Interactive archive",
+    "role": "Creative engineering · storytelling",
+    "summary": "A nostalgic terminal experience celebrating Dedalus's first birthday. Visitors type commands at DCD Terminal v1.9, inspect a cluttered digital desk, browse polaroid memories, and unlock hidden moments from the company's first year.",
+    "highlights": [
+      "Command-driven exploration",
+      "CRT desktop simulation",
+      "Hidden team memories"
+    ]
+  },
+  "9": {
+    "tagline": "Skills that update when their sources change.",
+    "category": "Agent tooling",
+    "role": "Agent systems · product engineering",
+    "summary": "Loop monitors documentation, changelogs, and repositories used by AI-agent skills. It researches upstream changes, produces reviewable diffs, and rewrites the relevant playbooks so operational knowledge does not quietly go stale.",
+    "highlights": [
+      "Upstream source monitoring",
+      "Research-backed diffs",
+      "Automated skill refresh"
+    ]
+  },
+  "10": {
+    "tagline": "Defend Princeton, one campus at a time.",
+    "category": "Browser game",
+    "role": "Game design · engine engineering",
+    "summary": "A canvas-based tower-defense game set across Princeton's campus, with 26 hand-built maps, seven tower classes, nine playable heroes, and more than 100 enemy types rendered through a custom browser game loop.",
+    "highlights": [
+      "26 hand-built maps",
+      "100+ enemy types",
+      "Custom Canvas renderer"
+    ]
+  },
+  "11": {
+    "tagline": "Model-agnostic agents made explorable.",
+    "category": "Developer platform demo",
+    "role": "Developer experience · frontend engineering",
+    "summary": "An interactive demo of the Dedalus SDK for building model-agnostic agents with MCP. It makes tool orchestration, server connections, authentication, and multi-tenant execution visible through working product flows.",
+    "highlights": [
+      "Live MCP orchestration",
+      "Multi-tenant authentication",
+      "Connectable server marketplace"
+    ]
+  },
+  "12": {
+    "tagline": "A control room for hackathon judging.",
+    "category": "Event operations",
+    "role": "Full-stack engineering",
+    "summary": "A judging and event-management platform built for HackPrinceton. Podium coordinates judge assignments, aggregates scores, protects against spam and abuse, and publishes live results without forcing organizers into spreadsheet triage.",
+    "highlights": [
+      "Judge assignment workflow",
+      "Real-time score aggregation",
+      "Live protected leaderboards"
+    ]
+  },
+  "13": {
+    "tagline": "Research without losing the citation trail.",
+    "category": "Research workspace",
+    "role": "Founding engineering",
+    "summary": "A research workspace for discovering, annotating, and synthesizing academic papers. Sevenfold combines semantic search, inline notes, corpus-wide conversation, and citation tracing in a single evidence-preserving workflow.",
+    "highlights": [
+      "Semantic paper search",
+      "Inline annotation",
+      "Corpus chat with citation tracing"
+    ]
+  },
+  "14": {
+    "tagline": "Forty real projects, compiled into a battle game.",
+    "category": "Portfolio game",
+    "role": "Game design · frontend engineering",
+    "summary": "A fully playable portfolio inspired by competitive monster battlers. Every fighter is a shipped project with its own types, stats, signature moves, status effects, team strategy, and animated battle presentation.",
+    "highlights": [
+      "40 playable project fighters",
+      "Type and status battle engine",
+      "Animated team-building flow"
+    ]
+  },
+  "15": {
+    "tagline": "Useful context before the model sees the prompt.",
+    "category": "AI knowledge engine",
+    "role": "AI engineering · full-stack development",
+    "summary": "Lumachor ingests documents, chunks and embeds them, retrieves relevant passages through vector search, and assembles stronger context for language-model prompts without asking users to become prompt engineers.",
+    "highlights": [
+      "Document ingestion pipeline",
+      "Vector retrieval",
+      "Automatic context assembly"
+    ]
+  },
+  "16": {
+    "tagline": "A flagship hackathon site built for launch energy.",
+    "category": "Event website",
+    "role": "Lead developer · interaction design",
+    "summary": "The Fall 2025 HackPrinceton site paired a high-motion public landing page with practical event information and applicant flows. Animated storytelling, schedules, sponsors, and responsive components shared one seasonal system.",
+    "highlights": [
+      "Seasonal visual system",
+      "Animated event storytelling",
+      "Applicant-portal integration"
+    ]
+  },
+  "17": {
+    "tagline": "Shared expenses resolved in real time.",
+    "category": "Consumer utility",
+    "role": "Full-stack engineering",
+    "summary": "A collaborative expense tracker for groups. Splitway records purchases, calculates who owes whom, updates every participant instantly through Firebase, and keeps settlement state synchronized across connected devices.",
+    "highlights": [
+      "Automatic debt calculation",
+      "Realtime Firebase sync",
+      "Group settlement workflow"
+    ]
+  },
+  "18": {
+    "tagline": "Probability tables turned into a playable toy.",
+    "category": "Browser game",
+    "role": "Game systems · frontend engineering",
+    "summary": "A browser lootbox simulator with weighted drop tables, rarity-specific collections, animated reveals, multiple box pools, and persistent inventory. The probabilities are the mechanic rather than something hidden behind it.",
+    "highlights": [
+      "Weighted drop tables",
+      "Animated unboxing",
+      "Persistent rarity inventory"
+    ]
+  },
+  "19": {
+    "tagline": "Princeton campus life as an idle game.",
+    "category": "Browser game",
+    "role": "Game design · frontend engineering",
+    "summary": "A Princeton-themed clicker inspired by incremental classics. Players earn Paw Points, buy campus-specific generators, unlock upgrades, climb prestige tiers, and keep progress locally between sessions.",
+    "highlights": [
+      "Incremental economy",
+      "Campus-themed upgrade tree",
+      "Persistent local progress"
+    ]
+  },
+  "20": {
+    "tagline": "A reusable spring identity for HackPrinceton.",
+    "category": "Event website",
+    "role": "Lead developer · design systems",
+    "summary": "The Spring 2025 HackPrinceton site translated the season's visual identity into a responsive component system, animated public pages, clear event information, and an integrated application path.",
+    "highlights": [
+      "Reusable event components",
+      "Responsive motion system",
+      "Application integration"
+    ]
+  },
+  "21": {
+    "tagline": "The first system in a multi-season event series.",
+    "category": "Event website",
+    "role": "Lead developer",
+    "summary": "The Fall 2024 HackPrinceton site established the structure later seasons inherited: sponsor showcases, live schedules, FAQs, application routing, and a forty-eight-hour countdown wrapped in a coherent event identity.",
+    "highlights": [
+      "Foundational seasonal template",
+      "Live schedule and countdown",
+      "Sponsor and FAQ system"
+    ]
+  },
+  "22": {
+    "tagline": "A calibrated eye chart that runs on ordinary screens.",
+    "category": "Digital health",
+    "role": "Product engineering",
+    "summary": "A low-cost visual-acuity testing tool that recreates the Snellen exam on a calibrated display. It guides users through the protocol and produces a portable result without requiring specialized clinic hardware.",
+    "highlights": [
+      "Display-size calibration",
+      "Guided test protocol",
+      "Shareable vision result"
+    ]
+  },
+  "23": {
+    "tagline": "Turn what is already in the fridge into dinner.",
+    "category": "AI consumer app",
+    "role": "AI engineering · product design",
+    "summary": "LetMeCook uses computer vision to identify available ingredients, then generates step-by-step recipes shaped by dietary needs, cuisine preferences, and meal type instead of starting from a blank search box.",
+    "highlights": [
+      "Ingredient recognition",
+      "Constraint-aware recipe generation",
+      "Step-by-step cooking flow"
+    ]
+  },
+  "24": {
+    "tagline": "A study guide assembled around the actual text.",
+    "category": "AI education",
+    "role": "AI engineering · frontend development",
+    "summary": "Balladeer converts a literary work into structured chapter summaries, character analysis, themes, contextual quotations, and essay prompts, giving students a navigable study artifact instead of a single chat response.",
+    "highlights": [
+      "Structured chapter summaries",
+      "Theme and character analysis",
+      "Contextual essay preparation"
+    ]
+  },
+  "25": {
+    "tagline": "A clearer starting point for navigating U.S. services.",
+    "category": "Civic resource hub",
+    "role": "Product engineering · information design",
+    "summary": "CompassUSA organizes legal aid, ESL programs, healthcare access, government services, and procedural guides for immigrants by location and need, with multilingual paths through unfamiliar systems.",
+    "highlights": [
+      "Location-based resources",
+      "Multilingual navigation",
+      "Step-by-step service guides"
+    ]
+  },
+  "26": {
+    "tagline": "Accessible overnight apnea monitoring from inexpensive hardware.",
+    "category": "Health hardware",
+    "role": "Hardware prototyping · data visualization",
+    "summary": "A wearable prototype that combines Arduino sensors with live data streaming to monitor blood oxygen and breathing patterns, flag likely apnea events, and surface overnight trends on a companion dashboard.",
+    "highlights": [
+      "Wearable sensor prototype",
+      "Realtime vitals stream",
+      "Overnight event dashboard"
+    ]
+  },
+  "27": {
+    "tagline": "Following money and influence through the iron triangle.",
+    "category": "Editorial data visualization",
+    "role": "Research · interaction design",
+    "summary": "An interactive history project tracing U.S. defense spending, lobbying, and contractor relationships. Animated diagrams and scroll-led narrative make a dense military-industrial system legible without flattening it.",
+    "highlights": [
+      "Research-led narrative",
+      "Animated relationship graphs",
+      "Scrollytelling interface"
+    ]
+  },
+  "28": {
+    "tagline": "Branching fiction generated one consequential choice at a time.",
+    "category": "AI game",
+    "role": "AI engineering · game design",
+    "summary": "An interactive-fiction engine where a premise becomes a branching story in real time. AdventureGPT preserves narrative state, adapts to player decisions, supports genre constraints, and exports the resulting journey.",
+    "highlights": [
+      "Persistent narrative state",
+      "Realtime branching generation",
+      "Exportable story logs"
+    ]
+  },
+  "29": {
+    "tagline": "Code review built directly into the editor loop.",
+    "category": "Developer tool",
+    "role": "AI engineering · frontend development",
+    "summary": "An in-browser editor that pairs syntax-aware writing with AI review for bugs, style, performance, and maintainability. Suggestions arrive as inspectable diffs with direct refactoring paths.",
+    "highlights": [
+      "Integrated AI review",
+      "Syntax-highlighted editing",
+      "Diff-based refactoring"
+    ]
+  },
+  "30": {
+    "tagline": "Competition-day infrastructure for online mathematics.",
+    "category": "Competition platform",
+    "role": "Full-stack engineering",
+    "summary": "The official OMMC test portal handles timed assessment delivery, answer submission, proctoring controls, live scoring, and leaderboard generation for large concurrent cohorts.",
+    "highlights": [
+      "Timed test delivery",
+      "Proctoring controls",
+      "Realtime scoring and rankings"
+    ]
+  },
+  "31": {
+    "tagline": "Practice under the same pressure as the real competition.",
+    "category": "Education platform",
+    "role": "Full-stack engineering",
+    "summary": "A preparation environment for OMMC with past problems, realistic timing, instant scoring, solution walkthroughs, and performance feedback that lets students rehearse the complete competition loop.",
+    "highlights": [
+      "Realistic timed practice",
+      "Instant scoring",
+      "Worked solution review"
+    ]
+  },
+  "32": {
+    "tagline": "An early, deliberately minimal interface for frontier models.",
+    "category": "AI interface",
+    "role": "AI integration · frontend development",
+    "summary": "A fast GPT-3.5 and GPT-4 client with conversation history, model switching, configurable system prompts, and token tracking. Enkrateia explored how little interface an effective model workspace actually needs.",
+    "highlights": [
+      "Model switching",
+      "System-prompt controls",
+      "Conversation and token history"
+    ]
+  },
+  "33": {
+    "tagline": "Speech recognition tuned for voices generic models miss.",
+    "category": "Accessible AI",
+    "role": "Machine learning · accessibility engineering",
+    "summary": "A transcription system trained around speech patterns associated with Huntington's disease. Its custom acoustic modeling targets dysarthric speech that general-purpose transcription systems frequently fail to recognize.",
+    "highlights": [
+      "Custom acoustic modeling",
+      "Dysarthric speech focus",
+      "Accessibility-first transcription"
+    ]
+  },
+  "34": {
+    "tagline": "A worldwide math competition with its own digital home.",
+    "category": "Education community",
+    "role": "Co-founder · platform engineering",
+    "summary": "The official website for the Online Monmouth Math Competition, supporting registration, problem archives, sponsors, updates, and community information across multiple competition seasons.",
+    "highlights": [
+      "Multi-season competition hub",
+      "Problem and registration archive",
+      "Global student community"
+    ]
+  },
+  "35": {
+    "tagline": "Every OMMC problem, searchable as one corpus.",
+    "category": "Education data platform",
+    "role": "Full-stack engineering",
+    "summary": "A searchable database for the full OMMC problem archive. Atlas supports filtering by year, round, difficulty, and topic, renders mathematical notation, hosts solution discussion, and includes an administrative publishing surface.",
+    "highlights": [
+      "Multi-axis problem search",
+      "LaTeX rendering",
+      "Admin publishing workflow"
+    ]
+  },
+  "36": {
+    "tagline": "Computer vision that physically sorts waste.",
+    "category": "AI hardware",
+    "role": "Computer vision · hardware prototyping",
+    "summary": "A PennApps hardware winner that uses OpenCV on a Raspberry Pi to identify waste in real time, then actuates servo-controlled bins to route items into recycling, compost, or trash.",
+    "highlights": [
+      "Realtime object detection",
+      "Raspberry Pi inference",
+      "Servo-controlled sorting"
+    ]
+  },
+  "37": {
+    "tagline": "STEM lessons designed to be seen, not only read.",
+    "category": "Education platform",
+    "role": "Frontend engineering · learning design",
+    "summary": "An interactive learning platform for mathematics and physics with animated diagrams, progressive explanations, practice problems, worked solutions, and topic-based progress tracking.",
+    "highlights": [
+      "Animated concept diagrams",
+      "Worked practice problems",
+      "Curriculum progress tracking"
+    ]
+  },
+  "38": {
+    "tagline": "Tutors, availability, and booking in one marketplace.",
+    "category": "Education marketplace",
+    "role": "Full-stack engineering",
+    "summary": "A tutoring marketplace that connects students with tutors by subject, availability, and location. Profiles, ratings, search, booking, messaging, authentication, and Firestore data form the complete service loop.",
+    "highlights": [
+      "Tutor discovery and filtering",
+      "Session booking",
+      "Authenticated messaging"
+    ]
+  },
+  "39": {
+    "tagline": "The first web app—and the project that started everything.",
+    "category": "Early browser game",
+    "role": "Solo builder",
+    "summary": "A satellite assembly game where players choose solar panels, thrusters, antennas, and other components before attempting a launch. Satellite Crafter is the first project in the archive and the one that made building software feel addictive.",
+    "highlights": [
+      "Component-based assembly",
+      "Launch outcome system",
+      "First shipped web project"
+    ]
+  }
+}

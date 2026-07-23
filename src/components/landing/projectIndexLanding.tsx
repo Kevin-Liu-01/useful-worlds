@@ -1,0 +1,3400 @@
+import Image from "next/image";
+import Link from "next/link";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type MouseEvent,
+} from "react";
+import {
+  ArrowDown,
+  ArrowLeft,
+  ArrowRight,
+  ArrowUpRight,
+  ChevronLeft,
+  ChevronRight,
+  Github,
+  Images,
+  Linkedin,
+  Maximize2,
+  Play,
+  X,
+} from "lucide-react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { SOCIAL_LINKS } from "../../constants/site";
+import { PHILOSOPHIES, type Philosophy } from "../../data/philosophies";
+import OperatorLab from "./operatorLab";
+
+type GalleryShot = {
+  readonly image?: string;
+  readonly title: string;
+  readonly caption: string;
+  readonly fit?: "cover" | "contain";
+};
+
+type FeaturedProject = {
+  readonly id: number;
+  readonly name: string;
+  readonly image: string;
+  readonly url: string;
+  readonly github: string;
+  readonly summary: string;
+  readonly detail: string;
+  readonly types: readonly [string, string];
+  readonly year: string;
+  readonly gallery: readonly GalleryShot[];
+  readonly internal?: boolean;
+};
+
+const FEATURED_PROJECTS = [
+  {
+    id: 10,
+    name: "Princeton Tower Defense",
+    image: "/images/princetontd.png",
+    url: "https://ptd.quest/",
+    github: "https://github.com/Kevin-Liu-01/Princeton-Tower-Defense",
+    summary: "Defend Princeton, one campus at a time.",
+    detail:
+      "A browser tower-defense world with 26 maps, seven towers, nine heroes, and more than 100 enemies.",
+    types: ["Game", "Canvas"],
+    year: "2025",
+    gallery: [
+      {
+        image: "/images/princetontd/gameplay_desert_ui.png",
+        title: "Desert campaign",
+        caption: "A complete desert level with the live tower and wave HUD.",
+      },
+      {
+        image: "/images/princetontd/gameplay_frontier_ui.png",
+        title: "Frontier",
+        caption: "Campus defense pushed into a wide frontier encounter.",
+      },
+      {
+        image: "/images/princetontd/gameplay_grounds_ui.png",
+        title: "The Grounds",
+        caption: "One of 26 maps, framed as a playable Princeton miniature.",
+      },
+      {
+        image: "/images/princetontd/gameplay_swamp_ui.png",
+        title: "Swamp route",
+        caption: "A darker biome with a completely different pathing read.",
+      },
+      {
+        image: "/images/princetontd/gameplay_volcano_ui.png",
+        title: "Volcano",
+        caption: "Late-game pressure, hot palette, and maximum screen energy.",
+      },
+      {
+        image: "/images/princetontd/gameplay_winter_ui.png",
+        title: "Winter campus",
+        caption: "The same system re-authored as a cold Princeton encounter.",
+      },
+    ],
+  },
+  {
+    id: 9,
+    name: "Loop",
+    image: "/images/loop-homepage.png",
+    url: "https://loooop.dev/",
+    github: "https://github.com/Kevin-Liu-01/Loop",
+    summary: "Skills that never go stale.",
+    detail:
+      "An operator desk that monitors upstream sources, reviews changes, and keeps agent playbooks current.",
+    types: ["Agents", "Knowledge"],
+    year: "2026",
+    gallery: [
+      {
+        image: "/images/loop-homepage.png",
+        title: "Loop home",
+        caption: "The public promise: skills that evolve on their own.",
+      },
+      {
+        image: "/images/project-galleries/loop/catalog.png",
+        title: "Skill catalog",
+        caption: "A working inventory of playbooks, sources, and freshness.",
+      },
+      {
+        image: "/images/project-galleries/loop/skill.png",
+        title: "Skill detail",
+        caption:
+          "Version history, evidence, sources, and the current artifact.",
+      },
+      {
+        image: "/images/project-galleries/loop/scheduled-runs.png",
+        title: "Scheduled intelligence",
+        caption:
+          "Every maintenance run is visible, inspectable, and replayable.",
+      },
+      {
+        image: "/images/project-galleries/loop/edit-automation.png",
+        title: "Automation editor",
+        caption: "The operator controls what changes, when, and why.",
+      },
+    ],
+  },
+  {
+    id: 5,
+    name: "Agent Machines",
+    image: "/images/agentmachines.png",
+    url: "https://www.agent-machines.dev/",
+    github: "https://github.com/Kevin-Liu-01/Agent-Machines",
+    summary: "Durable computers for persistent workers.",
+    detail:
+      "Provision and inspect always-on agent machines with filesystem state, tools, and resumable work.",
+    types: ["Agents", "Systems"],
+    year: "2026",
+    gallery: [
+      {
+        image: "/images/agentmachines.png",
+        title: "Machine surface",
+        caption: "Provision, inspect, and return to a persistent computer.",
+      },
+      {
+        image: "/images/project-galleries/agent-machines/machines.png",
+        title: "Machines",
+        caption: "Long-lived computers organized as first-class agent objects.",
+      },
+      {
+        image: "/images/project-galleries/agent-machines/agents.png",
+        title: "Agents",
+        caption:
+          "Workers, state, and execution history in one visual language.",
+      },
+      {
+        image: "/images/project-galleries/agent-machines/console.png",
+        title: "Console",
+        caption: "A direct operational view into the machine while it works.",
+      },
+    ],
+  },
+  {
+    id: 0,
+    name: "Reticle",
+    image: "/images/reticle.png",
+    url: "https://reticle-demo.vercel.app/",
+    github: "https://github.com/dedalus-labs",
+    summary: "Persistent computers for agents.",
+    detail:
+      "Sub-second machines, durable runtime, and a motion-rich control surface for agent compute.",
+    types: ["Infrastructure", "Interface"],
+    year: "2026",
+    gallery: [
+      {
+        image: "/images/reticle.png",
+        title: "Reticle control surface",
+        caption: "Persistent computers presented as fast, inspectable objects.",
+      },
+      {
+        title: "Machine inspection",
+        caption: "ADD HERE — authenticated machine detail capture needed.",
+      },
+      {
+        title: "Live terminal",
+        caption: "ADD HERE — private running-computer capture needed.",
+      },
+    ],
+  },
+  {
+    id: 1,
+    name: "Ariadne",
+    image: "/images/ariadne.png",
+    url: "https://ariadne.dedaluslabs.ai/",
+    github: "https://github.com/Kevin-Liu-01/Ariadne",
+    summary: "A phone-first agent for runway night.",
+    detail:
+      "An AI companion built around immediacy, place, live quests, music, and a little drama.",
+    types: ["Agents", "Product"],
+    year: "2026",
+    gallery: [
+      {
+        image: "/images/project-galleries/ariadne/landing.png",
+        title: "Run(way)time",
+        caption: "The public invitation into Ariadne's one-night world.",
+      },
+      {
+        image: "/images/project-galleries/ariadne/join.png",
+        title: "Join flow",
+        caption: "A phone-first path from guest to active participant.",
+      },
+      {
+        image: "/images/project-galleries/ariadne/operator.png",
+        title: "Operator view",
+        caption: "The live control system behind the event and its agent.",
+      },
+      {
+        image: "/images/project-galleries/ariadne/projection.png",
+        title: "Room-scale output",
+        caption: "Ariadne leaves the phone and becomes part of the venue.",
+      },
+    ],
+  },
+  {
+    id: 2,
+    name: "Sandbox Arena",
+    image: "/images/sandbox-arena.png",
+    url: "https://sandboxarena.vercel.app/",
+    github: "https://github.com/Kevin-Liu-01/Sandbox-Arena",
+    summary: "Cloud sandboxes, put under pressure.",
+    detail:
+      "A live benchmark where infrastructure providers race head to head with objective metrics and crowd Elo.",
+    types: ["Data", "Experiment"],
+    year: "2026",
+    gallery: [
+      {
+        image: "/images/sandbox-arena.png",
+        title: "Arena board",
+        caption: "Providers race on visible timings, status, and crowd Elo.",
+      },
+      {
+        image: "/images/project-galleries/sandbox-arena/cold-start.jpg",
+        title: "Cold start",
+        caption: "A workload built to expose provisioning latency.",
+        fit: "cover",
+      },
+      {
+        image: "/images/project-galleries/sandbox-arena/fs-storm.jpg",
+        title: "Filesystem storm",
+        caption: "Pressure on many small reads and writes inside the sandbox.",
+        fit: "cover",
+      },
+      {
+        image: "/images/project-galleries/sandbox-arena/npm-install.jpg",
+        title: "Package install",
+        caption: "A familiar developer workload turned into a benchmark.",
+        fit: "cover",
+      },
+    ],
+  },
+  {
+    id: 7,
+    name: "Sigil UI",
+    image: "/images/sigil-ui.png",
+    url: "https://sigil-ui-web.vercel.app/",
+    github: "https://github.com/Kevin-Liu-01/Sigil-UI",
+    summary: "An agent-first design system.",
+    detail:
+      "A broad component language with 350+ pieces, 46 presets, and one token-driven visual system.",
+    types: ["Design system", "Web"],
+    year: "2025",
+    gallery: [
+      {
+        image: "/images/sigil-ui.png",
+        title: "Sigil index",
+        caption: "A component language organized for humans and agents.",
+      },
+      {
+        title: "Component laboratory",
+        caption: "ADD HERE — authenticated component explorer capture needed.",
+      },
+      {
+        title: "Preset composer",
+        caption: "ADD HERE — private preset workflow capture needed.",
+      },
+    ],
+  },
+  {
+    id: 11,
+    name: "Dedalus Demo",
+    image: "/images/dedalus.png",
+    url: "https://dedalus-demo.vercel.app/",
+    github: "https://github.com/Kevin-Liu-01/Dedalus-Demo",
+    summary: "Model-agnostic agents, made tangible.",
+    detail:
+      "An interactive product demo for MCP orchestration, tool connections, authentication, and the Dedalus SDK.",
+    types: ["Agents", "Developer tools"],
+    year: "2025",
+    gallery: [
+      {
+        image: "/images/dedalus.png",
+        title: "Interactive SDK demo",
+        caption: "Model routing, tools, and MCP made tangible in the browser.",
+      },
+      {
+        image: "/images/project-galleries/dedalus-demo/deploy.png",
+        title: "Deploy",
+        caption: "A visual explanation of how an agent reaches production.",
+      },
+      {
+        image: "/images/project-galleries/dedalus-demo/sdk.png",
+        title: "SDK",
+        caption:
+          "The core developer loop expressed as a concise product frame.",
+      },
+    ],
+  },
+  {
+    id: 13,
+    name: "Sevenfold",
+    image: "/images/sevenfold.png",
+    url: "https://sevenfold-demo.vercel.app/",
+    github: "https://github.com/Kevin-Liu-01/Sevenfold-Demo",
+    summary: "Research without losing the trail.",
+    detail:
+      "A workspace for semantic paper search, inline annotations, corpus-wide chat, and citation tracing.",
+    types: ["Research", "AI"],
+    year: "2025",
+    gallery: [
+      {
+        image: "/images/project-galleries/sevenfold/mockup.webp",
+        title: "Research workspace",
+        caption: "Search, reading, notes, and corpus context share one desk.",
+      },
+      {
+        image: "/images/project-galleries/sevenfold/search.png",
+        title: "Semantic search",
+        caption: "Find papers by idea, not merely by exact wording.",
+      },
+      {
+        image: "/images/project-galleries/sevenfold/pdf.png",
+        title: "PDF viewer",
+        caption: "Read and annotate without leaving the research trail.",
+      },
+      {
+        image: "/images/project-galleries/sevenfold/chat.png",
+        title: "Corpus chat",
+        caption: "Ask across the collection while keeping citations attached.",
+      },
+    ],
+  },
+  {
+    id: 15,
+    name: "Lumachor",
+    image: "/images/lumachor.png",
+    url: "https://lumachor.vercel.app/home",
+    github: "https://github.com/Kevin-Liu-01/Lumachor",
+    summary: "Context engineering without the ceremony.",
+    detail:
+      "A document and vector-search engine that assembles useful context before an LLM ever sees the prompt.",
+    types: ["AI", "Data"],
+    year: "2024",
+    gallery: [
+      {
+        image: "/images/lumachor.png",
+        title: "Lumachor home",
+        caption: "Context engineering presented as a calm working surface.",
+      },
+      {
+        image: "/images/project-galleries/lumachor/library.png",
+        title: "Library",
+        caption: "Documents, collections, and source state in one place.",
+      },
+      {
+        image: "/images/project-galleries/lumachor/search.png",
+        title: "Search",
+        caption: "Find the right evidence before a model sees the prompt.",
+      },
+      {
+        image: "/images/project-galleries/lumachor/context.png",
+        title: "Context assembly",
+        caption: "Inspect and shape the exact bundle sent downstream.",
+      },
+      {
+        image: "/images/project-galleries/lumachor/chat.png",
+        title: "Grounded chat",
+        caption: "Conversation stays attached to selected source material.",
+      },
+    ],
+  },
+  {
+    id: 12,
+    name: "Podium",
+    image: "/images/podium.png",
+    url: "https://hackprinceton-podium.vercel.app/",
+    github: "https://github.com/Kevin-Liu-01/Podium",
+    summary: "A control room for hackathon judging.",
+    detail:
+      "Judge assignments, score aggregation, live leaderboards, and abuse prevention for HackPrinceton.",
+    types: ["Events", "Data"],
+    year: "2025",
+    gallery: [
+      {
+        image: "/images/project-galleries/podium/demo.png",
+        title: "Judging control room",
+        caption: "Assignments, submissions, scores, and rankings at a glance.",
+      },
+      {
+        title: "Judge assignment",
+        caption: "ADD HERE — authenticated judging workflow capture needed.",
+      },
+      {
+        title: "Live leaderboard",
+        caption: "ADD HERE — event-day leaderboard capture needed.",
+      },
+    ],
+  },
+  {
+    id: 14,
+    name: "PortfolioMon",
+    image: "/images/kevinportfolio.png",
+    url: "/?play=1",
+    github: "https://github.com/Kevin-Liu-01/PortfolioMon-Showdown",
+    summary: "My old portfolio, preserved as a game.",
+    detail:
+      "Forty real projects become a team-building, turn-based battle system.",
+    types: ["Game", "Archive"],
+    year: "2025—26",
+    gallery: [
+      {
+        image: "/images/kevinportfolio.png",
+        title: "PortfolioMon world",
+        caption: "The original game portfolio preserved as a playable project.",
+      },
+      {
+        image: "/images/gameplay.png",
+        title: "Battle system",
+        caption: "Projects become a party with moves, stats, and encounters.",
+      },
+      {
+        image: "/images/tutorial.png",
+        title: "Trainer onboarding",
+        caption: "The rules of the portfolio explained through play.",
+      },
+      {
+        image: "/images/backgrounds/background-3.jpg",
+        title: "Arena atmosphere",
+        caption: "One of the environmental frames behind the showdown.",
+        fit: "cover",
+      },
+    ],
+    internal: true,
+  },
+] as const satisfies readonly FeaturedProject[];
+
+const TOOL_ARCHIVE = [
+  {
+    name: "local-search",
+    category: "Rust CLI",
+    description:
+      "Free structured web search for agents, powered by your local browser.",
+    url: "https://github.com/Kevin-Liu-01/Local-Search",
+  },
+  {
+    name: "Agent Ping",
+    category: "Human-in-the-loop",
+    description:
+      "Lets any coding agent ask for approval or a decision without silently stalling.",
+    url: "https://github.com/Kevin-Liu-01/Agent-Ping",
+  },
+  {
+    name: "Agent Broom",
+    category: "Process hygiene",
+    description:
+      "Audits ports, agent-owned processes, caches, and safe cleanup targets.",
+    url: "https://github.com/Kevin-Liu-01/Agent-Broom",
+  },
+  {
+    name: "Agent Pets",
+    category: "Codex companions",
+    description:
+      "Versioned, installable pixel companions with repaired sprite atlases and QA sheets.",
+    url: "https://github.com/Kevin-Liu-01/Agent-Pets",
+  },
+  {
+    name: "Loop",
+    category: "Skill operations",
+    description:
+      "An operator desk that watches agent-skill sources and ships inspectable refreshes.",
+    url: "https://loooop.dev/",
+  },
+  {
+    name: "Agent Machines",
+    category: "Agent control plane",
+    description:
+      "Deploys persistent agent workers across runtimes and compute substrates.",
+    url: "https://www.agent-machines.dev/",
+  },
+  {
+    name: "Minecraft Agent",
+    category: "MCP stack",
+    description:
+      "A planning, memory, building, and survival agent inside a live Minecraft world.",
+    url: "https://github.com/Kevin-Liu-01/Minecraft-Agent",
+  },
+  {
+    name: "DJ Agent",
+    category: "Natural-language CLI",
+    description:
+      "A terminal Spotify DJ that searches, queues, and controls playback conversationally.",
+    url: "https://github.com/Kevin-Liu-01/dj-agent",
+  },
+  {
+    name: "X Agent",
+    category: "Social agent",
+    description:
+      "A read-and-write agent interface for X with cookie reads and official API writes.",
+    url: "https://github.com/Kevin-Liu-01/X-Agent",
+  },
+] as const;
+
+const BAYER_4 = [
+  [0, 8, 2, 10],
+  [12, 4, 14, 6],
+  [3, 11, 1, 9],
+  [15, 7, 13, 5],
+] as const;
+
+const CHOPPED =
+  "polygon(0 18px, 18px 0, calc(100% - 44px) 0, calc(100% - 32px) 12px, 100% 12px, 100% calc(100% - 18px), calc(100% - 18px) 100%, 32px 100%, 20px calc(100% - 12px), 0 calc(100% - 12px))";
+
+const SECTION_FRAME =
+  "circuit-chassis mx-3 max-w-[1520px] sm:mx-6 lg:mx-10 2xl:mx-auto";
+
+type FrameSurface = "paper" | "ink" | "acid";
+
+const FRAME_SURFACE: Record<
+  FrameSurface,
+  {
+    glyph: string;
+    line: string;
+    label: string;
+    muted: string;
+    signal: string;
+  }
+> = {
+  paper: {
+    glyph: "bg-[#f4f3ec] text-black",
+    line: "border-black/35",
+    label: "border-black/35 bg-[#f4f3ec] text-black/55",
+    muted: "text-black/30",
+    signal: "bg-black dark:bg-white",
+  },
+  ink: {
+    glyph: "bg-black text-white",
+    line: "border-white/35",
+    label: "border-white/30 bg-black text-white/60",
+    muted: "text-white/35",
+    signal: "bg-white",
+  },
+  acid: {
+    glyph: "bg-[#d8ff36] text-black",
+    line: "border-black/40",
+    label: "border-black/35 bg-[#d8ff36] text-black/60",
+    muted: "text-black/35",
+    signal: "bg-black",
+  },
+};
+
+const RoundedBracketCross = ({
+  surface = "paper",
+  className = "",
+}: {
+  surface?: FrameSurface;
+  className?: string;
+}) => (
+  <span
+    className={`flex h-6 w-6 items-center justify-center sm:h-9 sm:w-9 ${FRAME_SURFACE[surface].glyph} ${className}`}
+  >
+    <svg
+      viewBox="0 0 36 36"
+      fill="none"
+      className="h-full w-full"
+      aria-hidden="true"
+    >
+      <path
+        d="M14 4H9a5 5 0 0 0-5 5v5M22 4h5a5 5 0 0 1 5 5v5M32 22v5a5 5 0 0 1-5 5h-5M14 32H9a5 5 0 0 1-5-5v-5"
+        stroke="currentColor"
+        strokeWidth="1.25"
+      />
+      <path
+        d="M18 12.5v11M12.5 18h11"
+        stroke="currentColor"
+        strokeWidth="1.5"
+      />
+      <circle cx="18" cy="18" r="2" fill="currentColor" />
+    </svg>
+  </span>
+);
+
+const SECTION_RAIL_STOPS = [220, 500, 780] as const;
+const SECTION_RAIL_PATTERNS = [
+  [20, 34, 12],
+  [32, 10, 28],
+  [14, 30, 18],
+  [28, 14, 34],
+] as const;
+
+const SectionCircuitRail = ({
+  side,
+  index,
+  label,
+  surface,
+}: {
+  side: "left" | "right";
+  index: string;
+  label: string;
+  surface: FrameSurface;
+}) => {
+  const seed = Array.from(index).reduce(
+    (total, character) => total + character.charCodeAt(0),
+    0
+  );
+  const pattern =
+    SECTION_RAIL_PATTERNS[seed % SECTION_RAIL_PATTERNS.length] ??
+    SECTION_RAIL_PATTERNS[0];
+  const mapRailX = (value: number) => (side === "left" ? value : 40 - value);
+  const base = mapRailX(39);
+  const path = [
+    `M ${base} 0`,
+    ...SECTION_RAIL_STOPS.flatMap((stop, stopIndex) => [
+      `V ${stop - 25}`,
+      `L ${mapRailX(pattern[stopIndex] ?? 20)} ${stop + 25}`,
+    ]),
+    `V 940 L ${base} 980 V 1000`,
+  ].join(" ");
+  const traceColor =
+    surface === "ink"
+      ? "text-white/38"
+      : surface === "acid"
+      ? "text-black/45"
+      : "text-black/38 dark:text-white/38";
+  const labelColor =
+    surface === "ink"
+      ? "text-white/35"
+      : surface === "acid"
+      ? "text-black/40"
+      : "text-black/35 dark:text-white/35";
+  const signalColor = surface === "acid" ? "#0b0b0b" : "#d8ff36";
+  const focusStart = mapRailX(pattern[1] ?? 16);
+  const focusEnd = side === "left" ? 48 : -8;
+
+  return (
+    <div
+      className={`absolute inset-y-0 ${side}-0 !hidden w-7 overflow-visible opacity-70 transition-opacity duration-300 group-hover/section:opacity-100 lg:w-10 ${traceColor}`}
+    >
+      <svg
+        viewBox="0 0 40 1000"
+        preserveAspectRatio="none"
+        className="absolute inset-0 h-full w-full overflow-visible"
+      >
+        <path
+          d={path}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1"
+          vectorEffect="non-scaling-stroke"
+        />
+        <motion.path
+          d={path}
+          fill="none"
+          stroke={signalColor}
+          strokeWidth="1.35"
+          strokeDasharray="4 15"
+          vectorEffect="non-scaling-stroke"
+          animate={{ strokeDashoffset: [0, -38] }}
+          transition={{ duration: 3.4, repeat: Infinity, ease: "linear" }}
+        />
+        <motion.path
+          d={`M ${focusStart} 525 L ${focusEnd} 545`}
+          fill="none"
+          stroke={signalColor}
+          strokeWidth="1.4"
+          vectorEffect="non-scaling-stroke"
+          initial={{ pathLength: 0.25, opacity: 0.3 }}
+          whileInView={{ pathLength: 1, opacity: 0.9 }}
+          viewport={{ amount: 0.35 }}
+          transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+        />
+        {SECTION_RAIL_STOPS.map((stop, stopIndex) => (
+          <motion.rect
+            key={stop}
+            x={mapRailX(pattern[stopIndex] ?? 20) - 2}
+            y={stop + 23}
+            width="4"
+            height="4"
+            fill={stopIndex === 1 ? signalColor : "currentColor"}
+            animate={
+              stopIndex === 1
+                ? { scale: [1, 1.8, 1], rotate: [0, 90, 0] }
+                : { opacity: [0.3, 0.7, 0.3] }
+            }
+            transition={{
+              duration: stopIndex === 1 ? 2.4 : 3.6 + stopIndex * 0.25,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          />
+        ))}
+      </svg>
+
+      <span
+        className={`absolute left-1/2 top-8 -translate-x-1/2 font-kode text-[5px] uppercase tracking-[0.17em] [writing-mode:vertical-rl] ${labelColor}`}
+      >
+        {side === "left" ? `Trace / ${index}` : `Field / ${label}`}
+      </span>
+      <span
+        className={`absolute bottom-8 left-1/2 -translate-x-1/2 font-kode text-[5px] uppercase tracking-[0.16em] [writing-mode:vertical-rl] ${labelColor}`}
+      >
+        {side === "left" ? "KBL / 028" : `Live / ${index}`}
+      </span>
+    </div>
+  );
+};
+
+const SectionChrome = ({
+  index,
+  label,
+  surface = "paper",
+}: {
+  index: string;
+  label: string;
+  surface?: FrameSurface;
+}) => {
+  const styles = FRAME_SURFACE[surface];
+
+  return (
+    <div
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-0 z-20"
+    >
+      <div className={`absolute inset-x-10 top-0 border-t ${styles.line}`} />
+      <div
+        className={`absolute left-1/2 top-2 -translate-x-1/2 border px-3 py-1.5 font-kode text-[6px] uppercase tracking-[0.18em] sm:text-[7px] ${styles.label}`}
+      >
+        {index} / {label}
+      </div>
+
+      <SectionCircuitRail
+        side="left"
+        index={index}
+        label={label}
+        surface={surface}
+      />
+      <SectionCircuitRail
+        side="right"
+        index={index}
+        label={label}
+        surface={surface}
+      />
+
+      <RoundedBracketCross
+        surface={surface}
+        className="absolute left-1 top-1"
+      />
+      <RoundedBracketCross
+        surface={surface}
+        className="absolute right-1 top-1 rotate-90"
+      />
+      <RoundedBracketCross
+        surface={surface}
+        className="absolute bottom-1 left-1 -rotate-90"
+      />
+      <RoundedBracketCross
+        surface={surface}
+        className="absolute bottom-1 right-1 rotate-180"
+      />
+
+      {["top-[28%]", "top-1/2", "top-[72%]"].map((position) => (
+        <span
+          key={`left-${position}`}
+          className={`absolute left-0 hidden ${position} h-px w-3 -translate-x-1/2 border-t ${styles.line}`}
+        />
+      ))}
+      {["top-[28%]", "top-1/2", "top-[72%]"].map((position) => (
+        <span
+          key={`right-${position}`}
+          className={`absolute right-0 hidden ${position} h-px w-3 translate-x-1/2 border-t ${styles.line}`}
+        />
+      ))}
+    </div>
+  );
+};
+
+const SectionSpacer = ({ index, label }: { index: string; label: string }) => (
+  <div
+    aria-hidden="true"
+    className={`relative flex h-12 items-center justify-center gap-3 overflow-hidden bg-black sm:h-14 sm:gap-4 ${SECTION_FRAME}`}
+  >
+    <svg
+      viewBox="0 0 1000 100"
+      preserveAspectRatio="none"
+      className="pointer-events-none absolute inset-0 hidden h-full w-full overflow-visible text-black dark:text-white"
+    >
+      <path
+        d="M 0 14 H 72 L 90 26 H 392 L 416 38 H 446 M 1000 14 H 928 L 910 26 H 608 L 584 38 H 554"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="0.8"
+        vectorEffect="non-scaling-stroke"
+        className="opacity-25"
+      />
+      <path
+        d="M 0 86 H 58 L 78 74 H 402 L 424 61 H 446 M 1000 86 H 942 L 922 74 H 598 L 576 61 H 554"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="0.8"
+        vectorEffect="non-scaling-stroke"
+        className="opacity-25"
+      />
+      <path
+        d="M 28 0 V 27 L 42 41 V 59 L 28 73 V 100 M 972 0 V 27 L 958 41 V 59 L 972 73 V 100"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1"
+        vectorEffect="non-scaling-stroke"
+        className="opacity-35"
+      />
+      <motion.path
+        d="M 28 0 V 27 L 42 41 V 59 L 28 73 V 100 M 972 0 V 27 L 958 41 V 59 L 972 73 V 100"
+        fill="none"
+        stroke="#d8ff36"
+        strokeWidth="1.35"
+        strokeDasharray="3 10"
+        vectorEffect="non-scaling-stroke"
+        animate={{ strokeDashoffset: [0, -28] }}
+        transition={{ duration: 2.8, repeat: Infinity, ease: "linear" }}
+      />
+      {[28, 42, 958, 972].map((x) => (
+        <rect
+          key={x}
+          x={x - 1.8}
+          y="48.2"
+          width="3.6"
+          height="3.6"
+          fill="currentColor"
+          className="opacity-45"
+        />
+      ))}
+    </svg>
+
+    <span className="h-1.5 w-1.5 rotate-45 bg-[#d8ff36]" />
+    <span className="font-kode text-[6px] uppercase tracking-[0.18em] text-white/45 sm:text-[7px]">
+      {index}
+    </span>
+    <span className="font-kode text-[6px] uppercase tracking-[0.18em] text-white/80 sm:text-[7px]">
+      {label}
+    </span>
+  </div>
+);
+
+const HERO_SOCIAL_FRAMES = [
+  {
+    src: "/images/hero-social/ariadne-stage.jpg",
+    alt: "Kevin Liu standing in the Ariadne runway installation",
+    source: "LinkedIn",
+    label: "Ariadne / Run(way)time",
+    note: "Built for New York Tech Week",
+  },
+  {
+    src: "/images/hero-social/ariadne-system.jpg",
+    alt: "The Ariadne agent experience, live interface, and event crowd",
+    source: "LinkedIn",
+    label: "One agent / one room",
+    note: "1,012 messages in one night",
+  },
+  {
+    src: "/images/hero-social/gym-mirror.jpg",
+    alt: "Kevin Liu working from a gym bench between sets",
+    source: "X / @kevskgs",
+    label: "Work / train / repeat",
+    note: "The other half of the studio",
+  },
+  {
+    src: "/images/hero-social/ship-mode.jpg",
+    alt: "Kevin Liu in a black work jacket",
+    source: "X / @kevskgs",
+    label: "Ship mode",
+    note: "Language changes / the drip does not",
+  },
+] as const;
+
+const FIELD_MOMENTS = [
+  {
+    image: "/images/moments/hackprinceton-04.jpg",
+    alt: "Kevin Liu presenting Dedalus Machines to a packed HackPrinceton lecture hall",
+    kicker: "Speaking / HackPrinceton S26",
+    title: "From hacker to sponsor.",
+    story:
+      "Two years after my last high-school hackathon, I came back on the other side of the room—presenting Dedalus Machines, taking questions, and giving builders infrastructure to push against all weekend.",
+    meta: "Princeton / 2026",
+    source: "LinkedIn",
+    sourceUrl:
+      "https://www.linkedin.com/in/kevin-liu-princeton/recent-activity/images/",
+  },
+  {
+    image: "/images/moments/ariadne-03.jpg",
+    alt: "Kevin Liu operating the Ariadne event system from a laptop with his team",
+    kicker: "Demoing / Ariadne",
+    title: "Operating the room.",
+    story:
+      "At Ariadne Run(way)time, one agent moved across texts, calls, a web player, and live projections. I stayed behind the screen with the team while 76 guests turned it into a living system.",
+    meta: "New York / 2026",
+    source: "LinkedIn",
+    sourceUrl:
+      "https://www.linkedin.com/in/kevin-liu-princeton/recent-activity/images/",
+  },
+  {
+    image: "/images/moments/ariadne-04.jpg",
+    alt: "Kevin Liu and the Dedalus team gathered around a live Ariadne demo",
+    kicker: "Showing / Ariadne",
+    title: "The demo became a crowd.",
+    story:
+      "The good kind of launch is a little hard to explain because people are already leaning over the laptop, pulling in friends, and finding the next thing the system can do.",
+    meta: "New York Tech Week",
+    source: "X + LinkedIn",
+    sourceUrl: "https://x.com/kevskgs/status/2065110236944588869",
+  },
+  {
+    image: "/images/moments/hackprinceton-03.jpg",
+    alt: "Kevin Liu debugging with HackPrinceton builders at their table",
+    kicker: "Building / HackPrinceton S26",
+    title: "Beside the builders.",
+    story:
+      "The stage is fun; the table is the real work. We sat with teams, traced failures, answered the weird questions, and helped ideas survive contact with the deadline.",
+    meta: "Princeton / 2026",
+    source: "LinkedIn",
+    sourceUrl:
+      "https://www.linkedin.com/in/kevin-liu-princeton/recent-activity/images/",
+  },
+  {
+    image: "/images/moments/hackprinceton-01.jpg",
+    alt: "Kevin Liu with HackPrinceton teams and sponsor prizes",
+    kicker: "Teams / HackPrinceton S26",
+    title: "Builders on the board.",
+    story:
+      "A weekend is measured in what people ship and who they meet while shipping it. The prize table mattered less than the teams standing behind it with something new in the world.",
+    meta: "Princeton / 2026",
+    source: "LinkedIn",
+    sourceUrl:
+      "https://www.linkedin.com/in/kevin-liu-princeton/recent-activity/images/",
+  },
+  {
+    image: "/images/moments/hackprinceton-02.jpg",
+    alt: "Kevin Liu throwing a Dedalus hoodie into a HackPrinceton lecture hall",
+    kicker: "Energy / HackPrinceton S26",
+    title: "Throw the hoodie.",
+    story:
+      "A packed room should feel packed. We brought technical depth, but also noise, prizes, and the kind of slightly unhinged energy that makes a long build night memorable.",
+    meta: "Princeton / 2026",
+    source: "LinkedIn",
+    sourceUrl:
+      "https://www.linkedin.com/in/kevin-liu-princeton/recent-activity/images/",
+  },
+  {
+    image: "/images/moments/ariadne-01.jpg",
+    alt: "Kevin Liu standing in front of the Ariadne runway installation before the event",
+    kicker: "On site / Ariadne",
+    title: "Before the doors opened.",
+    story:
+      "A one-night product still deserves a world: narrative, interfaces, music, missions, physical space, and a system sturdy enough to disappear once the room fills up.",
+    meta: "New York / 2026",
+    source: "X + LinkedIn",
+    sourceUrl: "https://x.com/kevskgs/status/2064508774317203549",
+  },
+  {
+    image: "/images/moments/hackprinceton-05.jpg",
+    alt: "Kevin Liu and a Dedalus teammate posing playfully at HackPrinceton",
+    kicker: "People / Dedalus",
+    title: "Still a little unserious.",
+    story:
+      "I care about ambitious systems and precise craft. I also want the people building them to be curious, generous, and capable of laughing in the middle of the sprint.",
+    meta: "Princeton / 2026",
+    source: "LinkedIn",
+    sourceUrl:
+      "https://www.linkedin.com/in/kevin-liu-princeton/recent-activity/images/",
+  },
+] as const;
+
+const DitherMedia = ({
+  src,
+  alt,
+  priority = false,
+  tone = "binary",
+  revealOnParentHover = false,
+  fit = "cover",
+  className = "",
+}: {
+  src: string;
+  alt: string;
+  priority?: boolean;
+  tone?: "binary" | "soft";
+  revealOnParentHover?: boolean;
+  fit?: "cover" | "contain";
+  className?: string;
+}) => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    let disposed = false;
+    const image = new window.Image();
+
+    const paint = () => {
+      if (disposed || !image.naturalWidth || !image.naturalHeight) return;
+      const bounds = canvas.getBoundingClientRect();
+      if (!bounds.width || !bounds.height) return;
+
+      const pixelSize =
+        tone === "soft"
+          ? bounds.width < 520
+            ? 2
+            : 2.5
+          : bounds.width < 520
+          ? 2.6
+          : 3.2;
+      const width = Math.max(1, Math.ceil(bounds.width / pixelSize));
+      const height = Math.max(1, Math.ceil(bounds.height / pixelSize));
+      canvas.width = width;
+      canvas.height = height;
+
+      const context = canvas.getContext("2d", { willReadFrequently: true });
+      if (!context) return;
+      context.imageSmoothingEnabled = true;
+
+      if (fit === "contain") {
+        context.fillStyle = "#111111";
+        context.fillRect(0, 0, width, height);
+        const scale = Math.min(
+          width / image.naturalWidth,
+          height / image.naturalHeight
+        );
+        const drawWidth = image.naturalWidth * scale;
+        const drawHeight = image.naturalHeight * scale;
+        context.drawImage(
+          image,
+          (width - drawWidth) / 2,
+          (height - drawHeight) / 2,
+          drawWidth,
+          drawHeight
+        );
+      } else {
+        const sourceRatio = image.naturalWidth / image.naturalHeight;
+        const targetRatio = width / height;
+        let sourceWidth = image.naturalWidth;
+        let sourceHeight = image.naturalHeight;
+        let sourceX = 0;
+        let sourceY = 0;
+
+        if (sourceRatio > targetRatio) {
+          sourceWidth = image.naturalHeight * targetRatio;
+          sourceX = (image.naturalWidth - sourceWidth) / 2;
+        } else {
+          sourceHeight = image.naturalWidth / targetRatio;
+          sourceY = (image.naturalHeight - sourceHeight) / 2;
+        }
+
+        context.drawImage(
+          image,
+          sourceX,
+          sourceY,
+          sourceWidth,
+          sourceHeight,
+          0,
+          0,
+          width,
+          height
+        );
+      }
+
+      const pixels = context.getImageData(0, 0, width, height);
+      for (let y = 0; y < height; y += 1) {
+        for (let x = 0; x < width; x += 1) {
+          const offset = (y * width + x) * 4;
+          const red = pixels.data[offset] ?? 0;
+          const green = pixels.data[offset + 1] ?? 0;
+          const blue = pixels.data[offset + 2] ?? 0;
+          const luminance = red * 0.299 + green * 0.587 + blue * 0.114;
+          const matrixValue = BAYER_4[y % 4]?.[x % 4] ?? 0;
+          const threshold = ((matrixValue + 0.5) / 16) * 255;
+          const softOffset = (matrixValue / 15 - 0.5) * 46;
+          const quantized = Math.round((luminance + softOffset) / 64) * 64;
+          const value =
+            tone === "soft"
+              ? Math.max(16, Math.min(244, quantized))
+              : luminance > threshold
+              ? 244
+              : 12;
+          pixels.data[offset] = value;
+          pixels.data[offset + 1] = value;
+          pixels.data[offset + 2] = value;
+          pixels.data[offset + 3] = 255;
+        }
+      }
+      context.putImageData(pixels, 0, 0);
+    };
+
+    image.onload = paint;
+    image.src = src;
+    const observer = new ResizeObserver(paint);
+    observer.observe(canvas);
+    return () => {
+      disposed = true;
+      observer.disconnect();
+    };
+  }, [fit, src, tone]);
+
+  return (
+    <div className={`group overflow-hidden bg-[#111] ${className}`}>
+      <Image
+        src={src}
+        alt={alt}
+        fill
+        priority={priority}
+        sizes="(min-width: 1024px) 55vw, 100vw"
+        className={`${
+          fit === "contain" ? "object-contain" : "object-cover"
+        } opacity-0 saturate-[1.15] transition-opacity duration-700 ease-out ${
+          revealOnParentHover
+            ? "group-hover/sequence:opacity-100"
+            : "group-hover:opacity-100"
+        }`}
+      />
+      <canvas
+        ref={canvasRef}
+        aria-hidden="true"
+        className={`absolute inset-0 h-full w-full transition-opacity duration-500 [image-rendering:pixelated] ${
+          revealOnParentHover
+            ? "group-hover/sequence:opacity-0"
+            : "group-hover:opacity-0"
+        }`}
+      />
+      <div
+        className={`pointer-events-none absolute inset-0 bg-[linear-gradient(105deg,transparent_35%,rgba(255,255,255,.18)_50%,transparent_65%)] opacity-0 transition duration-500 ${
+          revealOnParentHover
+            ? "group-hover/sequence:translate-x-1/3 group-hover/sequence:opacity-100"
+            : "group-hover:translate-x-1/3 group-hover:opacity-100"
+        }`}
+      />
+    </div>
+  );
+};
+
+const HeroSocialSequence = ({
+  mode,
+  reduceMotion,
+  onExpand,
+}: {
+  mode: HeroMode;
+  reduceMotion: boolean;
+  onExpand: () => void;
+}) => {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+
+  useEffect(() => {
+    if (reduceMotion || isPaused) return;
+    const timer = window.setInterval(() => {
+      setActiveIndex((current) => (current + 1) % HERO_SOCIAL_FRAMES.length);
+    }, 5600);
+    return () => window.clearInterval(timer);
+  }, [isPaused, reduceMotion]);
+
+  const activeFrame = HERO_SOCIAL_FRAMES[activeIndex];
+
+  return (
+    <div
+      className="group/sequence absolute inset-0"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+      onFocusCapture={() => setIsPaused(true)}
+      onBlurCapture={() => setIsPaused(false)}
+    >
+      <button
+        type="button"
+        onClick={onExpand}
+        aria-label="Open Kevin's full moments gallery"
+        className="absolute inset-0 z-10 cursor-zoom-in outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-[#d8ff36]"
+      />
+      {HERO_SOCIAL_FRAMES.map((frame, index) => (
+        <motion.div
+          key={frame.src}
+          className="absolute inset-0"
+          initial={false}
+          animate={{ opacity: index === activeIndex ? 1 : 0 }}
+          transition={{
+            duration: reduceMotion ? 0.12 : 1.05,
+            ease: [0.22, 1, 0.36, 1],
+          }}
+          style={{ pointerEvents: index === activeIndex ? "auto" : "none" }}
+          aria-hidden={index !== activeIndex}
+        >
+          <DitherMedia
+            src={frame.src}
+            alt={index === activeIndex ? frame.alt : ""}
+            priority={index === 0}
+            tone="soft"
+            revealOnParentHover
+            className="absolute inset-0"
+          />
+        </motion.div>
+      ))}
+
+      {!reduceMotion && (
+        <motion.div
+          key={`dither-transition-${activeIndex}`}
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 z-20 bg-black/35 mix-blend-hard-light"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle, rgba(255,255,255,.98) 0 28%, rgba(8,8,8,.92) 31% 45%, transparent 48%)",
+            backgroundSize: "4px 4px",
+          }}
+          initial={{
+            clipPath: "inset(0 100% 0 0)",
+            opacity: 0,
+            backgroundSize: "3px 3px",
+          }}
+          animate={{
+            clipPath: [
+              "inset(0 100% 0 0)",
+              "inset(0 0% 0 0)",
+              "inset(0 0 0 100%)",
+            ],
+            opacity: [0, 0.88, 0],
+            backgroundSize: ["3px 3px", "11px 11px", "4px 4px"],
+          }}
+          transition={{
+            duration: 1.25,
+            times: [0, 0.48, 1],
+            ease: "easeInOut",
+          }}
+        />
+      )}
+
+      <div className="absolute left-5 top-5 z-30 flex flex-wrap gap-2 font-kode text-[7px] uppercase tracking-[0.18em] sm:text-[8px]">
+        <span className="bg-white px-2 py-1 text-black">
+          Frame / {String(activeIndex + 1).padStart(2, "0")}
+        </span>
+        <span className="bg-[#d8ff36] px-2 py-1 text-black">
+          {activeFrame.source}
+        </span>
+        <span className="bg-black px-2 py-1 text-white">{mode} mode</span>
+        <span className="hidden border border-white/35 bg-black/70 px-2 py-1 text-white/65 backdrop-blur-sm group-hover/sequence:hidden sm:inline">
+          Hover / reveal color
+        </span>
+        <span className="hidden bg-white px-2 py-1 text-black sm:group-hover/sequence:inline">
+          Color signal / live
+        </span>
+      </div>
+
+      <div className="pointer-events-none absolute left-5 top-16 z-30 flex items-center gap-2 bg-[#d8ff36] px-3 py-2 font-kode text-[7px] uppercase tracking-[0.15em] text-black sm:left-6 sm:text-[8px]">
+        Click image / expand
+        <Maximize2 className="h-3.5 w-3.5" />
+      </div>
+
+      <div className="absolute inset-x-5 bottom-[116px] z-30 flex items-end justify-between gap-4 border-b border-white/45 pb-3 text-white sm:inset-x-6 sm:bottom-[132px]">
+        <div className="min-w-0">
+          <p className="truncate font-kode text-[7px] uppercase tracking-[0.18em] sm:text-[8px]">
+            {activeFrame.label}
+          </p>
+          <p className="mt-1 truncate font-nacelle text-[11px] text-white/60 sm:text-xs">
+            {activeFrame.note}
+          </p>
+        </div>
+        <div
+          className="flex shrink-0 items-center gap-1"
+          aria-label="Hero image selection"
+        >
+          {HERO_SOCIAL_FRAMES.map((frame, index) => (
+            <button
+              key={frame.src}
+              type="button"
+              onClick={() => setActiveIndex(index)}
+              aria-label={`Show ${frame.label}`}
+              aria-pressed={index === activeIndex}
+              className={`h-2.5 transition-[width,background-color] duration-300 ${
+                index === activeIndex
+                  ? "w-7 bg-[#d8ff36]"
+                  : "w-2.5 bg-white/45 hover:bg-white"
+              }`}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const MomentFieldArchive = ({
+  onExpand,
+}: {
+  onExpand: (index: number) => void;
+}) => {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const activeMoment = FIELD_MOMENTS[activeIndex];
+
+  const selectMoment = (index: number) => setActiveIndex(index);
+
+  return (
+    <section
+      id="moments"
+      className={`group/section relative scroll-mt-20 border border-black bg-black text-white ${SECTION_FRAME}`}
+    >
+      <SectionChrome index="00" label="Moments in the wild" surface="ink" />
+
+      <div className="grid gap-8 px-5 pb-7 pt-16 sm:px-8 sm:pb-10 sm:pt-20 lg:grid-cols-12 lg:gap-12 lg:px-12 lg:pb-12">
+        <div className="lg:col-span-8">
+          <p className="font-kode text-[8px] uppercase tracking-[0.2em] text-white/45 sm:text-[9px]">
+            Field archive / 08 moments
+          </p>
+          <h2 className="mt-4 max-w-[12ch] font-telegraf text-[clamp(2.9rem,6vw,6.8rem)] font-black leading-[0.9] tracking-[-0.04em]">
+            I like being in the room when it becomes real.
+          </h2>
+        </div>
+        <div className="flex items-end lg:col-span-4">
+          <p className="max-w-[38ch] font-nacelle text-[15px] leading-[1.7] text-white/60 sm:text-[17px]">
+            Speaking, shipping, debugging, and celebrating with the people who
+            make the work worth doing. A few frames from outside the mockup.
+          </p>
+        </div>
+      </div>
+
+      <div className="border-y border-white/20 lg:grid lg:grid-cols-12">
+        <button
+          type="button"
+          onClick={() => onExpand(activeIndex)}
+          aria-label={`Expand moment: ${activeMoment.title}`}
+          className="group relative aspect-[16/10] cursor-zoom-in overflow-hidden bg-[#141414] text-left outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-[#d8ff36] lg:col-span-8 lg:aspect-auto lg:min-h-[610px] lg:border-r lg:border-white/20"
+        >
+          <motion.div
+            key={activeMoment.image}
+            className="absolute inset-0"
+            initial={{ opacity: 0.25, filter: "grayscale(1) contrast(1.2)" }}
+            animate={{ opacity: 1, filter: "grayscale(0) contrast(1)" }}
+            transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <Image
+              src={activeMoment.image}
+              alt={activeMoment.alt}
+              fill
+              sizes="(min-width: 1024px) 65vw, 100vw"
+              className="object-cover"
+            />
+          </motion.div>
+
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-black/15" />
+          <div className="pointer-events-none absolute left-4 top-4 flex gap-2 font-kode text-[7px] uppercase tracking-[0.16em] sm:left-6 sm:top-6 sm:text-[8px]">
+            <span className="bg-white px-2 py-1 text-black">
+              Frame / {String(activeIndex + 1).padStart(2, "0")}
+            </span>
+            <span className="bg-[#d8ff36] px-2 py-1 text-black">
+              In the wild
+            </span>
+            <span className="flex items-center gap-1.5 bg-white px-2 py-1 text-black">
+              Expand <Maximize2 className="h-3 w-3" />
+            </span>
+          </div>
+          <p className="pointer-events-none absolute bottom-4 left-4 right-4 border-t border-white/50 pt-3 font-kode text-[7px] uppercase tracking-[0.18em] text-white/75 sm:bottom-6 sm:left-6 sm:right-6 sm:text-[8px]">
+            {activeMoment.kicker}
+          </p>
+        </button>
+
+        <motion.div
+          key={`${activeMoment.image}-copy`}
+          aria-live="polite"
+          className="flex min-h-[380px] flex-col justify-between p-5 sm:p-8 lg:col-span-4 lg:min-h-0 lg:p-10"
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35 }}
+        >
+          <div className="flex items-start justify-between gap-5 border-b border-white/25 pb-5 font-kode text-[7px] uppercase tracking-[0.17em] text-white/45 sm:text-[8px]">
+            <span>{activeMoment.meta}</span>
+            <span>{String(activeIndex + 1).padStart(2, "0")} / 08</span>
+          </div>
+          <div className="py-10">
+            <p className="font-kode text-[8px] uppercase tracking-[0.2em] text-[#d8ff36] sm:text-[9px]">
+              {activeMoment.kicker}
+            </p>
+            <h3 className="mt-4 font-telegraf text-4xl font-black leading-[0.95] tracking-[-0.035em] sm:text-5xl">
+              {activeMoment.title}
+            </h3>
+            <p className="mt-6 max-w-[38ch] font-nacelle text-[15px] leading-[1.75] text-white/65 sm:text-base">
+              {activeMoment.story}
+            </p>
+          </div>
+          <a
+            href={activeMoment.sourceUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group flex items-center justify-between border-t border-white/25 pt-5 font-kode text-[8px] uppercase tracking-[0.18em] text-white/70 transition hover:text-[#d8ff36] sm:text-[9px]"
+          >
+            View the original / {activeMoment.source}
+            <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+          </a>
+        </motion.div>
+      </div>
+
+      <div
+        className="grid grid-cols-2 gap-px bg-white/20 sm:grid-cols-4 lg:grid-cols-8"
+        role="tablist"
+        aria-label="Select a field moment"
+      >
+        {FIELD_MOMENTS.map((moment, index) => {
+          const active = index === activeIndex;
+          return (
+            <button
+              key={moment.image}
+              type="button"
+              role="tab"
+              aria-selected={active}
+              aria-label={`Show moment ${index + 1}: ${moment.title}`}
+              onMouseEnter={() => selectMoment(index)}
+              onFocus={() => selectMoment(index)}
+              onClick={() => {
+                selectMoment(index);
+                onExpand(index);
+              }}
+              className={`group relative aspect-[4/3] overflow-hidden bg-black text-left outline-none transition focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#d8ff36] ${
+                active ? "opacity-100" : "opacity-60 hover:opacity-90"
+              }`}
+            >
+              <Image
+                src={moment.image}
+                alt=""
+                fill
+                sizes="(min-width: 1024px) 12.5vw, (min-width: 640px) 25vw, 50vw"
+                className={`object-cover transition-[filter] duration-300 ${
+                  active
+                    ? "grayscale-0"
+                    : "contrast-125 grayscale group-hover:grayscale-0"
+                }`}
+              />
+              <span className="absolute inset-x-0 bottom-0 flex items-end justify-between bg-gradient-to-t from-black/90 to-transparent px-3 pb-2 pt-8 font-kode text-[7px] uppercase tracking-[0.14em] text-white sm:text-[8px]">
+                {String(index + 1).padStart(2, "0")}
+                <span
+                  className={`h-1.5 w-1.5 ${
+                    active ? "bg-[#d8ff36]" : "bg-white/55"
+                  }`}
+                />
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    </section>
+  );
+};
+
+const GalleryPlaceholder = ({ shot }: { shot: GalleryShot }) => (
+  <div className="relative flex h-full min-h-[48vh] w-full items-center justify-center overflow-hidden bg-[#11110f] p-8 text-center text-white">
+    <div className="absolute inset-0 opacity-20 [background-image:radial-gradient(#fff_1px,transparent_1px)] [background-size:9px_9px]" />
+    <div className="absolute inset-5 border border-white/15" />
+    <div className="absolute left-5 top-5 h-14 w-14 border-l border-t border-[#d8ff36]" />
+    <div className="absolute bottom-5 right-5 h-14 w-14 border-b border-r border-[#d8ff36]" />
+    <div className="relative max-w-xl">
+      <span className="mx-auto flex h-16 w-16 items-center justify-center bg-[#d8ff36] text-black [clip-path:polygon(12px_0,100%_0,100%_calc(100%_-_12px),calc(100%_-_12px)_100%,0_100%,0_12px)]">
+        <Images className="h-7 w-7" />
+      </span>
+      <p className="mt-8 font-kode text-[8px] uppercase tracking-[0.24em] text-[#d8ff36]">
+        Capture slot / awaiting input
+      </p>
+      <strong className="mt-3 block font-telegraf text-[clamp(3.6rem,9vw,8rem)] font-black leading-[0.82] tracking-[-0.05em]">
+        ADD HERE
+      </strong>
+      <p className="mx-auto mt-6 max-w-[48ch] font-nacelle text-sm leading-relaxed text-white/55 sm:text-base">
+        {shot.caption}
+      </p>
+    </div>
+  </div>
+);
+
+const GalleryArrowControls = ({
+  onPrevious,
+  onNext,
+}: {
+  onPrevious: () => void;
+  onNext: () => void;
+}) => (
+  <div className="flex gap-2">
+    <button
+      type="button"
+      onClick={onPrevious}
+      aria-label="Previous image"
+      className="circuit-control flex h-11 w-12 items-center justify-center border border-white/25 bg-black/70 text-white backdrop-blur transition hover:bg-[#d8ff36] hover:text-black"
+    >
+      <ChevronLeft className="h-5 w-5" />
+    </button>
+    <button
+      type="button"
+      onClick={onNext}
+      aria-label="Next image"
+      className="circuit-control-reverse flex h-11 w-12 items-center justify-center border border-white/25 bg-black/70 text-white backdrop-blur transition hover:bg-[#d8ff36] hover:text-black"
+    >
+      <ChevronRight className="h-5 w-5" />
+    </button>
+  </div>
+);
+
+const MomentGalleryOverlay = ({
+  openIndex,
+  onClose,
+}: {
+  openIndex: number | null;
+  onClose: () => void;
+}) => {
+  const [activeIndex, setActiveIndex] = useState(openIndex ?? 0);
+
+  useEffect(() => {
+    if (openIndex !== null) setActiveIndex(openIndex);
+  }, [openIndex]);
+
+  const activeMoment = FIELD_MOMENTS[activeIndex] ?? FIELD_MOMENTS[0];
+  const move = (direction: number) =>
+    setActiveIndex(
+      (current) =>
+        (current + direction + FIELD_MOMENTS.length) % FIELD_MOMENTS.length
+    );
+
+  return (
+    <AnimatePresence>
+      {openIndex !== null && (
+        <motion.div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Kevin Liu moments gallery"
+          className="fixed inset-0 z-[140] overflow-y-auto bg-black text-white"
+          initial={{ opacity: 0, clipPath: "inset(12% 9% 12% 9%)" }}
+          animate={{ opacity: 1, clipPath: "inset(0% 0% 0% 0%)" }}
+          exit={{ opacity: 0, clipPath: "inset(8% 7% 8% 7%)" }}
+          transition={{ duration: 0.48, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <div className="fixed inset-x-0 top-0 z-30 flex items-center justify-between border-b border-white/20 bg-black/75 px-4 py-3 backdrop-blur-xl sm:px-7">
+            <button
+              type="button"
+              onClick={onClose}
+              className="group flex items-center gap-2 font-kode text-[8px] uppercase tracking-[0.18em] text-white/70 transition hover:text-[#d8ff36]"
+            >
+              <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
+              Back to portfolio
+            </button>
+            <span className="hidden font-kode text-[7px] uppercase tracking-[0.2em] text-white/40 sm:block">
+              Hero archive / {String(activeIndex + 1).padStart(2, "0")} of 08
+            </span>
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Close moments gallery"
+              className="circuit-control-reverse flex h-9 w-10 items-center justify-center bg-white text-black transition hover:bg-[#d8ff36]"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+
+          <div className="grid min-h-[100svh] pt-16 lg:grid-cols-[minmax(0,1fr)_390px]">
+            <div className="relative min-h-[44svh] overflow-hidden border-b border-white/20 bg-[#090909] sm:min-h-[58svh] lg:min-h-[calc(100svh-64px)] lg:border-b-0 lg:border-r">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeMoment.image}
+                  className="absolute inset-0"
+                  initial={{ opacity: 0, scale: 1.025, filter: "grayscale(1)" }}
+                  animate={{ opacity: 1, scale: 1, filter: "grayscale(0)" }}
+                  exit={{ opacity: 0, scale: 0.985 }}
+                  transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  <Image
+                    src={activeMoment.image}
+                    alt={activeMoment.alt}
+                    fill
+                    priority
+                    sizes="(min-width: 1024px) calc(100vw - 390px), 100vw"
+                    className="object-cover lg:object-contain"
+                  />
+                </motion.div>
+              </AnimatePresence>
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20" />
+              <div className="absolute bottom-4 left-4 right-4 z-10 sm:bottom-6 sm:left-6 sm:right-6">
+                <div className="mb-4 flex items-end justify-between gap-4">
+                  <div className="font-kode text-[7px] uppercase tracking-[0.18em] text-white/70 sm:text-[8px]">
+                    <span className="mr-2 bg-[#d8ff36] px-2 py-1 text-black">
+                      Open frame
+                    </span>
+                    {activeMoment.kicker}
+                  </div>
+                  <GalleryArrowControls
+                    onPrevious={() => move(-1)}
+                    onNext={() => move(1)}
+                  />
+                </div>
+                <div className="grid grid-cols-8 gap-1.5">
+                  {FIELD_MOMENTS.map((moment, index) => (
+                    <button
+                      key={moment.image}
+                      type="button"
+                      onClick={() => setActiveIndex(index)}
+                      aria-label={`Show ${moment.title}`}
+                      aria-pressed={index === activeIndex}
+                      className={`relative aspect-[4/3] overflow-hidden border transition ${
+                        index === activeIndex
+                          ? "border-[#d8ff36] opacity-100"
+                          : "border-white/20 opacity-45 hover:opacity-100"
+                      }`}
+                    >
+                      <Image
+                        src={moment.image}
+                        alt=""
+                        fill
+                        className="object-cover"
+                      />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <motion.aside
+              key={`${activeMoment.image}-expanded-copy`}
+              className="flex min-h-[42svh] flex-col justify-between p-6 pt-10 sm:p-9 lg:min-h-0 lg:p-10 lg:pt-12"
+              initial={{ opacity: 0, x: 18 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.35 }}
+            >
+              <div>
+                <div className="flex items-center justify-between border-b border-white/20 pb-4 font-kode text-[7px] uppercase tracking-[0.18em] text-white/40">
+                  <span>{activeMoment.meta}</span>
+                  <span>{String(activeIndex + 1).padStart(2, "0")} / 08</span>
+                </div>
+                <p className="mt-12 font-kode text-[8px] uppercase tracking-[0.2em] text-[#d8ff36]">
+                  {activeMoment.kicker}
+                </p>
+                <h2 className="mt-4 font-telegraf text-[clamp(3rem,5vw,5.8rem)] font-black leading-[0.88] tracking-[-0.045em]">
+                  {activeMoment.title}
+                </h2>
+                <p className="mt-7 font-nacelle text-base leading-[1.8] text-white/65">
+                  {activeMoment.story}
+                </p>
+              </div>
+              <a
+                href={activeMoment.sourceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group mt-12 flex items-center justify-between border-t border-white/20 pt-5 font-kode text-[8px] uppercase tracking-[0.18em] text-white/65 hover:text-[#d8ff36]"
+              >
+                Original / {activeMoment.source}
+                <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" />
+              </a>
+            </motion.aside>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+};
+
+const ProjectGalleryOverlay = ({
+  project,
+  onClose,
+  onPlay,
+}: {
+  project: FeaturedProject | null;
+  onClose: () => void;
+  onPlay: () => void;
+}) => {
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  useEffect(() => setActiveIndex(0), [project]);
+
+  const shots = project?.gallery ?? [];
+  const activeShot = shots[activeIndex] ?? shots[0];
+  const move = (direction: number) => {
+    if (!shots.length) return;
+    setActiveIndex(
+      (current) => (current + direction + shots.length) % shots.length
+    );
+  };
+
+  return (
+    <AnimatePresence>
+      {project && activeShot && (
+        <motion.div
+          role="dialog"
+          aria-modal="true"
+          aria-label={`${project.name} project gallery`}
+          className="fixed inset-0 z-[140] overflow-y-auto bg-[#f4f3ec] text-black"
+          initial={{ opacity: 0, clipPath: "inset(10% 8% 10% 8%)" }}
+          animate={{ opacity: 1, clipPath: "inset(0% 0% 0% 0%)" }}
+          exit={{ opacity: 0, clipPath: "inset(8% 6% 8% 6%)" }}
+          transition={{ duration: 0.48, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <div className="fixed inset-x-0 top-0 z-30 flex items-center justify-between border-b border-white/20 bg-black px-4 py-3 text-white sm:px-7">
+            <button
+              type="button"
+              onClick={onClose}
+              className="group flex items-center gap-2 font-kode text-[8px] uppercase tracking-[0.18em] text-white/70 transition hover:text-[#d8ff36]"
+            >
+              <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
+              Back to projects
+            </button>
+            <span className="hidden font-kode text-[7px] uppercase tracking-[0.2em] text-white/40 sm:block">
+              PKMN–{String(project.id).padStart(3, "0")} / visual archive
+            </span>
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label={`Close ${project.name} gallery`}
+              className="circuit-control-reverse flex h-9 w-10 items-center justify-center bg-white text-black transition hover:bg-[#d8ff36]"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+
+          <div className="grid min-h-[100svh] pt-16 lg:grid-cols-[minmax(0,1fr)_410px]">
+            <div className="relative min-h-[44svh] overflow-hidden border-b border-black bg-black sm:min-h-[58svh] lg:min-h-[calc(100svh-64px)] lg:border-b-0 lg:border-r">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={`${project.id}-${activeIndex}`}
+                  className="absolute inset-0"
+                  initial={{ opacity: 0, scale: 1.02, x: 24 }}
+                  animate={{ opacity: 1, scale: 1, x: 0 }}
+                  exit={{ opacity: 0, scale: 0.985, x: -20 }}
+                  transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  {activeShot.image ? (
+                    <Image
+                      src={activeShot.image}
+                      alt={`${project.name}: ${activeShot.title}`}
+                      fill
+                      priority
+                      sizes="(min-width: 1024px) calc(100vw - 410px), 100vw"
+                      className={
+                        activeShot.fit === "cover"
+                          ? "object-cover"
+                          : "object-contain"
+                      }
+                    />
+                  ) : (
+                    <GalleryPlaceholder shot={activeShot} />
+                  )}
+                </motion.div>
+              </AnimatePresence>
+
+              <div className="absolute bottom-4 left-4 right-4 z-10 sm:bottom-6 sm:left-6 sm:right-6">
+                <div className="mb-4 flex items-end justify-between gap-4">
+                  <div className="bg-black/75 px-3 py-2 font-kode text-[7px] uppercase tracking-[0.18em] text-white backdrop-blur sm:text-[8px]">
+                    <span className="mr-2 text-[#d8ff36]">
+                      {String(activeIndex + 1).padStart(2, "0")} /{" "}
+                      {String(shots.length).padStart(2, "0")}
+                    </span>
+                    {activeShot.title}
+                  </div>
+                  <GalleryArrowControls
+                    onPrevious={() => move(-1)}
+                    onNext={() => move(1)}
+                  />
+                </div>
+                <div
+                  className="grid gap-1.5"
+                  style={{
+                    gridTemplateColumns: `repeat(${shots.length}, minmax(0, 1fr))`,
+                  }}
+                >
+                  {shots.map((shot, index) => (
+                    <button
+                      key={`${shot.title}-${index}`}
+                      type="button"
+                      onClick={() => setActiveIndex(index)}
+                      aria-label={`Show ${shot.title}`}
+                      aria-pressed={index === activeIndex}
+                      className={`relative aspect-[16/9] overflow-hidden border bg-[#151515] transition ${
+                        index === activeIndex
+                          ? "border-[#d8ff36] opacity-100"
+                          : "border-white/20 opacity-45 hover:opacity-100"
+                      }`}
+                    >
+                      {shot.image ? (
+                        <Image
+                          src={shot.image}
+                          alt=""
+                          fill
+                          className="object-cover"
+                        />
+                      ) : (
+                        <span className="flex h-full items-center justify-center font-kode text-[5px] uppercase tracking-[0.12em] text-[#d8ff36] sm:text-[6px]">
+                          Add here
+                        </span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <motion.aside
+              key={`${project.id}-${activeIndex}-copy`}
+              className="flex min-h-[42svh] flex-col justify-between p-6 pt-10 sm:p-9 lg:min-h-0 lg:p-10 lg:pt-12"
+              initial={{ opacity: 0, x: 18 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.32 }}
+            >
+              <div>
+                <div className="flex items-center justify-between border-b border-black/25 pb-4 font-kode text-[7px] uppercase tracking-[0.18em] text-black/45">
+                  <span>{project.year}</span>
+                  <span>{project.types.join(" / ")}</span>
+                </div>
+                <p className="mt-10 font-kode text-[8px] uppercase tracking-[0.2em] text-black/45">
+                  Expanded project / {String(activeIndex + 1).padStart(2, "0")}
+                </p>
+                <h2 className="mt-3 font-telegraf text-[clamp(3.2rem,5.4vw,6rem)] font-black leading-[0.86] tracking-[-0.05em]">
+                  {project.name}
+                </h2>
+                <p className="mt-5 font-nacelle text-lg font-medium leading-tight">
+                  {project.summary}
+                </p>
+                <p className="mt-5 font-nacelle text-[15px] leading-[1.75] text-black/60">
+                  {project.detail}
+                </p>
+                <div className="mt-9 border-l-2 border-[#d8ff36] pl-4">
+                  <strong className="font-telegraf text-xl font-black">
+                    {activeShot.title}
+                  </strong>
+                  <p className="mt-2 font-nacelle text-sm leading-relaxed text-black/55">
+                    {activeShot.caption}
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-12 grid grid-cols-2 gap-2">
+                {project.internal ? (
+                  <button
+                    type="button"
+                    onClick={onPlay}
+                    className="circuit-action flex items-center justify-between bg-black px-4 py-3 font-kode text-[8px] uppercase tracking-[0.15em] text-white hover:bg-[#d8ff36] hover:text-black"
+                  >
+                    Play <Play className="h-3.5 w-3.5" />
+                  </button>
+                ) : (
+                  <Link
+                    href={project.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="circuit-action flex items-center justify-between bg-black px-4 py-3 font-kode text-[8px] uppercase tracking-[0.15em] text-white hover:bg-[#d8ff36] hover:text-black"
+                  >
+                    Open <ArrowUpRight className="h-3.5 w-3.5" />
+                  </Link>
+                )}
+                <Link
+                  href={project.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="circuit-control flex items-center justify-between border border-black px-4 py-3 font-kode text-[8px] uppercase tracking-[0.15em] hover:bg-black hover:text-white"
+                >
+                  GitHub <Github className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+            </motion.aside>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+};
+
+const BallGlyph = ({ inverted = false }: { inverted?: boolean }) => (
+  <span
+    aria-hidden="true"
+    className={`relative block h-8 w-8 overflow-hidden rounded-full border ${
+      inverted
+        ? "border-white bg-black text-white"
+        : "border-black bg-white text-black"
+    }`}
+  >
+    <span className="absolute inset-x-0 bottom-0 h-1/2 bg-current" />
+    <span
+      className={`absolute left-0 top-1/2 h-px w-full -translate-y-1/2 ${
+        inverted ? "bg-white" : "bg-black"
+      }`}
+    />
+    <span
+      className={`absolute left-1/2 top-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full border ${
+        inverted ? "border-white bg-black" : "border-black bg-white"
+      }`}
+    />
+  </span>
+);
+
+const ProjectCard = ({
+  project,
+  index,
+  onEnter,
+  onOpen,
+}: {
+  project: FeaturedProject;
+  index: number;
+  onEnter: () => void;
+  onOpen: () => void;
+}) => {
+  return (
+    <motion.article
+      initial={{ opacity: 0, y: 32 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-70px" }}
+      transition={{
+        duration: 0.55,
+        delay: (index % 2) * 0.06,
+        ease: [0.22, 1, 0.36, 1],
+      }}
+      onClick={(event) => {
+        if ((event.target as HTMLElement).closest("a, button")) return;
+        onOpen();
+      }}
+      className="group relative h-full cursor-zoom-in bg-black p-px"
+      style={{ clipPath: CHOPPED }}
+    >
+      <div
+        className="flex h-full flex-col bg-[#f4f3ec]"
+        style={{ clipPath: CHOPPED }}
+      >
+        <button
+          type="button"
+          onClick={onOpen}
+          aria-label={`Open ${project.name} image gallery`}
+          className="relative aspect-[16/10] w-full cursor-zoom-in overflow-hidden border-b border-black/25 bg-black text-left outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-[#d8ff36]"
+        >
+          <DitherMedia
+            src={project.image}
+            alt={`${project.name} project preview`}
+            fit="contain"
+            className="absolute inset-0"
+          />
+          <div className="absolute left-3 top-3 flex items-center gap-2 font-kode text-[8px] uppercase tracking-[0.16em] sm:left-4 sm:top-4">
+            <span className="bg-white px-2 py-1 text-black">
+              PKMN–{String(project.id).padStart(3, "0")}
+            </span>
+            <span className="bg-black px-2 py-1 text-white">
+              {project.year}
+            </span>
+          </div>
+          <span className="circuit-action absolute bottom-3 right-3 flex items-center gap-2 bg-[#d8ff36] px-3 py-2 font-kode text-[7px] uppercase tracking-[0.15em] text-black sm:bottom-4 sm:right-4 sm:text-[8px]">
+            Expand / {String(project.gallery.length).padStart(2, "0")} views
+            <Maximize2 className="h-3.5 w-3.5" />
+          </span>
+        </button>
+
+        <div className="flex flex-1 flex-col p-5 sm:p-6 lg:p-7">
+          <div className="flex items-start justify-between gap-4">
+            <span className="font-kode text-[8px] uppercase tracking-[0.2em] text-black/45">
+              Field note / {String(index + 1).padStart(2, "0")}
+            </span>
+            {project.internal && <BallGlyph />}
+          </div>
+
+          <div className="my-8 flex-1 sm:my-10">
+            <h3 className="font-telegraf text-3xl font-black tracking-[-0.025em] sm:text-4xl">
+              {project.name}
+            </h3>
+            <p className="mt-3 max-w-md font-nacelle text-lg font-medium leading-tight sm:text-xl">
+              {project.summary}
+            </p>
+            <p className="mt-3 max-w-[46ch] font-nacelle text-[14px] leading-[1.7] text-black/60 sm:text-[15px]">
+              {project.detail}
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-2 border-t border-black/35 pt-4">
+            {project.types.map((type) => (
+              <span
+                key={type}
+                className="border border-black/25 px-2 py-1 font-kode text-[7px] uppercase tracking-[0.14em]"
+              >
+                {type}
+              </span>
+            ))}
+          </div>
+
+          <div className="mt-4 grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={onOpen}
+              className="circuit-action col-span-2 flex items-center justify-between bg-[#d8ff36] px-3 py-3 font-kode text-[8px] uppercase tracking-[0.15em] text-black transition hover:bg-black hover:text-white"
+            >
+              View full gallery
+              <span className="flex items-center gap-2">
+                {String(project.gallery.length).padStart(2, "0")} frames
+                <Images className="h-3.5 w-3.5" />
+              </span>
+            </button>
+            {project.internal ? (
+              <button
+                type="button"
+                onClick={onEnter}
+                className="flex items-center justify-between border border-black bg-black px-3 py-3 font-kode text-[8px] uppercase tracking-[0.15em] text-white transition hover:bg-[#d8ff36] hover:text-black"
+              >
+                Play project <Play className="h-3.5 w-3.5" />
+              </button>
+            ) : (
+              <Link
+                href={project.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between border border-black bg-black px-3 py-3 font-kode text-[8px] uppercase tracking-[0.15em] text-white transition hover:bg-[#d8ff36] hover:text-black"
+              >
+                Open project <ArrowUpRight className="h-3.5 w-3.5" />
+              </Link>
+            )}
+            <Link
+              href={project.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-between border border-black px-3 py-3 font-kode text-[8px] uppercase tracking-[0.15em] transition hover:bg-black hover:text-white"
+            >
+              GitHub <Github className="h-3.5 w-3.5" />
+            </Link>
+          </div>
+        </div>
+      </div>
+    </motion.article>
+  );
+};
+
+const UnassignedArt = () => (
+  <div className="relative h-full min-h-[430px] overflow-hidden bg-black text-white sm:min-h-[560px]">
+    <div className="absolute inset-0 opacity-25 [background-image:radial-gradient(#fff_1px,transparent_1px)] [background-size:7px_7px]" />
+    <svg
+      className="absolute inset-0 h-full w-full"
+      viewBox="0 0 700 560"
+      fill="none"
+      aria-hidden="true"
+    >
+      <motion.path
+        d="M78 405 C 180 110, 480 90, 620 300 C 690 405, 510 500, 336 430 C 180 368, 230 190, 380 178"
+        stroke="rgba(255,255,255,.42)"
+        strokeWidth="1"
+        strokeDasharray="7 9"
+        animate={{ strokeDashoffset: [0, -64] }}
+        transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+      />
+      <motion.circle
+        r="8"
+        fill="#d8ff36"
+        animate={{
+          cx: [78, 190, 420, 620, 500, 336, 210, 380],
+          cy: [405, 170, 112, 300, 470, 430, 300, 178],
+        }}
+        transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
+      />
+    </svg>
+
+    {[
+      ["NO BRIEF", "18%", "14%", -7],
+      ["NO RUBRIC", "48%", "27%", 6],
+      ["NO PERMISSION", "23%", "62%", -2],
+    ].map(([label, left, top, rotate], index) => (
+      <motion.div
+        key={label}
+        className="absolute w-[44%] border border-white/55 bg-black/80 p-4 backdrop-blur-sm sm:p-5"
+        style={{
+          left: String(left),
+          top: String(top),
+          rotate: Number(rotate),
+          clipPath:
+            "polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px)",
+        }}
+        animate={{ y: [0, index % 2 === 0 ? -9 : 9, 0] }}
+        transition={{
+          duration: 3.8 + index * 0.65,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      >
+        <div className="flex items-center justify-between font-kode text-[8px] uppercase tracking-[0.18em] text-white/55">
+          <span>Constraint / 0{index + 1}</span>
+          <span>×</span>
+        </div>
+        <p className="mt-8 font-telegraf text-2xl font-black tracking-[-0.02em] line-through decoration-1 sm:text-4xl">
+          {label}
+        </p>
+      </motion.div>
+    ))}
+
+    <motion.div
+      className="absolute bottom-[8%] right-[8%] bg-[#d8ff36] px-5 py-4 text-black"
+      style={{
+        clipPath:
+          "polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px)",
+      }}
+      animate={{ rotate: [-2, 2, -2], scale: [1, 1.025, 1] }}
+      transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+    >
+      <span className="font-kode text-[8px] uppercase tracking-[0.18em]">
+        Status / self-assigned
+      </span>
+      <strong className="mt-1 block font-telegraf text-3xl tracking-[-0.02em] sm:text-5xl">
+        MAKE IT.
+      </strong>
+    </motion.div>
+  </div>
+);
+
+const TasteArt = () => (
+  <div className="relative h-full min-h-[430px] overflow-hidden bg-[#d8ff36] text-black sm:min-h-[560px]">
+    <motion.div
+      className="absolute -right-24 -top-24 h-72 w-72 rounded-full border-[34px] border-black"
+      animate={{ rotate: 360 }}
+      transition={{ duration: 24, repeat: Infinity, ease: "linear" }}
+    >
+      <span className="absolute left-1/2 top-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2 rounded-full bg-black" />
+    </motion.div>
+
+    <div className="absolute left-[7%] top-[8%] font-kode text-[8px] uppercase tracking-[0.2em]">
+      Interface calibration / live
+    </div>
+    <div className="absolute left-[7%] top-[18%] font-telegraf text-[clamp(7rem,20vw,13rem)] font-black leading-none tracking-[-0.035em]">
+      Aa
+    </div>
+
+    <div className="absolute inset-x-[7%] bottom-[8%] border border-black bg-[#f4f3ec] p-5 sm:p-7">
+      <div className="mb-6 flex items-center justify-between font-kode text-[8px] uppercase tracking-[0.18em]">
+        <span>Function</span>
+        <span>Feeling</span>
+      </div>
+      {(
+        [
+          ["Hierarchy", 78],
+          ["Spacing", 64],
+          ["Motion", 86],
+        ] as const
+      ).map(([label, value], index) => (
+        <div
+          key={label}
+          className="mb-4 grid grid-cols-[82px_1fr_30px] items-center gap-3 last:mb-0"
+        >
+          <span className="font-kode text-[8px] uppercase tracking-[0.12em]">
+            {label}
+          </span>
+          <div className="relative h-2 bg-black/15">
+            <motion.div
+              className="absolute inset-y-0 left-0 bg-black"
+              initial={{ width: 0 }}
+              whileInView={{ width: `${value}%` }}
+              viewport={{ once: true }}
+              transition={{ duration: 1, delay: 0.15 + index * 0.12 }}
+            />
+            <motion.span
+              className="absolute top-1/2 h-4 w-1 -translate-y-1/2 bg-black"
+              initial={{ left: 0 }}
+              whileInView={{ left: `calc(${value}% - 2px)` }}
+              viewport={{ once: true }}
+              transition={{ duration: 1, delay: 0.15 + index * 0.12 }}
+            />
+          </div>
+          <span className="text-right font-kode text-[8px]">{value}</span>
+        </div>
+      ))}
+      <motion.div
+        className="mt-7 flex items-center justify-between border-t border-black pt-4 font-telegraf text-xl font-bold sm:text-2xl"
+        animate={{ letterSpacing: ["0em", "0.06em", "0em"] }}
+        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+      >
+        <span>CLARITY</span>
+        <span>+</span>
+        <span>CHARACTER</span>
+      </motion.div>
+    </div>
+  </div>
+);
+
+const PlayArt = () => {
+  const nodes = [
+    [18, 24, "BENCHMARK"],
+    [77, 18, "AGENT"],
+    [22, 76, "PORTFOLIO"],
+    [80, 72, "SYSTEM"],
+  ] as const;
+
+  return (
+    <div className="relative h-full min-h-[430px] overflow-hidden bg-black text-white sm:min-h-[560px]">
+      <svg
+        className="absolute inset-0 h-full w-full"
+        viewBox="0 0 700 560"
+        fill="none"
+        aria-hidden="true"
+      >
+        <path d="M126 134 L350 280 L539 101" stroke="rgba(255,255,255,.28)" />
+        <path d="M154 426 L350 280 L560 403" stroke="rgba(255,255,255,.28)" />
+        <path
+          d="M126 134 L154 426"
+          stroke="rgba(255,255,255,.14)"
+          strokeDasharray="5 8"
+        />
+        <path
+          d="M539 101 L560 403"
+          stroke="rgba(255,255,255,.14)"
+          strokeDasharray="5 8"
+        />
+        <motion.circle
+          r="7"
+          fill="#d8ff36"
+          animate={{
+            cx: [126, 350, 539, 350, 560, 350, 154, 350, 126],
+            cy: [134, 280, 101, 280, 403, 280, 426, 280, 134],
+          }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        />
+      </svg>
+
+      {nodes.map(([left, top, label], index) => (
+        <motion.div
+          key={label}
+          className="absolute flex h-20 w-28 items-center justify-center border border-white/50 bg-black font-kode text-[8px] uppercase tracking-[0.15em] sm:h-24 sm:w-36"
+          style={{
+            left: `${left}%`,
+            top: `${top}%`,
+            x: "-50%",
+            y: "-50%",
+            clipPath:
+              "polygon(9px 0, 100% 0, 100% calc(100% - 9px), calc(100% - 9px) 100%, 0 100%, 0 9px)",
+          }}
+          animate={{
+            borderColor: [
+              "rgba(255,255,255,.35)",
+              "rgba(216,255,54,.95)",
+              "rgba(255,255,255,.35)",
+            ],
+          }}
+          transition={{
+            duration: 2.8,
+            repeat: Infinity,
+            delay: index * 0.42,
+          }}
+        >
+          {label}
+        </motion.div>
+      ))}
+
+      <motion.div
+        className="absolute left-1/2 top-1/2 flex h-36 w-36 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-[#d8ff36] bg-black shadow-[0_0_60px_rgba(216,255,54,.18)] sm:h-44 sm:w-44"
+        animate={{ scale: [1, 1.05, 1] }}
+        transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
+      >
+        <div className="text-center">
+          <BallGlyph inverted />
+          <span className="mt-3 block font-kode text-[8px] uppercase tracking-[0.2em] text-[#d8ff36]">
+            Make it playable
+          </span>
+        </div>
+      </motion.div>
+
+      <span className="absolute bottom-5 left-5 font-kode text-[8px] uppercase tracking-[0.18em] text-white/45">
+        Input → consequence → understanding
+      </span>
+    </div>
+  );
+};
+
+const AdditionalPhilosophyArt = ({
+  kind,
+}: {
+  kind: Extract<Philosophy["id"], "systems" | "proof" | "open">;
+}) => {
+  const config = {
+    systems: {
+      code: "SYS / 04",
+      title: "THE SECOND RUN",
+      labels: ["STATE", "VISIBILITY", "RECOVERY", "TRUST"],
+      acid: false,
+    },
+    proof: {
+      code: "PRF / 05",
+      title: "SHOW THE PULSE",
+      labels: ["CLAIM", "INPUT", "EVIDENCE", "CONVICTION"],
+      acid: true,
+    },
+    open: {
+      code: "OPN / 06",
+      title: "LEAVE THE SOURCE",
+      labels: ["ARTIFACT", "SOURCE", "FORK", "COMPOUND"],
+      acid: false,
+    },
+  }[kind];
+
+  return (
+    <div
+      className={`relative h-full min-h-[430px] overflow-hidden sm:min-h-[560px] ${
+        config.acid ? "bg-[#d8ff36] text-black" : "bg-black text-white"
+      }`}
+    >
+      <div className="absolute inset-0 opacity-20 [background-image:linear-gradient(currentColor_1px,transparent_1px)] [background-size:100%_42px]" />
+      <div className="border-current/30 absolute inset-6 border sm:inset-10" />
+      <span className="absolute left-10 top-10 font-kode text-[8px] uppercase tracking-[0.2em] opacity-55 sm:left-14 sm:top-14">
+        {config.code} / LIVE MODEL
+      </span>
+      <strong className="absolute left-10 top-24 max-w-[80%] font-telegraf text-[clamp(3.2rem,7vw,7rem)] font-black leading-[0.84] tracking-[-0.05em] sm:left-14 sm:top-28">
+        {config.title}
+      </strong>
+      <div className="absolute inset-x-10 bottom-10 grid grid-cols-2 gap-2 sm:inset-x-14 sm:bottom-14 sm:grid-cols-4">
+        {config.labels.map((label, index) => (
+          <motion.div
+            key={label}
+            className={`border px-3 py-4 font-kode text-[7px] uppercase tracking-[0.15em] sm:py-6 ${
+              config.acid
+                ? "border-black/35 bg-[#d8ff36]"
+                : "border-white/35 bg-black"
+            }`}
+            animate={{ y: [0, index % 2 === 0 ? -7 : 7, 0] }}
+            transition={{
+              duration: 3.2 + index * 0.35,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          >
+            <span className="mb-5 block opacity-45">0{index + 1}</span>
+            {label}
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const PhilosophyArt = ({ kind }: { kind: Philosophy["id"] }) => {
+  if (kind === "unassigned") return <UnassignedArt />;
+  if (kind === "taste") return <TasteArt />;
+  if (kind === "play") return <PlayArt />;
+  return <AdditionalPhilosophyArt kind={kind} />;
+};
+
+const PhilosophyChapter = ({
+  philosophy,
+  index,
+}: {
+  philosophy: Philosophy;
+  index: number;
+}) => {
+  const inverted = philosophy.id === "taste";
+  const artFirst = index % 2 === 1;
+
+  return (
+    <Link
+      id={`philosophy-${philosophy.id}`}
+      href={`/en/philosophy/${philosophy.id}`}
+      className={`group/section group relative my-4 block border border-black outline-none focus-visible:ring-4 focus-visible:ring-[#d8ff36] sm:my-6 ${SECTION_FRAME}`}
+    >
+      <SectionChrome
+        index={`P-${philosophy.number}`}
+        label="Field note"
+        surface={inverted ? "ink" : "paper"}
+      />
+      <motion.section
+        initial={{ opacity: 0, y: 38 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        className={inverted ? "bg-black text-white" : "bg-[#f4f3ec] text-black"}
+      >
+        <div className="mx-auto grid max-w-[1600px] lg:min-h-[680px] lg:grid-cols-12">
+          <div
+            className={`flex flex-col justify-between p-6 sm:p-10 lg:col-span-5 lg:p-12 ${
+              artFirst ? "lg:order-2" : "lg:order-1"
+            }`}
+          >
+            <div className="flex items-center justify-between font-kode text-[8px] uppercase tracking-[0.2em] opacity-50">
+              <span>Principle / {philosophy.number}</span>
+              <span>{philosophy.eyebrow}</span>
+            </div>
+
+            <div className="my-14 lg:my-0">
+              <h3 className="max-w-2xl font-telegraf text-[clamp(3.2rem,5.6vw,6.8rem)] font-black leading-[0.92] tracking-[-0.025em] transition-[font-style,transform] group-hover:-translate-y-1 group-hover:italic">
+                {philosophy.title}
+              </h3>
+              <div
+                className={`mt-9 max-w-[62ch] space-y-5 border-l pl-5 font-nacelle text-base leading-[1.75] sm:pl-7 sm:text-lg ${
+                  inverted
+                    ? "text-white/67 border-white/30"
+                    : "text-black/62 border-black/30"
+                }`}
+              >
+                {philosophy.paragraphs.map((paragraph) => (
+                  <p key={paragraph}>{paragraph}</p>
+                ))}
+              </div>
+            </div>
+
+            <div
+              className={`flex items-center justify-between gap-4 border-t pt-4 font-kode text-[8px] uppercase tracking-[0.18em] ${
+                inverted
+                  ? "border-white/35 text-white/55"
+                  : "border-black/35 text-black/50"
+              }`}
+            >
+              <span>{philosophy.annotation}</span>
+              <span className="flex shrink-0 items-center gap-2 opacity-100">
+                Read full article
+                <ArrowUpRight className="h-4 w-4 transition-transform group-hover:rotate-45" />
+              </span>
+            </div>
+          </div>
+
+          <div
+            className={`overflow-hidden p-3 sm:p-5 lg:col-span-7 ${
+              artFirst ? "lg:order-1 lg:border-r" : "lg:order-2 lg:border-l"
+            } ${inverted ? "border-white/25" : "border-black/25"}`}
+          >
+            <div
+              className="h-full overflow-hidden transition-transform duration-700 group-hover:scale-[0.985]"
+              style={{ clipPath: CHOPPED }}
+            >
+              <PhilosophyArt kind={philosophy.id} />
+            </div>
+          </div>
+        </div>
+      </motion.section>
+    </Link>
+  );
+};
+
+type HeroMode = "dither" | "orbit" | "signal";
+
+const HERO_MODES: Array<{
+  id: HeroMode;
+  short: string;
+  index: string;
+  label: string;
+  detail: string;
+}> = [
+  {
+    id: "signal",
+    short: "SIG",
+    index: "01",
+    label: "Agents",
+    detail: "that act",
+  },
+  {
+    id: "dither",
+    short: "DTH",
+    index: "02",
+    label: "Interfaces",
+    detail: "that move",
+  },
+  {
+    id: "orbit",
+    short: "ORB",
+    index: "03",
+    label: "Games",
+    detail: "that explain",
+  },
+];
+
+const HeroMarginRail = ({
+  side,
+  mode,
+  onMode,
+}: {
+  side: "left" | "right";
+  mode: HeroMode;
+  onMode: (mode: HeroMode) => void;
+}) => (
+  <aside
+    aria-label={`${side === "left" ? "Pointer telemetry" : "Hero visual mode"}`}
+    className={`relative hidden h-full overflow-hidden bg-black text-white min-[1800px]:block ${
+      side === "left" ? "border-l border-r" : "border-l border-r"
+    } border-white/20`}
+  >
+    {side === "left" ? (
+      <>
+        <span className="absolute left-1/2 top-5 -translate-x-1/2 font-kode text-[6px] uppercase tracking-[0.18em] text-white/40 [writing-mode:vertical-rl]">
+          Pointer telemetry / live
+        </span>
+        <motion.div
+          aria-hidden="true"
+          className="absolute left-1/2 z-10 h-10 w-10 -translate-x-1/2 -translate-y-1/2"
+          style={{ top: "var(--spot-y, 50%)" }}
+          transition={{ type: "spring", stiffness: 180, damping: 24 }}
+        >
+          <span className="absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-white/55" />
+          <span className="absolute left-0 top-1/2 h-px w-full -translate-y-1/2 bg-white/55" />
+          <span className="absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white bg-[#d8ff36]" />
+        </motion.div>
+        <div className="absolute bottom-5 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2">
+          {[0, 1, 2, 3].map((index) => (
+            <motion.span
+              key={index}
+              className="h-1 w-1 bg-[#d8ff36]"
+              animate={{ opacity: [0.18, 0.9, 0.18] }}
+              transition={{
+                duration: 1.8,
+                repeat: Infinity,
+                delay: index * 0.2,
+              }}
+            />
+          ))}
+          <span className="mt-2 font-kode text-[6px] tracking-[0.16em] text-white/40 [writing-mode:vertical-rl]">
+            Y / 028
+          </span>
+        </div>
+      </>
+    ) : (
+      <>
+        <span className="absolute left-1/2 top-5 -translate-x-1/2 font-kode text-[6px] uppercase tracking-[0.18em] text-white/40 [writing-mode:vertical-rl]">
+          Image channel / select
+        </span>
+        <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col gap-2">
+          {HERO_MODES.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              aria-label={`Use ${item.id} hero mode`}
+              aria-pressed={mode === item.id}
+              onClick={() => onMode(item.id)}
+              className={`group relative flex h-11 w-11 items-center justify-center border font-kode text-[7px] transition ${
+                mode === item.id
+                  ? "border-[#d8ff36] bg-[#d8ff36] text-black"
+                  : "border-white/30 bg-black text-white/65 hover:bg-white/10 hover:text-white"
+              }`}
+            >
+              {item.short}
+              <span
+                className={`absolute -right-1 -top-1 h-2 w-2 border border-white/50 ${
+                  mode === item.id ? "bg-black" : "bg-white/25"
+                }`}
+              />
+            </button>
+          ))}
+        </div>
+        <div className="absolute bottom-5 left-1/2 grid -translate-x-1/2 grid-cols-3 gap-1">
+          {Array.from({ length: 6 }, (_, index) => (
+            <motion.span
+              key={index}
+              className="h-1.5 w-1.5 bg-white"
+              animate={{ opacity: [0.12, 0.8, 0.12] }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                delay: (index % 4) * 0.13,
+              }}
+            />
+          ))}
+        </div>
+      </>
+    )}
+  </aside>
+);
+
+const HeroSignalDeck = ({
+  mode,
+  onMode,
+}: {
+  mode: HeroMode;
+  onMode: (mode: HeroMode) => void;
+}) => (
+  <div className="mt-8 grid max-w-2xl grid-cols-3 border border-black/25">
+    {HERO_MODES.map((item) => {
+      const active = item.id === mode;
+      return (
+        <motion.button
+          key={item.id}
+          type="button"
+          aria-pressed={active}
+          onMouseEnter={() => onMode(item.id)}
+          onFocus={() => onMode(item.id)}
+          onClick={() => onMode(item.id)}
+          className={`group relative min-w-0 overflow-hidden border-r border-black/25 p-3 text-left last:border-r-0 sm:p-4 ${
+            active ? "bg-black text-white" : "bg-transparent text-black"
+          }`}
+          whileHover={{ y: -4 }}
+          transition={{ type: "spring", stiffness: 360, damping: 24 }}
+        >
+          <span className="font-kode text-[6px] uppercase tracking-[0.16em] opacity-45">
+            Channel / {item.index}
+          </span>
+          <strong className="mt-5 block truncate font-telegraf text-sm font-black sm:text-base">
+            {item.label}
+          </strong>
+          <span className="block truncate font-kode text-[6px] uppercase tracking-[0.14em] opacity-50 sm:text-[7px]">
+            {item.detail}
+          </span>
+          <motion.span
+            className="absolute inset-x-0 bottom-0 h-1 bg-[#d8ff36]"
+            animate={{ scaleX: active ? 1 : 0 }}
+            style={{ transformOrigin: "left" }}
+          />
+        </motion.button>
+      );
+    })}
+  </div>
+);
+
+const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
+  const [isLaunching, setIsLaunching] = useState(false);
+  const [heroMode, setHeroMode] = useState<HeroMode>("dither");
+  const [navDocked, setNavDocked] = useState(false);
+  const [momentGalleryIndex, setMomentGalleryIndex] = useState<number | null>(
+    null
+  );
+  const [galleryProject, setGalleryProject] = useState<FeaturedProject | null>(
+    null
+  );
+  const reduceMotion = useReducedMotion();
+
+  const launch = useCallback(() => {
+    if (!isLaunching) setIsLaunching(true);
+  }, [isLaunching]);
+
+  useEffect(() => {
+    if (!isLaunching) return;
+    const timer = window.setTimeout(onEnter, reduceMotion ? 120 : 1100);
+    return () => window.clearTimeout(timer);
+  }, [isLaunching, onEnter, reduceMotion]);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (
+        event.key.toLowerCase() === "b" &&
+        momentGalleryIndex === null &&
+        !galleryProject
+      ) {
+        launch();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [galleryProject, launch, momentGalleryIndex]);
+
+  useEffect(() => {
+    if (momentGalleryIndex === null && !galleryProject) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setMomentGalleryIndex(null);
+        setGalleryProject(null);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [galleryProject, momentGalleryIndex]);
+
+  useEffect(() => {
+    let frame = 0;
+    const syncNavigation = () => {
+      window.cancelAnimationFrame(frame);
+      frame = window.requestAnimationFrame(() => {
+        setNavDocked(window.scrollY > 112);
+      });
+    };
+
+    syncNavigation();
+    window.addEventListener("scroll", syncNavigation, { passive: true });
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", syncNavigation);
+    };
+  }, []);
+
+  const followPointer = (event: MouseEvent<HTMLElement>) => {
+    const bounds = event.currentTarget.getBoundingClientRect();
+    event.currentTarget.style.setProperty(
+      "--spot-x",
+      `${event.clientX - bounds.left}px`
+    );
+    event.currentTarget.style.setProperty(
+      "--spot-y",
+      `${event.clientY - bounds.top}px`
+    );
+  };
+
+  return (
+    <motion.main
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0, filter: "contrast(1.8) grayscale(1)" }}
+      transition={{ duration: reduceMotion ? 0.1 : 0.45 }}
+      className="bw-portfolio min-h-screen overflow-hidden bg-black text-[#0b0b0b]"
+    >
+      <div aria-hidden="true" className="h-[68px]" />
+      <motion.header
+        initial={false}
+        animate={{
+          top: 0,
+          width: "min(1520px, calc(100vw - clamp(20px, 6.25vw, 80px)))",
+          height: navDocked ? 54 : 68,
+          boxShadow: navDocked
+            ? "0 16px 45px rgba(0,0,0,.2)"
+            : "0 0 0 rgba(0,0,0,0)",
+        }}
+        transition={{ type: "spring", stiffness: 280, damping: 30 }}
+        className={`fixed left-1/2 z-[95] -translate-x-1/2 overflow-hidden backdrop-blur-xl transition-colors duration-300 ${
+          navDocked
+            ? "border border-white/20 bg-black text-white"
+            : "border-b border-black/30 bg-[#f4f3ec]/95 text-black"
+        }`}
+        style={{
+          clipPath:
+            "polygon(10px 0, calc(100% - 10px) 0, 100% 10px, 100% calc(100% - 10px), calc(100% - 10px) 100%, 10px 100%, 0 calc(100% - 10px), 0 10px)",
+        }}
+      >
+        <AnimatePresence mode="wait" initial={false}>
+          {navDocked ? (
+            <motion.div
+              key="floating-social-dock"
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.18 }}
+              className="flex h-full items-center justify-between gap-2 px-2"
+            >
+              <span className="pointer-events-none absolute bottom-0 left-0 h-3 w-3 border-b border-l border-[#d8ff36]" />
+              <span className="pointer-events-none absolute bottom-0 right-0 h-3 w-3 border-b border-r border-white/40" />
+              <Link
+                href="/#top"
+                className="circuit-control flex min-w-0 items-center gap-2 py-1 pl-1 pr-2 sm:gap-3 sm:pr-3"
+              >
+                <Image
+                  src="/images/logo.png"
+                  alt=""
+                  width={36}
+                  height={36}
+                  loading="eager"
+                  className="h-9 w-9 shrink-0 object-cover"
+                />
+                <span className="hidden truncate font-telegraf text-sm font-black uppercase sm:block">
+                  Kevin Liu
+                </span>
+                <span className="h-1.5 w-1.5 shrink-0 animate-pulse rounded-full bg-[#d8ff36]" />
+              </Link>
+
+              <nav
+                aria-label="Kevin Liu social links"
+                className="flex items-center gap-1 border-x border-white/20 px-1.5 sm:px-3"
+              >
+                <Link
+                  href={SOCIAL_LINKS.github}
+                  target="_blank"
+                  aria-label="GitHub"
+                  title="GitHub"
+                  className="circuit-control flex h-8 w-8 items-center justify-center text-white/65 transition hover:bg-white hover:text-black"
+                >
+                  <Github className="h-3.5 w-3.5" />
+                </Link>
+                <Link
+                  href={SOCIAL_LINKS.linkedin}
+                  target="_blank"
+                  aria-label="LinkedIn"
+                  title="LinkedIn"
+                  className="circuit-control-reverse flex h-8 w-8 items-center justify-center text-white/65 transition hover:bg-white hover:text-black"
+                >
+                  <Linkedin className="h-3.5 w-3.5" />
+                </Link>
+                <Link
+                  href={SOCIAL_LINKS.x}
+                  target="_blank"
+                  aria-label="X"
+                  title="X"
+                  className="circuit-control flex h-8 w-8 items-center justify-center font-telegraf text-[11px] font-black text-white/65 transition hover:bg-white hover:text-black"
+                >
+                  X
+                </Link>
+                <a
+                  href="mailto:k.bowen.liu@gmail.com"
+                  aria-label="Email Kevin"
+                  title="Email Kevin"
+                  className="circuit-control-reverse hidden h-8 items-center gap-1.5 px-3 font-kode text-[7px] uppercase tracking-[0.13em] text-white/65 transition hover:bg-white hover:text-black md:flex"
+                >
+                  Hello <ArrowUpRight className="h-3 w-3" />
+                </a>
+              </nav>
+
+              <button
+                type="button"
+                onClick={launch}
+                className="circuit-action group relative flex h-9 shrink-0 items-center gap-2 bg-[#d8ff36] pl-4 pr-1.5 font-kode text-[7px] uppercase tracking-[0.13em] text-black transition hover:bg-white sm:pl-5 sm:pr-2 sm:text-[8px]"
+              >
+                <span className="absolute left-1.5 top-1.5 h-1 w-1 rotate-45 bg-black/35" />
+                <span className="hidden sm:inline">PortfolioMon</span>
+                <span className="sm:hidden">Mon</span>
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-black text-white transition-transform group-hover:rotate-180">
+                  <Play className="h-2.5 w-2.5 fill-current" />
+                </span>
+              </button>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="full-identity-bar"
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 6 }}
+              transition={{ duration: 0.18 }}
+              className="relative mx-auto grid h-full max-w-[1600px] grid-cols-[1fr_auto_1fr] items-center px-5 sm:px-8 lg:px-12"
+            >
+              <div className="flex min-w-0 items-center gap-4 font-kode text-[7px] uppercase tracking-[0.18em] text-black/45 sm:text-[8px]">
+                <span className="sm:hidden">No. 028</span>
+                <span className="hidden sm:inline">Portfolio / 2026</span>
+                <span className="hidden h-4 w-px bg-black/20 lg:block" />
+                <span className="hidden lg:inline">LA ↔ Princeton</span>
+              </div>
+
+              <Link href="/#top" className="group relative text-center">
+                <span className="font-telegraf text-[15px] font-black uppercase leading-none tracking-[-0.02em] sm:text-base">
+                  Kevin Liu
+                </span>
+                <span className="absolute -bottom-[25px] left-1/2 h-[3px] w-12 -translate-x-1/2 bg-black transition-[width] group-hover:w-20 dark:bg-white" />
+              </Link>
+
+              <div className="flex min-w-0 items-center justify-end gap-2 sm:gap-3">
+                <span className="hidden items-center gap-2 font-kode text-[7px] uppercase tracking-[0.16em] text-black/45 xl:flex">
+                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-black dark:bg-white" />
+                  Founding engineer / Dedalus
+                </span>
+
+                <nav
+                  aria-label="Kevin Liu social links"
+                  className="hidden items-center border-l border-black/20 pl-2 lg:flex"
+                >
+                  <Link
+                    href={SOCIAL_LINKS.github}
+                    target="_blank"
+                    aria-label="GitHub"
+                    title="GitHub"
+                    className="circuit-control flex h-8 w-8 items-center justify-center text-black/45 transition hover:bg-black hover:text-white"
+                  >
+                    <Github className="h-3.5 w-3.5" />
+                  </Link>
+                  <Link
+                    href={SOCIAL_LINKS.linkedin}
+                    target="_blank"
+                    aria-label="LinkedIn"
+                    title="LinkedIn"
+                    className="circuit-control-reverse flex h-8 w-8 items-center justify-center text-black/45 transition hover:bg-black hover:text-white"
+                  >
+                    <Linkedin className="h-3.5 w-3.5" />
+                  </Link>
+                  <Link
+                    href={SOCIAL_LINKS.x}
+                    target="_blank"
+                    aria-label="X"
+                    title="X"
+                    className="circuit-control flex h-8 w-8 items-center justify-center font-telegraf text-[11px] font-black text-black/45 transition hover:bg-black hover:text-white"
+                  >
+                    X
+                  </Link>
+                </nav>
+
+                <a
+                  href="mailto:k.bowen.liu@gmail.com"
+                  className="circuit-control-reverse group hidden h-8 items-center gap-1.5 border-l border-black/20 px-3 font-kode text-[7px] uppercase tracking-[0.17em] transition hover:bg-black hover:text-white 2xl:flex"
+                >
+                  Say hello
+                  <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                </a>
+                <button
+                  type="button"
+                  onClick={launch}
+                  className="circuit-action group relative flex h-9 items-center gap-2 bg-black pl-4 pr-1.5 font-kode text-[7px] uppercase tracking-[0.13em] text-white transition hover:bg-[#d8ff36] hover:text-black sm:h-10 sm:pl-5 sm:pr-2 sm:text-[8px]"
+                >
+                  <span className="absolute left-1.5 top-1.5 h-1 w-1 rotate-45 bg-white/40 group-hover:bg-black/40" />
+                  <span className="sm:hidden">Mon</span>
+                  <span className="hidden sm:inline">PortfolioMon</span>
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-black transition-transform group-hover:rotate-180">
+                    <Play className="h-2.5 w-2.5 fill-current" />
+                  </span>
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.header>
+
+      <section
+        id="top"
+        onMouseMove={followPointer}
+        className={`spotlight-field relative border-b border-black bg-[#f4f3ec] ${SECTION_FRAME}`}
+      >
+        <div className="mx-auto grid w-full max-w-[1760px] grid-cols-1 min-[1800px]:grid-cols-[80px_1600px_80px]">
+          <HeroMarginRail side="left" mode={heroMode} onMode={setHeroMode} />
+
+          <div className="mx-auto grid min-h-[620px] w-full max-w-[1600px] grid-cols-1 border-x border-black/20 lg:h-[clamp(640px,72svh,780px)] lg:min-h-0 lg:grid-cols-12">
+            <div className="relative z-10 flex min-w-0 flex-col justify-between border-b border-black p-5 sm:p-8 lg:col-span-7 lg:border-b-0 lg:border-r lg:p-10 xl:p-12">
+              <div className="flex items-center justify-between gap-4 font-kode text-[8px] uppercase tracking-[0.2em] text-black/50 sm:text-[9px]">
+                <span>Trainer file / No. 028</span>
+                <span className="flex items-center gap-2">
+                  <span className="h-2 w-2 animate-pulse rounded-full bg-black" />
+                  Building now
+                </span>
+              </div>
+
+              <div className="py-10 sm:py-12 lg:py-5">
+                <motion.p
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.15 }}
+                  className="mb-5 font-kode text-[8px] uppercase tracking-[0.22em] sm:text-[9px]"
+                >
+                  Software with utility / interfaces with bite
+                </motion.p>
+                <h1 className="font-telegraf text-[clamp(4rem,7.5vw,8.2rem)] font-black leading-[0.82] tracking-[-0.04em]">
+                  I build
+                  <br />
+                  <span className="font-normal italic">useful</span>
+                  <br />
+                  worlds.
+                </h1>
+                <HeroSignalDeck mode={heroMode} onMode={setHeroMode} />
+              </div>
+
+              <div className="grid gap-5 border-t border-black pt-4 sm:grid-cols-2">
+                <p className="max-w-md font-nacelle text-base font-medium leading-snug sm:text-lg">
+                  Founding engineer at Dedalus. I make agents, interfaces, and
+                  games feel inevitable.
+                </p>
+                <Link
+                  href="/#work"
+                  className="group flex items-end justify-between font-kode text-[8px] uppercase tracking-[0.18em] sm:text-[9px]"
+                >
+                  Scan selected work
+                  <ArrowDown className="h-5 w-5 transition group-hover:translate-y-1" />
+                </Link>
+              </div>
+            </div>
+
+            <div className="relative min-h-[420px] overflow-hidden bg-black p-3 sm:min-h-[500px] sm:p-4 lg:col-span-5 lg:min-h-0">
+              <div
+                className="relative h-full min-h-[390px] overflow-hidden bg-white sm:min-h-[470px] lg:min-h-0"
+                style={{ clipPath: CHOPPED }}
+              >
+                <HeroSocialSequence
+                  mode={heroMode}
+                  reduceMotion={Boolean(reduceMotion)}
+                  onExpand={() => setMomentGalleryIndex(0)}
+                />
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
+
+                {heroMode === "orbit" && (
+                  <motion.div
+                    key="orbit"
+                    className="pointer-events-none absolute left-1/2 top-1/2 h-[58%] w-[58%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/60"
+                    initial={{ opacity: 0, scale: 0.7 }}
+                    animate={{ opacity: 1, scale: 1, rotate: 360 }}
+                    transition={{
+                      rotate: {
+                        duration: 24,
+                        repeat: Infinity,
+                        ease: "linear",
+                      },
+                      opacity: { duration: 0.3 },
+                      scale: { duration: 0.5 },
+                    }}
+                  >
+                    {[0, 1, 2, 3].map((item) => (
+                      <span
+                        key={item}
+                        className="absolute left-1/2 top-1/2 h-1.5 w-1.5 rounded-full bg-white"
+                        style={{
+                          transform: `rotate(${item * 90}deg) translateY(-${
+                            item % 2 === 0 ? 114 : 96
+                          }px)`,
+                          transformOrigin: "0 0",
+                        }}
+                      />
+                    ))}
+                  </motion.div>
+                )}
+
+                {heroMode === "dither" && (
+                  <motion.div
+                    key="dither"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    className="pointer-events-none absolute right-5 top-16 border border-white/50 bg-black/55 p-2 backdrop-blur-sm"
+                  >
+                    <div className="grid grid-cols-6 gap-1">
+                      {Array.from({ length: 30 }, (_, index) => (
+                        <motion.span
+                          key={index}
+                          className="h-1.5 w-1.5 bg-white"
+                          animate={{
+                            opacity: [0.12, (index % 5) / 5 + 0.2, 0.12],
+                          }}
+                          transition={{
+                            duration: 2.4,
+                            repeat: Infinity,
+                            delay: (index % 6) * 0.08,
+                          }}
+                        />
+                      ))}
+                    </div>
+                    <span className="mt-2 block font-kode text-[6px] uppercase tracking-[0.16em] text-white/55">
+                      Bayer / 04×04
+                    </span>
+                  </motion.div>
+                )}
+
+                {heroMode === "signal" && (
+                  <motion.div
+                    key="signal"
+                    className="pointer-events-none absolute inset-0"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                  >
+                    <motion.span
+                      className="absolute inset-x-0 h-px bg-[#d8ff36] shadow-[0_0_12px_#d8ff36]"
+                      animate={{ top: ["12%", "84%", "12%"] }}
+                      transition={{
+                        duration: 4.5,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                      }}
+                    />
+                    {[
+                      "left-7 top-[28%]",
+                      "right-8 top-[42%]",
+                      "left-[38%] top-[66%]",
+                    ].map((position, index) => (
+                      <motion.span
+                        key={position}
+                        className={`absolute ${position} h-3 w-3 border border-[#d8ff36]`}
+                        animate={{
+                          scale: [1, 1.8, 1],
+                          opacity: [0.45, 1, 0.45],
+                        }}
+                        transition={{
+                          duration: 2.1,
+                          repeat: Infinity,
+                          delay: index * 0.35,
+                        }}
+                      />
+                    ))}
+                  </motion.div>
+                )}
+
+                <div className="absolute inset-x-0 bottom-0 p-5 text-white sm:p-6">
+                  <div className="mb-3 flex items-center justify-between border-b border-white/45 pb-3 font-kode text-[7px] uppercase tracking-[0.18em] sm:text-[8px]">
+                    <span>Kevin Bowen Liu</span>
+                    <span>Princeton ’28</span>
+                  </div>
+                  <div className="grid grid-cols-3 gap-1.5 text-center">
+                    {[
+                      ["40+", "Projects", "signal"],
+                      ["06", "Disciplines", "dither"],
+                      ["∞", "Curiosity", "orbit"],
+                    ].map(([value, label, linkedMode]) => (
+                      <motion.button
+                        key={label}
+                        type="button"
+                        onMouseEnter={() => setHeroMode(linkedMode as HeroMode)}
+                        onFocus={() => setHeroMode(linkedMode as HeroMode)}
+                        onClick={() => setHeroMode(linkedMode as HeroMode)}
+                        className="border border-white/35 p-2 text-white transition hover:bg-white hover:text-black sm:p-3"
+                        whileHover={{ y: -3 }}
+                      >
+                        <span className="block font-telegraf text-xl font-black sm:text-2xl">
+                          {value}
+                        </span>
+                        <span className="font-kode text-[6px] uppercase tracking-[0.14em] opacity-60 sm:text-[7px]">
+                          {label}
+                        </span>
+                      </motion.button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <HeroMarginRail side="right" mode={heroMode} onMode={setHeroMode} />
+        </div>
+      </section>
+
+      <MomentFieldArchive onExpand={setMomentGalleryIndex} />
+
+      <SectionSpacer index="01" label="Selected work" />
+
+      <section
+        id="work"
+        className={`group/section relative scroll-mt-20 border border-black/20 bg-[#f4f3ec] px-5 py-20 sm:px-8 sm:py-28 lg:px-12 ${SECTION_FRAME}`}
+      >
+        <SectionChrome index="01" label="Built in the wild" />
+        <div className="mb-14 grid items-end gap-8 border-b border-black pb-6 sm:mx-4 lg:mx-8 lg:grid-cols-12">
+          <div className="lg:col-span-8">
+            <p className="font-kode text-[9px] uppercase tracking-[0.2em] text-black/45">
+              Field research / 12 selected
+            </p>
+            <h2 className="mt-3 font-telegraf text-5xl font-black tracking-[-0.035em] sm:text-7xl lg:text-8xl">
+              Built in the wild.
+            </h2>
+          </div>
+          <p className="max-w-[42ch] font-nacelle text-[17px] leading-[1.7] text-black/60 lg:col-span-4">
+            Twelve shipped worlds, arranged as a working contact sheet. Every
+            preview opens into a full visual case file with multiple screens,
+            context, and direct project links.
+          </p>
+        </div>
+
+        <div className="grid gap-5 sm:px-4 md:grid-cols-2 lg:gap-7 lg:px-8">
+          {FEATURED_PROJECTS.map((project, index) => (
+            <ProjectCard
+              key={project.id}
+              project={project}
+              index={index}
+              onEnter={launch}
+              onOpen={() => setGalleryProject(project)}
+            />
+          ))}
+        </div>
+      </section>
+
+      <SectionSpacer index="02" label="Operator lab" />
+
+      <section
+        id="components"
+        className={`group/section relative scroll-mt-20 border border-black/25 bg-[#f4f3ec] ${SECTION_FRAME}`}
+      >
+        <SectionChrome index="02" label="Copmonents / hidden systems" />
+        <OperatorLab />
+      </section>
+
+      <SectionSpacer index="03" label="Field manual" />
+
+      <section
+        id="philosophy"
+        className={`group/section relative scroll-mt-20 border border-black bg-[#d8ff36] ${SECTION_FRAME}`}
+      >
+        <SectionChrome index="03" label="Personal doctrine" surface="acid" />
+        <div className="mx-auto grid max-w-[1440px] gap-10 px-5 py-16 sm:px-8 sm:py-24 lg:grid-cols-12 lg:px-12">
+          <div className="lg:col-span-8">
+            <p className="font-kode text-[9px] uppercase tracking-[0.2em] text-black/55">
+              Field manual / 06 linked essays
+            </p>
+            <h2 className="mt-4 max-w-5xl font-telegraf text-[clamp(3.8rem,7.5vw,8rem)] font-black leading-[0.9] tracking-[-0.025em]">
+              How I decide what deserves to exist.
+            </h2>
+          </div>
+          <div className="flex items-end lg:col-span-4">
+            <p className="max-w-md border-t border-black pt-5 font-nacelle text-lg leading-relaxed">
+              Six full articles behind the work: each principle opens into its
+              own field note, argument, and set of operating rules.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {PHILOSOPHIES.map((philosophy, index) => (
+        <PhilosophyChapter
+          key={philosophy.id}
+          philosophy={philosophy}
+          index={index}
+        />
+      ))}
+
+      <SectionSpacer index="04" label="Compounding memory" />
+
+      <section
+        id="wiki"
+        className={`group/section relative border border-black bg-black text-white ${SECTION_FRAME}`}
+      >
+        <SectionChrome index="04" label="Kevin's Wiki" surface="ink" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_40%,rgba(216,255,54,.08),transparent_30%),radial-gradient(circle_at_85%_65%,rgba(255,255,255,.07),transparent_32%)]" />
+        <div className="relative mx-auto grid max-w-[1440px] gap-10 px-5 py-20 sm:px-8 sm:py-28 lg:grid-cols-12 lg:px-12">
+          <div className="lg:col-span-5">
+            <div className="flex items-center gap-3 font-kode text-[9px] uppercase tracking-[0.2em] text-white/55">
+              <BallGlyph inverted />
+              Compounding memory / Public viewer
+            </div>
+            <h2 className="mt-10 font-telegraf text-[clamp(3.8rem,7vw,7.8rem)] font-black leading-[0.9] tracking-[-0.035em]">
+              A wiki
+              <br />
+              that thinks
+              <br />
+              <span className="font-normal italic">with me.</span>
+            </h2>
+            <div className="mt-8 max-w-[58ch] space-y-5 font-nacelle text-lg leading-[1.75] text-white/70">
+              <p>
+                Kevin&apos;s Wiki is a persistent knowledge base that agents
+                read from and write to as a codebase. I drop in a source,
+                repository, conversation, or half-formed idea; the system files
+                it, links it, and keeps it current.
+              </p>
+              <p>
+                The public viewer makes that memory legible: projects, people,
+                research, decisions, contradictions, and the trails connecting
+                them. Knowledge gets compiled once, then compounds.
+              </p>
+            </div>
+            <div className="mt-8 flex flex-wrap gap-2">
+              {[
+                "Markdown-native",
+                "Agent-maintained",
+                "Local search",
+                "Public",
+              ].map((label) => (
+                <span
+                  key={label}
+                  className="border border-white/25 px-2.5 py-1.5 font-kode text-[7px] uppercase tracking-[0.14em] text-white/60"
+                >
+                  {label}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex flex-col justify-end lg:col-span-7">
+            <div
+              className="relative bg-white p-px"
+              style={{ clipPath: CHOPPED }}
+            >
+              <DitherMedia
+                src="/images/wiki.png"
+                alt="Kevin's Wiki knowledge base"
+                className="relative aspect-[16/10]"
+              />
+              <div className="absolute left-4 top-4 bg-black px-3 py-2 font-kode text-[8px] uppercase tracking-[0.18em] text-white">
+                Live knowledge system / wiki.kevinliu.biz
+              </div>
+            </div>
+
+            <Link
+              href="https://wiki.kevinliu.biz/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group mt-4 flex w-full items-center justify-between bg-white px-5 py-5 text-left text-black transition hover:bg-[#d8ff36] disabled:cursor-wait sm:px-7 sm:py-6"
+              style={{ clipPath: CHOPPED }}
+            >
+              <span>
+                <span className="block font-kode text-[8px] uppercase tracking-[0.2em] text-black/50">
+                  Browse the public memory
+                </span>
+                <span className="mt-1 block font-telegraf text-2xl font-black tracking-[-0.02em] sm:text-4xl">
+                  Open Kevin&apos;s Wiki
+                </span>
+              </span>
+              <ArrowRight className="h-7 w-7 transition group-hover:translate-x-2" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <SectionSpacer index="05" label="Tool archive" />
+
+      <section
+        id="archive"
+        className={`group/section relative scroll-mt-20 border border-black/20 bg-[#f4f3ec] px-5 py-20 sm:px-8 sm:py-28 lg:px-12 ${SECTION_FRAME}`}
+      >
+        <SectionChrome index="05" label="Utility belt" />
+        <div className="grid gap-12 lg:grid-cols-12">
+          <div className="lg:col-span-3">
+            <p className="font-kode text-[9px] uppercase tracking-[0.2em] text-black/45">
+              Utility belt / Open source
+            </p>
+            <h2 className="mt-3 font-telegraf text-5xl font-black leading-[0.95] tracking-[-0.03em] sm:text-6xl">
+              Tools I keep reaching for.
+            </h2>
+            <p className="mt-6 max-w-sm font-nacelle text-base leading-relaxed text-black/55">
+              Small, opinionated software for agents, local workflows, and the
+              recurring annoyances I got tired of accepting.
+            </p>
+          </div>
+          <div className="border-t border-black lg:col-span-9">
+            {TOOL_ARCHIVE.map((tool, index) => (
+              <Link
+                key={tool.name}
+                href={tool.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group grid grid-cols-[42px_1fr_auto] items-center gap-4 border-b border-black py-5 sm:grid-cols-[58px_minmax(0,1fr)_160px_minmax(0,1.35fr)_auto]"
+              >
+                <span className="font-kode text-[8px] text-black/40">
+                  T-{String(index + 1).padStart(2, "0")}
+                </span>
+                <span className="font-telegraf text-xl font-bold tracking-[-0.03em] sm:text-2xl">
+                  {tool.name}
+                </span>
+                <span className="text-black/42 hidden font-kode text-[7px] uppercase tracking-[0.14em] sm:block">
+                  {tool.category}
+                </span>
+                <span className="col-start-2 max-w-[48ch] font-nacelle text-[15px] leading-[1.65] text-black/60 sm:col-start-auto">
+                  {tool.description}
+                </span>
+                <ArrowUpRight className="h-5 w-5 transition group-hover:rotate-45" />
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <SectionSpacer index="06" label="Contact" />
+
+      <footer
+        id="contact"
+        className={`group/section relative mb-3 border border-black bg-[#d8ff36] ${SECTION_FRAME}`}
+      >
+        <SectionChrome index="06" label="Open channel" surface="acid" />
+        <div className="mx-auto max-w-[1440px] px-5 py-14 sm:px-8 sm:py-20 lg:px-12">
+          <p className="font-kode text-[9px] uppercase tracking-[0.2em] text-black/55">
+            New encounter available
+          </p>
+          <div className="mt-4 flex flex-col justify-between gap-10 sm:flex-row sm:items-end">
+            <Link
+              href="mailto:k.bowen.liu@gmail.com"
+              className="font-telegraf text-[clamp(3.4rem,8vw,8.5rem)] font-black leading-[0.88] tracking-[-0.035em] hover:italic"
+            >
+              Let’s talk.
+            </Link>
+            <div className="flex items-center gap-3">
+              <Link
+                href={SOCIAL_LINKS.github}
+                target="_blank"
+                aria-label="GitHub"
+                className="border border-black p-3 hover:bg-black hover:text-white"
+              >
+                <Github className="h-5 w-5" />
+              </Link>
+              <Link
+                href={SOCIAL_LINKS.linkedin}
+                target="_blank"
+                aria-label="LinkedIn"
+                className="border border-black p-3 hover:bg-black hover:text-white"
+              >
+                <Linkedin className="h-5 w-5" />
+              </Link>
+              <span className="ml-3 font-kode text-[8px] uppercase tracking-[0.18em]">
+                LA / Princeton
+                <br />
+                2026
+              </span>
+            </div>
+          </div>
+        </div>
+      </footer>
+
+      <MomentGalleryOverlay
+        openIndex={momentGalleryIndex}
+        onClose={() => setMomentGalleryIndex(null)}
+      />
+      <ProjectGalleryOverlay
+        project={galleryProject}
+        onClose={() => setGalleryProject(null)}
+        onPlay={() => {
+          setGalleryProject(null);
+          launch();
+        }}
+      />
+
+      {isLaunching && (
+        <>
+          <motion.div
+            aria-hidden="true"
+            className="pointer-events-none fixed inset-0 z-[90] bg-black [background-image:radial-gradient(#fff_1px,transparent_1px)] [background-size:5px_5px]"
+            initial={{ opacity: 0, clipPath: "circle(0% at 50% 50%)" }}
+            animate={{
+              opacity: [0, 0.92, 1],
+              clipPath: "circle(90% at 50% 50%)",
+            }}
+            transition={{
+              duration: reduceMotion ? 0.1 : 0.62,
+              ease: "circOut",
+            }}
+          />
+          <motion.div
+            aria-hidden="true"
+            className="pointer-events-none fixed left-1/2 top-1/2 z-[100] h-28 w-28 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full border-[10px] border-white bg-black shadow-[0_0_0_10px_#101010]"
+            initial={{ scale: 0, rotate: 0 }}
+            animate={{ scale: reduceMotion ? 1 : 30, rotate: 540 }}
+            transition={{
+              duration: reduceMotion ? 0.1 : 1,
+              delay: reduceMotion ? 0 : 0.18,
+              ease: [0.76, 0, 0.24, 1],
+            }}
+          >
+            <span className="absolute inset-x-0 bottom-0 h-1/2 bg-[linear-gradient(100deg,#ff5b35,#ffb800,#8b5cf6,#22d3ee)]" />
+            <span className="absolute left-0 top-1/2 h-2 w-full -translate-y-1/2 bg-white" />
+            <span className="absolute left-1/2 top-1/2 h-7 w-7 -translate-x-1/2 -translate-y-1/2 rounded-full border-4 border-white bg-black" />
+          </motion.div>
+        </>
+      )}
+    </motion.main>
+  );
+};
+
+export default ProjectIndexLanding;
