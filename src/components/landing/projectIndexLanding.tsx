@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { SOCIAL_LINKS } from "../../constants/site";
+import { COMMIT_CELLS, DEFAULT_ACTIVE_DAY } from "../../data/commitActivity";
 import { PHILOSOPHIES, type Philosophy } from "../../data/philosophies";
 import OperatorLab from "./operatorLab";
 
@@ -876,11 +877,11 @@ const HERO_SOCIAL_FRAMES = [
     note: "Built for New York Tech Week",
   },
   {
-    src: "/images/hero-social/ariadne-system.jpg",
-    alt: "The Ariadne agent experience, live interface, and event crowd",
+    src: "/images/moments/ariadne-03.jpg",
+    alt: "Kevin Liu operating the Ariadne event system with his team",
     source: "LinkedIn",
-    label: "One agent / one room",
-    note: "1,012 messages in one night",
+    label: "Operating the room",
+    note: "One agent across a live New York night",
   },
   {
     src: "/images/hero-social/gym-mirror.jpg",
@@ -2435,34 +2436,10 @@ const PhilosophyChapter = ({
 
 type HeroMode = "dither" | "orbit" | "signal";
 
-const HERO_MODES: Array<{
-  id: HeroMode;
-  short: string;
-  value: string;
-  label: string;
-  detail: string;
-}> = [
-  {
-    id: "signal",
-    short: "SIG",
-    value: "40+",
-    label: "Shipped projects",
-    detail: "Agents to games",
-  },
-  {
-    id: "dither",
-    short: "DTH",
-    value: "26",
-    label: "Playable maps",
-    detail: "Princeton TD",
-  },
-  {
-    id: "orbit",
-    short: "ORB",
-    value: "1st",
-    label: "PennApps hardware",
-    detail: "RecyclAIble",
-  },
+const HERO_MODES: Array<{ id: HeroMode; short: string }> = [
+  { id: "signal", short: "SIG" },
+  { id: "dither", short: "DTH" },
+  { id: "orbit", short: "ORB" },
 ];
 
 const HeroMarginRail = ({
@@ -2475,125 +2452,198 @@ const HeroMarginRail = ({
   onMode: (mode: HeroMode) => void;
 }) => (
   <aside
-    aria-label={`${side === "left" ? "Pointer telemetry" : "Hero visual mode"}`}
-    className={`relative hidden h-full overflow-hidden bg-black text-white min-[1800px]:block ${
-      side === "left" ? "border-l border-r" : "border-l border-r"
-    } border-white/20`}
+    aria-label={
+      side === "left" ? "Responsive pointer trace" : "Hero visual modes"
+    }
+    className="relative hidden h-full min-h-0 overflow-hidden bg-black text-white xl:block"
   >
-    {side === "left" ? (
-      <>
-        <motion.div
-          aria-hidden="true"
-          className="absolute left-1/2 z-10 h-10 w-10 -translate-x-1/2 -translate-y-1/2"
-          style={{ top: "var(--spot-y, 50%)" }}
-          transition={{ type: "spring", stiffness: 180, damping: 24 }}
-        >
-          <span className="absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-white/55" />
-          <span className="absolute left-0 top-1/2 h-px w-full -translate-y-1/2 bg-white/55" />
-          <span className="absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white bg-[#d8ff36]" />
-        </motion.div>
-        <div className="absolute bottom-5 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2">
-          {[0, 1, 2, 3].map((index) => (
-            <motion.span
-              key={index}
-              className="h-1 w-1 bg-[#d8ff36]"
-              animate={{ opacity: [0.18, 0.9, 0.18] }}
-              transition={{
-                duration: 1.8,
-                repeat: Infinity,
-                delay: index * 0.2,
-              }}
-            />
-          ))}
-        </div>
-      </>
-    ) : (
-      <>
-        <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col gap-2">
-          {HERO_MODES.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              aria-label={`Use ${item.id} hero mode`}
-              aria-pressed={mode === item.id}
-              onClick={() => onMode(item.id)}
-              className={`group relative flex h-11 w-11 items-center justify-center border font-kode text-[7px] transition ${
-                mode === item.id
-                  ? "border-[#d8ff36] bg-[#d8ff36] text-black"
-                  : "border-white/30 bg-black text-white/65 hover:bg-white/10 hover:text-white"
-              }`}
-            >
-              {item.short}
-              <span
-                className={`absolute -right-1 -top-1 h-2 w-2 border border-white/50 ${
-                  mode === item.id ? "bg-black" : "bg-white/25"
-                }`}
-              />
-            </button>
-          ))}
-        </div>
-        <div className="absolute bottom-5 left-1/2 grid -translate-x-1/2 grid-cols-3 gap-1">
-          {Array.from({ length: 6 }, (_, index) => (
-            <motion.span
-              key={index}
-              className="h-1.5 w-1.5 bg-white"
-              animate={{ opacity: [0.12, 0.8, 0.12] }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                delay: (index % 4) * 0.13,
-              }}
-            />
-          ))}
-        </div>
-      </>
+    <svg
+      aria-hidden="true"
+      className="absolute inset-0 h-full w-full"
+      viewBox="0 0 64 720"
+      preserveAspectRatio="none"
+    >
+      <motion.path
+        fill="none"
+        stroke="rgba(255,255,255,.48)"
+        strokeWidth="1"
+        vectorEffect="non-scaling-stroke"
+        animate={{
+          d:
+            side === "left"
+              ? `M 63 0 V 196 L ${mode === "orbit" ? 22 : mode === "signal" ? 38 : 30} 238 V 482 L 63 524 V 720`
+              : `M 1 0 V 196 L ${mode === "orbit" ? 42 : mode === "signal" ? 26 : 34} 238 V 482 L 1 524 V 720`,
+        }}
+        transition={{ type: "spring", stiffness: 105, damping: 24 }}
+      />
+      <motion.path
+        fill="none"
+        stroke="#d8ff36"
+        strokeWidth="1.5"
+        strokeDasharray="2 12"
+        vectorEffect="non-scaling-stroke"
+        animate={{
+          d:
+            side === "left"
+              ? `M 63 196 L ${mode === "orbit" ? 22 : mode === "signal" ? 38 : 30} 238 V 482 L 63 524`
+              : `M 1 196 L ${mode === "orbit" ? 42 : mode === "signal" ? 26 : 34} 238 V 482 L 1 524`,
+          strokeDashoffset: [0, -28],
+        }}
+        transition={{
+          d: { type: "spring", stiffness: 105, damping: 24 },
+          strokeDashoffset: { duration: 2.4, repeat: Infinity, ease: "linear" },
+        }}
+      />
+    </svg>
+
+    <div
+      aria-hidden="true"
+      className={`absolute top-[var(--spot-y,50%)] h-7 w-7 -translate-y-1/2 transition-[left,right] duration-500 ${
+        side === "left" ? "right-0" : "left-0"
+      }`}
+    >
+      <span className="absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-white/35" />
+      <span className="absolute left-0 top-1/2 h-px w-full -translate-y-1/2 bg-white/35" />
+      <span className="absolute left-1/2 top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rotate-45 bg-[#d8ff36]" />
+    </div>
+
+    <span className="absolute left-1/2 top-8 -translate-x-1/2 font-kode text-[5px] uppercase tracking-[0.2em] text-white/40 [writing-mode:vertical-rl]">
+      {side === "left" ? "Pointer trace" : "Visual field"}
+    </span>
+
+    {side === "right" && (
+      <div className="absolute bottom-8 left-1/2 flex -translate-x-1/2 flex-col gap-2">
+        {HERO_MODES.map((item) => (
+          <button
+            key={item.id}
+            type="button"
+            aria-label={`Use ${item.id} hero mode`}
+            aria-pressed={mode === item.id}
+            onClick={() => onMode(item.id)}
+            className={`h-2.5 w-2.5 rotate-45 border transition ${
+              mode === item.id
+                ? "border-[#d8ff36] bg-[#d8ff36]"
+                : "border-white/40 bg-black hover:border-white hover:bg-white"
+            }`}
+          />
+        ))}
+      </div>
     )}
   </aside>
 );
 
-const HeroSignalDeck = ({
+const HeroCommitField = ({
   mode,
   onMode,
 }: {
   mode: HeroMode;
   onMode: (mode: HeroMode) => void;
-}) => (
-  <div className="mt-8 grid max-w-2xl grid-cols-3 border border-black/25">
-    {HERO_MODES.map((item) => {
-      const active = item.id === mode;
-      return (
-        <motion.button
-          key={item.id}
-          type="button"
-          aria-pressed={active}
-          onMouseEnter={() => onMode(item.id)}
-          onFocus={() => onMode(item.id)}
-          onClick={() => onMode(item.id)}
-          className={`group relative min-w-0 overflow-hidden border-r border-black/25 p-3 text-left last:border-r-0 sm:p-4 ${
-            active ? "bg-black text-white" : "bg-transparent text-black"
-          }`}
-          whileHover={{ y: -4 }}
-          transition={{ type: "spring", stiffness: 360, damping: 24 }}
+}) => {
+  const defaultIndex = Math.max(
+    0,
+    COMMIT_CELLS.findIndex((cell) => cell.key === DEFAULT_ACTIVE_DAY.key),
+  );
+  const [activeIndex, setActiveIndex] = useState(defaultIndex);
+  const activeCell = COMMIT_CELLS[activeIndex] ?? DEFAULT_ACTIVE_DAY;
+
+  const wakeCell = (index: number) => {
+    setActiveIndex(index);
+    onMode(HERO_MODES[index % HERO_MODES.length].id);
+  };
+
+  return (
+    <div className="mt-6 max-w-[650px] border-y border-black/25 py-3 sm:mt-7 sm:py-4">
+      <div className="mb-3 flex items-end justify-between gap-4">
+        <div>
+          <span className="font-kode text-[7px] uppercase tracking-[0.18em] text-black/45">
+            Commit history / 2026
+          </span>
+          <p className="mt-1 font-telegraf text-sm font-black tracking-[-0.01em] sm:text-base">
+            Move through the build trail.
+          </p>
+        </div>
+        <motion.div
+          key={activeCell.key}
+          initial={{ opacity: 0, x: 5 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="text-right font-kode text-[6px] uppercase tracking-[0.13em] text-black/50 sm:text-[7px]"
         >
-          <span className="font-telegraf text-2xl font-black leading-none sm:text-3xl">
-            {item.value}
-          </span>
-          <strong className="mt-3 block truncate font-telegraf text-xs font-black sm:text-sm">
-            {item.label}
-          </strong>
-          <span className="block truncate font-kode text-[6px] uppercase tracking-[0.14em] opacity-50 sm:text-[7px]">
-            {item.detail}
-          </span>
+          <strong className="block text-black">{activeCell.label}</strong>
+          {activeCell.count} commit{activeCell.count === 1 ? "" : "s"} / {mode}
+        </motion.div>
+      </div>
+
+      <div className="overflow-x-auto overflow-y-visible py-2">
+        <div
+          className="grid min-w-[520px] gap-[3px]"
+          style={{
+            gridTemplateRows: "repeat(7, 7px)",
+            gridAutoFlow: "column",
+            gridAutoColumns: "7px",
+          }}
+          role="grid"
+          aria-label="Interactive portfolio commit history for 2026"
+        >
+          {COMMIT_CELLS.map((cell, index) => {
+            const columnDistance = Math.abs(
+              Math.floor(index / 7) - Math.floor(activeIndex / 7),
+            );
+            const rowDistance = Math.abs((index % 7) - (activeIndex % 7));
+            const energy = Math.max(0, 3 - columnDistance - rowDistance);
+            const unavailable = !cell.inYear || cell.future;
+            const baseColor = unavailable
+              ? "rgba(10,10,10,.035)"
+              : cell.count >= 3
+                ? "rgba(10,10,10,1)"
+                : cell.count === 2
+                  ? "rgba(10,10,10,.58)"
+                  : cell.count === 1
+                    ? "rgba(10,10,10,.28)"
+                    : "rgba(10,10,10,.09)";
+
+            return (
+              <motion.button
+                key={cell.key}
+                type="button"
+                role="gridcell"
+                aria-label={`${cell.label}: ${cell.count} commits`}
+                disabled={unavailable}
+                onPointerEnter={() => !unavailable && wakeCell(index)}
+                onFocus={() => !unavailable && wakeCell(index)}
+                onClick={() => !unavailable && wakeCell(index)}
+                animate={{
+                  scale: index === activeIndex ? 1.9 : 1 + energy * 0.13,
+                  rotate:
+                    index === activeIndex ? 45 : energy > 0 ? energy * 5 : 0,
+                  backgroundColor:
+                    index === activeIndex
+                      ? "#d8ff36"
+                      : energy > 0
+                        ? `rgba(10,10,10,${0.16 + energy * 0.18})`
+                        : baseColor,
+                }}
+                transition={{ type: "spring", stiffness: 520, damping: 25 }}
+                className="h-[7px] w-[7px] outline-none ring-black focus-visible:ring-1 disabled:cursor-default"
+              />
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="mt-3 flex items-center justify-between gap-4 font-kode text-[6px] uppercase tracking-[0.14em] text-black/40 sm:text-[7px]">
+        <span>Jan — Jul / this repository</span>
+        <span className="flex items-center gap-2 text-black/65">
           <motion.span
-            className="absolute inset-x-0 bottom-0 h-1 bg-[#d8ff36]"
-            animate={{ scaleX: active ? 1 : 0 }}
-            style={{ transformOrigin: "left" }}
+            className="h-1.5 w-1.5 rotate-45 bg-[#d8ff36]"
+            animate={{ scale: [0.75, 1.35, 0.75] }}
+            transition={{ duration: 1.4, repeat: Infinity }}
           />
-        </motion.button>
-      );
-    })}
-  </div>
-);
+          Swipe your cursor
+        </span>
+      </div>
+    </div>
+  );
+};
 
 const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
   const [isLaunching, setIsLaunching] = useState(false);
@@ -2685,18 +2735,21 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
       transition={{ duration: reduceMotion ? 0.1 : 0.45 }}
       className="bw-portfolio min-h-screen overflow-hidden bg-black text-[#0b0b0b]"
     >
-      <div aria-hidden="true" className="h-[76px]" />
+      <div aria-hidden="true" className="h-[68px]" />
       <motion.header
         initial={false}
         animate={{
-          top: navDocked ? 10 : 0,
+          top: navDocked ? 12 : 0,
           width: navDocked
-            ? "min(940px, calc(100vw - 24px))"
+            ? "min(232px, calc(100vw - 32px))"
             : "min(1520px, calc(100vw - clamp(20px, 6.25vw, 80px)))",
-          height: navDocked ? 58 : 68,
+          height: navDocked ? 46 : 68,
           boxShadow: navDocked
-            ? "0 18px 60px rgba(0,0,0,.28)"
+            ? "0 16px 50px rgba(0,0,0,.32)"
             : "0 0 0 rgba(0,0,0,0)",
+          clipPath: navDocked
+            ? "polygon(10px 0, calc(100% - 10px) 0, 100% 10px, 100% calc(100% - 10px), calc(100% - 10px) 100%, 10px 100%, 0 calc(100% - 10px), 0 10px)"
+            : "polygon(12px 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%, 0 12px)",
         }}
         transition={{ type: "spring", stiffness: 260, damping: 29, mass: 0.8 }}
         className={`fixed left-1/2 z-[95] -translate-x-1/2 overflow-hidden border backdrop-blur-xl transition-colors duration-300 ${
@@ -2704,75 +2757,68 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
             ? "border-white/20 bg-black/95 text-white"
             : "border-black/25 bg-[#f4f3ec]/95 text-black"
         }`}
-        style={{
-          clipPath:
-            "polygon(12px 0, calc(100% - 12px) 0, 100% 12px, 100% calc(100% - 12px), calc(100% - 12px) 100%, 12px 100%, 0 calc(100% - 12px), 0 12px)",
-        }}
       >
-        <motion.div className="relative flex h-full items-center justify-between gap-2 px-2 sm:gap-4 sm:px-3">
-          <Link
-            href="/#top"
-            className={`circuit-control group flex min-w-0 items-center gap-2 py-1 pl-1 pr-3 transition-colors sm:gap-3 ${
-              navDocked
-                ? "hover:bg-white hover:text-black"
-                : "hover:bg-black hover:text-white"
-            }`}
-          >
-            <Image
-              src="/images/logo.png"
-              alt=""
-              width={40}
-              height={40}
-              loading="eager"
-              className="h-10 w-10 shrink-0 object-cover"
-            />
-            <span className="truncate font-telegraf text-sm font-black uppercase tracking-[-0.02em] sm:text-base">
-              Kevin Liu
-            </span>
-            <motion.span
-              className="h-1.5 w-1.5 shrink-0 rotate-45 bg-[#d8ff36]"
-              animate={{ rotate: navDocked ? 135 : 45 }}
-            />
-          </Link>
+        <AnimatePresence initial={false} mode="wait">
+          {navDocked ? (
+            <motion.div
+              key="compact-kevin"
+              className="flex h-full items-center justify-center"
+              initial={{ opacity: 0, scale: 0.86, filter: "blur(8px)" }}
+              animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+              exit={{ opacity: 0, scale: 0.9, filter: "blur(6px)" }}
+              transition={{ duration: 0.22 }}
+            >
+              <Link
+                href="/#top"
+                className="group flex h-full w-full items-center justify-center gap-3 font-telegraf text-sm font-black uppercase tracking-[-0.01em]"
+              >
+                Kevin Liu
+                <motion.span
+                  className="h-1.5 w-1.5 rotate-45 bg-[#d8ff36]"
+                  animate={{ rotate: [45, 135, 45] }}
+                  transition={{ duration: 4, repeat: Infinity }}
+                />
+              </Link>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="opening-nav"
+              className="relative flex h-full items-center justify-between gap-4 px-2 sm:px-3"
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.2 }}
+            >
+              <Link
+                href="/#top"
+                className="circuit-control group flex min-w-0 items-center gap-2 py-1 pl-1 pr-3 transition-colors hover:bg-black hover:text-white sm:gap-3"
+              >
+                <Image
+                  src="/images/logo.png"
+                  alt=""
+                  width={40}
+                  height={40}
+                  loading="eager"
+                  className="h-10 w-10 shrink-0 object-cover"
+                />
+                <span className="truncate font-telegraf text-sm font-black uppercase tracking-[-0.02em] sm:text-base">
+                  Kevin Liu
+                </span>
+                <span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-[#d8ff36]" />
+              </Link>
 
-          <nav
-            aria-label="Primary navigation"
-            className={`hidden items-center gap-1 border-x px-2 md:flex ${
-              navDocked ? "border-white/20" : "border-black/20"
-            }`}
-          >
-            {[
-              ["Work", "/#work"],
-              ["Writing", "/#philosophy"],
-              ["Experience", "/experience"],
-              ["People", "/people"],
-              ["Photos", "/photography"],
-            ].map(([label, href], index) => (
-              <motion.div key={href} whileHover={{ y: -2 }} whileTap={{ y: 0 }}>
-                <Link
-                  href={href ?? "/"}
-                  className={`block px-3 py-2 font-kode text-[7px] uppercase tracking-[0.13em] transition lg:px-4 lg:text-[8px] ${
-                    navDocked
-                      ? "text-white/60 hover:bg-white hover:text-black"
-                      : "text-black/55 hover:bg-black hover:text-white"
-                  } ${index > 2 && navDocked ? "hidden lg:block" : ""}`}
-                >
-                  {label}
-                </Link>
-              </motion.div>
-            ))}
-          </nav>
+              <div className="hidden min-w-0 flex-1 items-center gap-4 md:flex">
+                <span className="h-px min-w-8 flex-1 bg-black/20" />
+                <span className="font-kode text-[7px] uppercase tracking-[0.19em] text-black/40 lg:text-[8px]">
+                  Personal portfolio / 2026
+                </span>
+                <span className="h-px min-w-8 flex-1 bg-black/20" />
+              </div>
 
-          <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
-            <AnimatePresence initial={false}>
-              {!navDocked && (
-                <motion.nav
-                  key="header-socials"
+              <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+                <nav
                   aria-label="Kevin Liu social links"
                   className="hidden items-center lg:flex"
-                  initial={{ opacity: 0, width: 0 }}
-                  animate={{ opacity: 1, width: "auto" }}
-                  exit={{ opacity: 0, width: 0 }}
                 >
                   <Link
                     href={SOCIAL_LINKS.github}
@@ -2798,49 +2844,41 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
                   >
                     X
                   </Link>
-                </motion.nav>
-              )}
-            </AnimatePresence>
+                </nav>
 
-            <button
-              type="button"
-              onClick={launch}
-              className={`circuit-action group relative flex h-10 items-center gap-2 px-2 pl-4 font-kode text-[7px] uppercase tracking-[0.12em] transition sm:pl-5 sm:text-[8px] ${
-                navDocked
-                  ? "bg-[#d8ff36] text-black hover:bg-white"
-                  : "bg-black text-white hover:bg-[#d8ff36] hover:text-black"
-              }`}
-            >
-              <span className="hidden sm:inline">Play PortfolioMon</span>
-              <span className="sm:hidden">Play</span>
-              <span
-                className={`flex h-7 w-7 items-center justify-center rounded-full transition-transform duration-500 group-hover:rotate-[360deg] ${
-                  navDocked ? "bg-black text-white" : "bg-white text-black"
-                }`}
-              >
-                <Play className="h-3 w-3 fill-current" />
-              </span>
-            </button>
-          </div>
+                <button
+                  type="button"
+                  onClick={launch}
+                  className="circuit-action group relative flex h-10 items-center gap-2 bg-black px-2 pl-4 font-kode text-[7px] uppercase tracking-[0.12em] text-white transition hover:bg-[#d8ff36] hover:text-black sm:pl-5 sm:text-[8px]"
+                >
+                  <span className="hidden sm:inline">Play PortfolioMon</span>
+                  <span className="sm:hidden">Play</span>
+                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white text-black transition-transform duration-500 group-hover:rotate-[360deg]">
+                    <Play className="h-3 w-3 fill-current" />
+                  </span>
+                </button>
+              </div>
 
-          <motion.span
-            aria-hidden="true"
-            className="absolute bottom-0 left-0 h-0.5 bg-[#d8ff36]"
-            animate={{ width: navDocked ? "34%" : "12%" }}
-            transition={{ type: "spring", stiffness: 220, damping: 28 }}
-          />
-        </motion.div>
+              <motion.span
+                aria-hidden="true"
+                className="absolute bottom-0 left-0 h-0.5 bg-[#d8ff36]"
+                initial={{ width: 0 }}
+                animate={{ width: "12%" }}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.header>
 
       <section
         id="top"
         onMouseMove={followPointer}
-        className={`spotlight-field relative border-b border-black bg-[#f4f3ec] ${SECTION_FRAME}`}
+        className={`spotlight-field relative border-b border-white/20 bg-black ${SECTION_FRAME}`}
       >
-        <div className="mx-auto grid w-full max-w-[1760px] grid-cols-1 min-[1800px]:grid-cols-[80px_1600px_80px]">
+        <div className="mx-auto grid w-full grid-cols-1 xl:grid-cols-[64px_minmax(0,1fr)_64px]">
           <HeroMarginRail side="left" mode={heroMode} onMode={setHeroMode} />
 
-          <div className="mx-auto grid min-h-[590px] w-full max-w-[1600px] grid-cols-1 border-x border-black/20 lg:h-[clamp(620px,70svh,740px)] lg:min-h-0 lg:grid-cols-12">
+          <div className="mx-auto grid min-h-[590px] w-full grid-cols-1 border-x border-black/20 lg:h-[clamp(640px,72svh,760px)] lg:min-h-0 lg:grid-cols-12">
             <div className="relative z-10 flex min-w-0 flex-col justify-between border-b border-black p-5 sm:p-8 lg:col-span-7 lg:border-b-0 lg:border-r lg:p-10 xl:p-12">
               <div className="flex items-center justify-between gap-4 font-kode text-[8px] uppercase tracking-[0.2em] text-black/50 sm:text-[9px]">
                 <span>Kevin Liu / engineer + designer</span>
@@ -2855,7 +2893,7 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
                   <br />
                   <span className="font-normal italic">sharp tools.</span>
                 </h1>
-                <HeroSignalDeck mode={heroMode} onMode={setHeroMode} />
+                <HeroCommitField mode={heroMode} onMode={setHeroMode} />
               </div>
 
               <div className="grid gap-5 border-t border-black pt-4 sm:grid-cols-2">
