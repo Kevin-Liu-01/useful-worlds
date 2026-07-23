@@ -1248,6 +1248,7 @@ const HeroSocialSequence = ({
             alt={index === activeIndex ? frame.alt : ""}
             priority={index === 0}
             tone="soft"
+            fit="contain"
             focus={frame.focus}
             revealOnParentHover
             className="absolute inset-0"
@@ -2846,17 +2847,17 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
       <section
         id="top"
         onMouseMove={followPointer}
-        className="spotlight-field relative mx-3 min-h-[calc(100dvh-68px)] max-w-[1520px] snap-start border-x border-b border-black/30 bg-[#f4f3ec] text-black sm:mx-6 md:snap-always lg:mx-10 lg:h-[calc(100dvh-68px)] lg:min-h-0 lg:overflow-hidden 2xl:mx-auto"
+        className="spotlight-field relative mx-3 min-h-[calc(100dvh-68px)] max-w-[1520px] snap-start border-x border-b border-black/30 bg-[#f4f3ec] text-black sm:mx-6 lg:mx-10 2xl:mx-auto"
         style={{
           clipPath:
             "polygon(0 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 14px 100%, 0 calc(100% - 14px))",
         }}
       >
-        <div className="mx-auto grid w-full grid-cols-1 lg:h-full lg:items-center xl:grid-cols-[64px_minmax(0,1fr)_64px]">
+        <div className="mx-auto grid w-full grid-cols-1 items-stretch xl:grid-cols-[64px_minmax(0,1fr)_64px]">
           <HeroMarginRail side="left" mode={heroMode} onMode={setHeroMode} />
 
-          <div className="mx-auto grid min-h-[590px] w-full grid-cols-1 bg-[#f4f3ec] lg:h-[min(780px,calc(100dvh-68px))] lg:min-h-0 lg:grid-cols-12">
-            <div className="relative z-10 flex min-w-0 flex-col justify-between border-b border-black p-5 sm:p-8 lg:col-span-7 lg:border-b-0 lg:border-r lg:p-10 xl:p-12">
+          <div className="mx-auto flex w-full flex-col bg-[#f4f3ec]">
+            <div className="relative z-10 flex min-h-[620px] min-w-0 flex-col justify-between border-b border-black p-5 sm:min-h-[680px] sm:p-8 lg:min-h-[min(760px,calc(100dvh-68px))] lg:p-10 xl:p-12">
               <div className="flex flex-1 flex-col justify-center py-9 sm:py-11 lg:py-4">
                 <h1 className="max-w-[9ch] font-telegraf text-[clamp(3.8rem,7vw,7.6rem)] font-black leading-[0.86] tracking-[-0.045em]">
                   Agents,
@@ -2883,9 +2884,9 @@ const ProjectIndexLanding = ({ onEnter }: { onEnter: () => void }) => {
               </div>
             </div>
 
-            <div className="relative min-h-[420px] overflow-hidden bg-black p-3 sm:min-h-[500px] sm:p-4 lg:col-span-5 lg:min-h-0">
+            <div className="relative w-full overflow-hidden bg-black p-3 sm:p-5 lg:p-7">
               <div
-                className="relative h-full min-h-[390px] overflow-hidden bg-white sm:min-h-[470px] lg:min-h-0"
+                className="relative aspect-[4/5] w-full overflow-hidden bg-black sm:aspect-[3/2]"
                 style={{ clipPath: CHOPPED }}
               >
                 <HeroSocialSequence
