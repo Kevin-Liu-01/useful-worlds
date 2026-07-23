@@ -6,6 +6,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import {
   AnimatePresence,
   motion,
+  useMotionValue,
   useMotionValueEvent,
   useScroll,
   useSpring,
@@ -179,16 +180,38 @@ const PortfolioDock = ({ onPlay }: { onPlay?: () => void }) => {
   const router = useRouter();
   const [expanded, setExpanded] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const { scrollY, scrollYProgress } = useScroll();
-  const frameProgress = useSpring(scrollYProgress, {
+  const { scrollY } = useScroll();
+  const rawFrameProgress = useMotionValue(0);
+  const frameProgress = useSpring(rawFrameProgress, {
     stiffness: 150,
     damping: 28,
     mass: 0.25,
   });
 
   useMotionValueEvent(scrollY, "change", (latest) => {
+    if (document.querySelector("[data-portfolio-scroll-root]")) return;
     setScrolled(latest > 84);
+    const maxScroll = Math.max(
+      1,
+      document.documentElement.scrollHeight - window.innerHeight,
+    );
+    rawFrameProgress.set(latest / maxScroll);
   });
+
+  useEffect(() => {
+    const syncPortfolioScroll = (event: Event) => {
+      const detail = (event as CustomEvent).detail as {
+        scrollY?: number;
+        progress?: number;
+      };
+      setScrolled((detail.scrollY ?? 0) > 84);
+      rawFrameProgress.set(detail.progress ?? 0);
+    };
+
+    window.addEventListener("portfolio-scroll", syncPortfolioScroll);
+    return () =>
+      window.removeEventListener("portfolio-scroll", syncPortfolioScroll);
+  }, [rawFrameProgress]);
 
   return (
     <motion.nav
@@ -384,8 +407,8 @@ const PortfolioShell = ({
     <div className="portfolio-ui min-h-screen bg-black font-mori text-[#24211d]">
       {showPageNavigation && <PortfolioTopNavigation />}
       <div
-        className={`min-w-0 pb-20 sm:pb-24 ${
-          showPageNavigation ? "pt-16 sm:pt-[72px]" : ""
+        className={`min-w-0 ${
+          showPageNavigation ? "pb-20 pt-16 sm:pb-24 sm:pt-[72px]" : ""
         }`}
       >
         {children}
